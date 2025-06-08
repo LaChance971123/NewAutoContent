@@ -18,7 +18,7 @@ def test_elevenlabs_generation(monkeypatch, tmp_path):
 
     monkeypatch.setenv("ELEVENLABS_API_KEY", "key")
     monkeypatch.setenv("ELEVENLABS_VOICE_ID", "voice")
-    gen = VoiceOverGenerator("elevenlabs", coqui_model_name="model", coqui_vocoder_name=None)
+    gen = VoiceOverGenerator("elevenlabs", coqui_model_name="model")
     monkeypatch.setattr(gen, "_generate_elevenlabs", fake_eleven)
     monkeypatch.setattr(gen, "_generate_coqui", fake_coqui)
     out = tmp_path / "out.wav"
@@ -43,13 +43,38 @@ def test_coqui_fallback(monkeypatch, tmp_path):
 
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
     monkeypatch.delenv("ELEVENLABS_VOICE_ID", raising=False)
-    gen = VoiceOverGenerator("elevenlabs", coqui_model_name="model", coqui_vocoder_name=None)
+    gen = VoiceOverGenerator("elevenlabs", coqui_model_name="model")
     monkeypatch.setattr(gen, "_generate_elevenlabs", fake_eleven)
     monkeypatch.setattr(gen, "_generate_coqui", fake_coqui)
     out = tmp_path / "out.wav"
     result = gen.generate("hi", out)
     assert result is True
     assert called["eleven"] is False
+    assert called["coqui"] is True
+    assert out.exists()
+
+
+def test_invalid_voice_id_fallback(monkeypatch, tmp_path):
+    called = {"eleven": False, "coqui": False}
+
+    def fake_eleven(text, path):
+        called["eleven"] = True
+        return False
+
+    def fake_coqui(text, path):
+        called["coqui"] = True
+        path.write_text("data")
+        return True
+
+    monkeypatch.setenv("ELEVENLABS_API_KEY", "key")
+    monkeypatch.setenv("ELEVENLABS_VOICE_ID", "bad")
+    gen = VoiceOverGenerator("elevenlabs", coqui_model_name="model")
+    monkeypatch.setattr(gen, "_generate_elevenlabs", fake_eleven)
+    monkeypatch.setattr(gen, "_generate_coqui", fake_coqui)
+    out = tmp_path / "out.wav"
+    result = gen.generate("hi", out)
+    assert result is True
+    assert called["eleven"] is True
     assert called["coqui"] is True
     assert out.exists()
 
@@ -88,7 +113,6 @@ def test_coqui_download(monkeypatch, tmp_path):
     gen = VoiceOverGenerator(
         "elevenlabs",
         coqui_model_name="model",
-        coqui_vocoder_name=None,
     )
 
     out = tmp_path / "out.wav"

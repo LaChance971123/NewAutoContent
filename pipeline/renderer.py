@@ -19,18 +19,63 @@ class VideoRenderer:
         log_file: Optional[Path] = None,
         debug: bool = False,
     ):
-        self.bg_folder = bg_folder
+        self.logger = setup_logger("renderer", log_file, debug)
+        self.bg_root = bg_folder.parent
+        self.bg_folder = self._resolve_folder(bg_folder)
         self.watermark = watermark if watermark and watermark.exists() else None
         self.opacity = opacity
         self.resolution = resolution
         self.ffmpeg = ffmpeg_path
-        self.logger = setup_logger("renderer", log_file, debug)
+
+    def _list_videos(self, folder: Path) -> list[Path]:
+        return [p for p in folder.glob("*") if p.suffix.lower() in {".mp4", ".webm"}]
+
+    def _resolve_folder(self, folder: Path) -> Path:
+        folder = folder.resolve()
+        if folder.exists():
+            videos = self._list_videos(folder)
+            if videos:
+                return folder
+            self.logger.warning(
+                f"No background videos found in '{folder}'. Please add videos or pick another style."
+            )
+        # try case-insensitive search in root
+        root = folder.parent
+        if not root.exists():
+            raise FileNotFoundError(f"Background root {root} does not exist")
+        target = folder.name.lower()
+        for cand in root.iterdir():
+            if cand.is_dir() and cand.name.lower() == target:
+                videos = self._list_videos(cand)
+                if videos:
+                    self.logger.info(f"Resolved background folder to {cand}")
+                    return cand
+                self.logger.error(f"No background videos found in {cand}")
+                break
+        # fallback to default 'Rain' folder if available
+        for cand in root.iterdir():
+            if cand.is_dir() and cand.name.lower() == "rain" and self._list_videos(cand):
+                self.logger.warning(
+                    f"Falling back to {cand} due to missing {folder.name} videos"
+                )
+                return cand
+        # fallback to any folder with videos
+        for cand in root.iterdir():
+            if cand.is_dir() and self._list_videos(cand):
+                self.logger.warning(
+                    f"Falling back to {cand} due to missing {folder.name} videos"
+                )
+                return cand
+        raise FileNotFoundError(f"No background videos found in {root}")
 
     def pick_background(self) -> Path:
-        videos = list(self.bg_folder.glob("*.mp4"))
+        videos = self._list_videos(self.bg_folder)
         if not videos:
+            self.logger.error(f"No background videos found in {self.bg_folder}")
             raise FileNotFoundError("No background videos found")
-        return random.choice(videos)
+        choice = random.choice(videos)
+        self.logger.info(f"Selected background video {choice}")
+        return choice
 
     def render(self, audio_path: Path, subtitles: Path, output_path: Path):
         bg_video = self.pick_background()

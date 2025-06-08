@@ -32,12 +32,11 @@ def main():
 
     script_text, name = read_script(args)
     config = load_config()
+    config.validate()
 
-    log_file = None
-    if args.log_to_file:
-        log_dir = Path("logs")
-        log_dir.mkdir(exist_ok=True)
-        log_file = log_dir / f"{name}.log"
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
+    log_file = log_dir / "pipeline.log"
 
     logger = setup_logger("cli", log_file, args.debug)
 
@@ -51,10 +50,12 @@ def main():
         config.resolution = args.resolution
     if args.no_watermark:
         config.watermark_enabled = False
+    background = args.background_style or args.background
+    output_path = Path(args.output) if args.output else None
 
     pipeline = VideoPipeline(config, debug=args.debug, log_file=log_file)
     try:
-        ctx = pipeline.run(script_text, name)
+        ctx = pipeline.run(script_text, name, background=background, output=output_path)
         logger.info(f"Video created at {ctx.final_video_path}")
     except Exception as e:
         logger.error(f"Pipeline failed: {e}")
