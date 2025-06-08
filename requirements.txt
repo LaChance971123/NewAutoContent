@@ -1,0 +1,6 @@
+python-dotenv
+requests
+whisper
+TTS
+PySide6
+yt_dlp
