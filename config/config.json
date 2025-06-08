@@ -6,7 +6,6 @@
   "voice_engine": "elevenlabs",
   "default_voice_id": "",
   "coqui_model_name": "tts_models/en/ljspeech/tacotron2-DDC",
-  "coqui_vocoder_name": "vocoder_models/en/ljspeech/hifigan_v2",
   "background_videos_path": "assets/backgrounds",
   "resolution": "1080x1920",
   "ffmpeg_path": "ffmpeg",

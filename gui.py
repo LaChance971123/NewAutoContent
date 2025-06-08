@@ -27,7 +27,9 @@ class QTextLogger(logging.Handler):
 
 
 def load_config() -> Config:
-    return Config.load(Path("config/config.json"))
+    cfg = Config.load(Path("config/config.json"))
+    cfg.validate()
+    return cfg
 
 
 class SidebarButton(QtWidgets.QToolButton):
@@ -268,6 +270,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings_page.configSaved.connect(self._reload_config)
 
     def _reload_config(self, config: Config) -> None:
+        config.validate()
         self.config = config
 
     def _run_pipeline(self, opts: dict) -> None:
@@ -293,6 +296,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     break
         cfg.resolution = opts.get("resolution", cfg.resolution)
         cfg.watermark_enabled = opts.get("watermark", True)
+        cfg.validate()
 
         pipeline = VideoPipeline(cfg, debug=True)
         self.create_page.log_edit.clear()
