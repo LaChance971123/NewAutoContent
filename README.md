@@ -6,6 +6,7 @@ This project provides a modular pipeline for generating short-form storytelling 
 - Voiceover generation with ElevenLabs TTS and automatic fallback to Coqui TTS.
 - Subtitle generation via Whisper with support for karaoke, progressive, and simple styles.
 - Final rendering using FFmpeg with random background videos and optional watermark overlay.
+- Background styles are loaded from folders under `assets/backgrounds` and must contain at least one `.mp4` or `.webm` video. The renderer will fall back to another style if the selected one is missing or empty.
 - Command line interface with flags for subtitle style, resolution, watermark toggle, dry runs, debug mode, and optional log file output.
 - Configuration through `config/config.json` and environment variables in `.env`.
 - The config file also defines `coqui_model_name` and `coqui_vocoder_name` for automatic
