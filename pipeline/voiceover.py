@@ -1,17 +1,10 @@
 from __future__ import annotations
 
 import os
-try:
-    import requests
-except Exception:  # pragma: no cover - missing dependency in tests
-    requests = None
+import requests
 from pathlib import Path
 from typing import Optional
-try:
-    from dotenv import load_dotenv
-except Exception:  # pragma: no cover - missing dependency in tests
-    def load_dotenv():
-        pass
+from dotenv import load_dotenv
 from .logger import setup_logger
 
 load_dotenv()
@@ -23,54 +16,40 @@ class VoiceOverGenerator:
         engine: str,
         voice_id: Optional[str] = None,
         coqui_model_name: str | None = None,
+        coqui_vocoder_name: str | None = None,
         debug: bool = False,
         log_file: Optional[Path] = None,
     ):
         self.engine = engine
         self.voice_id = voice_id
         self.coqui_model_name = coqui_model_name or "tts_models/en/ljspeech/tacotron2-DDC"
+        self.coqui_vocoder_name = coqui_vocoder_name
         self.logger = setup_logger("voiceover", log_file, debug)
         self.api_key = os.getenv("ELEVENLABS_API_KEY")
         self.voice_id = voice_id or os.getenv("ELEVENLABS_VOICE_ID")
 
     def generate(self, text: str, output_path: Path) -> bool:
         self.logger.info(f"Generating voiceover using {self.engine}")
-        if self.engine == "elevenlabs":
-            if not self.api_key or not self.voice_id:
-                self.logger.error("ElevenLabs voice ID not found. Falling back to Coqui TTS.")
-                return self._generate_coqui(text, output_path)
-            if self._generate_elevenlabs(text, output_path):
-                return output_path.exists() and output_path.stat().st_size > 0
-            self.logger.error("ElevenLabs generation failed. Falling back to Coqui TTS.")
-            return self._generate_coqui(text, output_path)
-
+        if self.engine == "elevenlabs" and self.api_key and self.voice_id:
+            return self._generate_elevenlabs(text, output_path)
+        self.logger.info("Falling back to Coqui TTS")
         return self._generate_coqui(text, output_path)
 
     def _generate_elevenlabs(self, text: str, output_path: Path) -> bool:
-        if requests is None:
-            self.logger.error("requests library not available")
-            return False
-        url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}"
-        headers = {"xi-api-key": self.api_key}
-        payload = {"text": text}
-        for attempt in range(3):
-            try:
-                response = requests.post(url, json=payload, headers=headers, timeout=30)
-                if response.status_code == 200:
-                    output_path.write_bytes(response.content)
-                    self.logger.info("ElevenLabs voiceover generated successfully")
-                    return True
+        try:
+            url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}"
+            headers = {"xi-api-key": self.api_key}
+            response = requests.post(url, json={"text": text}, headers=headers)
+            if response.status_code >= 400:
                 self.logger.error(
                     f"ElevenLabs API error {response.status_code}: {response.text}"
                 )
-                if response.status_code >= 500:
-                    continue
                 return False
-            except Exception as e:
-                self.logger.error(f"ElevenLabs request failed: {e}")
-                if attempt == 2:
-                    return False
-        return False
+            output_path.write_bytes(response.content)
+            return True
+        except Exception as e:
+            self.logger.error(f"ElevenLabs generation failed: {e}")
+            return False
 
     def _generate_coqui(self, text: str, output_path: Path) -> bool:
         try:
@@ -81,23 +60,30 @@ class VoiceOverGenerator:
             return False
 
         try:
-            tts = TTS(model_name=self.coqui_model_name)
+            tts = TTS(
+                model_name=self.coqui_model_name,
+                vocoder_name=self.coqui_vocoder_name,
+                progress_bar=False,
+            )
         except Exception:
             self.logger.info("Downloading Coqui TTS model...")
             manager = ModelManager()
             try:
                 manager.download_model(self.coqui_model_name)
-                tts = TTS(model_name=self.coqui_model_name)
+                if self.coqui_vocoder_name:
+                    manager.download_model(self.coqui_vocoder_name)
+                tts = TTS(
+                    model_name=self.coqui_model_name,
+                    vocoder_name=self.coqui_vocoder_name,
+                    progress_bar=False,
+                )
             except Exception as e:
                 self.logger.error(f"Coqui TTS download failed: {e}")
                 return False
 
         try:
             tts.tts_to_file(text=text, file_path=str(output_path))
-            if output_path.exists() and output_path.stat().st_size > 0:
-                self.logger.info("Coqui voiceover generated successfully")
-                return True
-            return False
+            return True
         except Exception as e:
             self.logger.error(f"Coqui TTS generation failed: {e}")
             return False
