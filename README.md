@@ -9,8 +9,8 @@ This project provides a modular pipeline for generating short-form storytelling 
 - Background styles are loaded from folders under `assets/backgrounds` and must contain at least one `.mp4` or `.webm` video. Folder names are resolved case-insensitively and the renderer falls back to the first style containing videos if needed.
 - Command line interface with flags for subtitle style, resolution, watermark toggle, dry runs, debug mode, and optional log file output.
 - Configuration through `config/config.json` and environment variables in `.env`.
-- The config file also defines `coqui_model_name` and `coqui_vocoder_name` for automatic
-  download of Coqui models when needed.
+- The config file also defines `coqui_model_name` for automatic download of the
+  Coqui model when needed.
 - The PyQt5 GUI provides a multi-page interface styled with the PyDracula theme. It offers live logging, a fixed preview pane and export features.
 
 ## Usage
@@ -21,7 +21,7 @@ Use `--script-text` to pass a script inline or provide input via `stdin`.
 Other useful flags:
 ```
 --style karaoke|progressive|simple
---background <style>
+--background-style <style>
 --output <path/to/output.mp4>
 --resolution 1080x1920
 --no-watermark

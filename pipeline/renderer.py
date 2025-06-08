@@ -36,7 +36,9 @@ class VideoRenderer:
             videos = self._list_videos(folder)
             if videos:
                 return folder
-            self.logger.error(f"No background videos found in {folder}")
+            self.logger.warning(
+                f"No background videos found in '{folder}'. Please add videos or pick another style."
+            )
         # try case-insensitive search in root
         root = folder.parent
         if not root.exists():
@@ -50,6 +52,13 @@ class VideoRenderer:
                     return cand
                 self.logger.error(f"No background videos found in {cand}")
                 break
+        # fallback to default 'Rain' folder if available
+        for cand in root.iterdir():
+            if cand.is_dir() and cand.name.lower() == "rain" and self._list_videos(cand):
+                self.logger.warning(
+                    f"Falling back to {cand} due to missing {folder.name} videos"
+                )
+                return cand
         # fallback to any folder with videos
         for cand in root.iterdir():
             if cand.is_dir() and self._list_videos(cand):

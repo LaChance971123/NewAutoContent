@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from pathlib import Path
+import time
+import json
 from .helpers import PipelineContext, sanitize_name, now_ts_folder
 from .voiceover import VoiceOverGenerator
 from .subtitles import SubtitleGenerator
@@ -61,13 +63,13 @@ class VideoPipeline:
         setup_logger("pipeline", session_log, self.debug)
         self.logger.info("Starting pipeline")
         status = "success"
+        start = time.time()
         try:
             # Voiceover
             voice = VoiceOverGenerator(
                 engine,
                 voice_id,
                 self.config.coqui_model_name,
-                self.config.coqui_vocoder_name,
                 debug=self.debug,
                 log_file=session_log,
             )
@@ -99,7 +101,17 @@ class VideoPipeline:
             ctx.archive()
             raise
 
+        duration = f"{int(time.time() - start)}s"
         ctx.save_metadata(status=status)
+        run_summary = {
+            "script": ctx.script_path.name,
+            "voice": ctx.voice_engine.capitalize() if ctx.voice_engine else "",
+            "style": ctx.subtitle_style,
+            "duration": duration,
+            "success": status == "success",
+        }
+        with open(ctx.output_dir / "run_summary.json", "w") as f:
+            json.dump(run_summary, f, indent=2)
         ctx.write_summary()
         ctx.archive()
         self.logger.info("Pipeline completed")
