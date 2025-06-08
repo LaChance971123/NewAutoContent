@@ -1,0 +1,5 @@
+python-dotenv
+requests
+whisper
+TTS
+PyQt5
