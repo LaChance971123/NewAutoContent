@@ -12,6 +12,9 @@ This project provides a modular pipeline for generating short-form storytelling 
 - The config file also defines `coqui_model_name` for automatic download of the
   Coqui model when needed.
 - The PyQt5 GUI provides a multi-page interface styled with the PyDracula theme. It offers live logging, a fixed preview pane and export features.
+- Downloader page allows batch downloading of background videos via `yt_dlp`.
+- Each pipeline step has a configurable timeout (`step_timeout`) to avoid hanging processes.
+- Developer mode can be enabled in `config/config.json` to continue with dummy audio/subtitles when errors occur.
 
 ## Usage
 ```

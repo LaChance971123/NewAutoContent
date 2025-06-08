@@ -19,6 +19,7 @@ class Config:
     background_videos_path: str = "assets/backgrounds"
     resolution: str = "1080x1920"
     ffmpeg_path: str = "ffmpeg"
+    step_timeout: int = 120
     safe_mode: bool = False
     developer_mode: bool = False
     voices: dict[str, str] | None = None
@@ -50,4 +51,7 @@ class Config:
         if not bg_root.exists():
             logger.warning(f"Background path {bg_root} does not exist")
         self.resolution = self.resolution.lower().replace(" ", "")
+        if self.step_timeout <= 0:
+            logger.warning("step_timeout must be > 0; using 120")
+            self.step_timeout = 120
 

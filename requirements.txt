@@ -3,3 +3,4 @@ requests
 whisper
 TTS
 PyQt5
+yt_dlp

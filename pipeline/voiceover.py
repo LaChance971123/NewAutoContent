@@ -1,10 +1,17 @@
 from __future__ import annotations
 
 import os
-import requests
+try:
+    import requests
+except Exception:  # pragma: no cover - missing dependency in tests
+    requests = None
 from pathlib import Path
 from typing import Optional
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except Exception:  # pragma: no cover - missing dependency in tests
+    def load_dotenv():
+        pass
 from .logger import setup_logger
 
 load_dotenv()
@@ -40,6 +47,9 @@ class VoiceOverGenerator:
         return self._generate_coqui(text, output_path)
 
     def _generate_elevenlabs(self, text: str, output_path: Path) -> bool:
+        if requests is None:
+            self.logger.error("requests library not available")
+            return False
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}"
         headers = {"xi-api-key": self.api_key}
         payload = {"text": text}
