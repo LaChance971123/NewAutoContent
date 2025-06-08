@@ -1,16 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-import time
-import json
-from .helpers import (
-    PipelineContext,
-    sanitize_name,
-    now_ts_folder,
-    run_with_timeout,
-    create_silence,
-    create_dummy_subtitles,
-)
+from .helpers import PipelineContext, sanitize_name, now_ts_folder
 from .voiceover import VoiceOverGenerator
 from .subtitles import SubtitleGenerator
 from .renderer import VideoRenderer
@@ -24,35 +15,14 @@ class VideoPipeline:
         self.logger = setup_logger("pipeline", log_file, debug)
         self.debug = debug
         self.log_file = log_file
-        self.timeout = config.step_timeout
 
-    def run(
-        self,
-        script_text: str,
-        script_name: str,
-        background: str | None = None,
-        output: Path | None = None,
-    ) -> PipelineContext:
+    def run(self, script_text: str, script_name: str) -> PipelineContext:
         style = self.config.subtitle_style
         engine = self.config.voice_engine
         voice_id = self.config.default_voice_id
 
-        # resolve background folder
-        bg_styles = self.config.background_styles or {}
-        bg_folder = Path(self.config.background_videos_path)
-        if background:
-            for key, val in bg_styles.items():
-                if key.lower() == background.lower():
-                    bg_folder = Path(val)
-                    break
-
         title = sanitize_name(script_name if script_name not in {"cli", "stdin"} else "session")
-        if output:
-            final_output = Path(output)
-            out_dir = final_output.parent
-        else:
-            out_dir = Path("output") / f"{title}_{now_ts_folder()}"
-            final_output = out_dir / "final_video.mp4"
+        out_dir = Path("output") / f"{title}_{now_ts_folder()}"
         session_log = out_dir / "pipeline.log"
 
         ctx = PipelineContext(
@@ -65,58 +35,33 @@ class VideoPipeline:
             log_file=session_log,
             debug=self.debug,
         )
-        ctx.final_video_path = final_output
 
         # Reconfigure logger to use session log as well
         setup_logger("pipeline", session_log, self.debug)
         self.logger.info("Starting pipeline")
         status = "success"
-        start = time.time()
         try:
             # Voiceover
             voice = VoiceOverGenerator(
                 engine,
                 voice_id,
                 self.config.coqui_model_name,
+                self.config.coqui_vocoder_name,
                 debug=self.debug,
                 log_file=session_log,
             )
-            try:
-                run_with_timeout(
-                    lambda: voice.generate(ctx.script_text, ctx.voiceover_path),
-                    self.timeout,
-                )
-                if not ctx.voiceover_path.exists() or ctx.voiceover_path.stat().st_size == 0:
-                    raise RuntimeError("voiceover file invalid")
-            except Exception as e:
-                self.logger.error(f"Voiceover step failed: {e}")
-                if self.config.developer_mode:
-                    create_silence(ctx.voiceover_path)
-                    self.logger.warning("Developer mode: using silent audio")
-                else:
-                    raise
+            if not voice.generate(ctx.script_text, ctx.voiceover_path):
+                raise RuntimeError("Voiceover generation failed")
 
             # Subtitles
             subs = SubtitleGenerator(style, log_file=session_log, debug=self.debug)
-            try:
-                words = run_with_timeout(subs.transcribe, self.timeout, ctx.voiceover_path)
-                run_with_timeout(subs.generate_ass, self.timeout, words, ctx.subtitles_path)
-            except Exception as e:
-                self.logger.error(f"Subtitle step failed: {e}")
-                if self.config.developer_mode:
-                    create_dummy_subtitles(ctx.subtitles_path)
-                    self.logger.warning("Developer mode: using dummy subtitles")
-                else:
-                    raise
+            words = subs.transcribe(ctx.voiceover_path)
+            subs.generate_ass(words, ctx.subtitles_path)
 
             # Render
-            watermark_path = (
-                Path(self.config.watermark_path)
-                if self.config.watermark_enabled and self.config.watermark_path
-                else None
-            )
+            watermark_path = Path(self.config.watermark_path) if self.config.watermark_enabled and self.config.watermark_path else None
             renderer = VideoRenderer(
-                bg_folder,
+                Path(self.config.background_videos_path),
                 watermark_path,
                 self.config.watermark_opacity,
                 resolution=self.config.resolution,
@@ -124,35 +69,16 @@ class VideoPipeline:
                 log_file=session_log,
                 debug=self.debug,
             )
-            run_with_timeout(
-                renderer.render,
-                self.timeout,
-                ctx.voiceover_path,
-                ctx.subtitles_path,
-                ctx.final_video_path,
-            )
+            renderer.render(ctx.voiceover_path, ctx.subtitles_path, ctx.final_video_path)
         except Exception as e:
             status = "failed"
             self.logger.error(f"Pipeline failed: {e}")
-            ctx.write_error_trace(e)
             ctx.save_metadata(status=status)
-            ctx.save_config_snapshot(self.config.__dict__)
             ctx.write_summary()
             ctx.archive()
             raise
 
-        duration = f"{int(time.time() - start)}s"
         ctx.save_metadata(status=status)
-        run_summary = {
-            "script": ctx.script_path.name,
-            "voice": ctx.voice_engine.capitalize() if ctx.voice_engine else "",
-            "style": ctx.subtitle_style,
-            "duration": duration,
-            "success": status == "success",
-        }
-        with open(ctx.output_dir / "run_summary.json", "w") as f:
-            json.dump(run_summary, f, indent=2)
-        ctx.save_config_snapshot(self.config.__dict__)
         ctx.write_summary()
         ctx.archive()
         self.logger.info("Pipeline completed")

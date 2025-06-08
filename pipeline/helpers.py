@@ -1,13 +1,10 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional, Callable, Any
+from typing import Optional
 from datetime import datetime
 import json
 import re
 import shutil
-import threading
-import traceback
-import wave
 
 
 def sanitize_name(name: str) -> str:
@@ -35,48 +32,6 @@ def zip_folder(folder: Path, dest_zip: Path) -> Path:
     base = dest_zip.with_suffix("")
     shutil.make_archive(str(base), "zip", root_dir=folder)
     return dest_zip
-
-
-def run_with_timeout(func: Callable[..., Any], timeout: float, *args, **kwargs) -> Any:
-    """Run *func* with timeout. Raises TimeoutError if timeout exceeded."""
-    result: dict[str, Any] = {}
-    exc: list[BaseException] = []
-
-    def target() -> None:
-        try:
-            result["value"] = func(*args, **kwargs)
-        except BaseException as e:  # capture all
-            exc.append(e)
-
-    thread = threading.Thread(target=target)
-    thread.start()
-    thread.join(timeout)
-    if thread.is_alive():
-        raise TimeoutError(f"{func.__name__} timed out after {timeout}s")
-    if exc:
-        raise exc[0]
-    return result.get("value")
-
-
-def create_silence(path: Path, duration: float = 1.0) -> None:
-    """Create a silent WAV file of *duration* seconds."""
-    n_frames = int(44100 * duration)
-    with wave.open(str(path), "w") as wf:
-        wf.setnchannels(1)
-        wf.setsampwidth(2)
-        wf.setframerate(44100)
-        wf.writeframes(b"\x00\x00" * n_frames)
-
-
-def create_dummy_subtitles(path: Path) -> None:
-    """Write a minimal subtitle file when generation fails."""
-    text = "[Script Info]\nScriptType: v4.00+\n\n[V4+ Styles]\n" \
-        "Format: Name, Fontname, Fontsize, PrimaryColour, BackColour, " \
-        "OutlineColour, Bold, Italic, Alignment, MarginL, MarginR, " \
-        "MarginV, BorderStyle, Outline, Shadow, Encoding\n" \
-        "Style: Default,Arial,48,&H00FFFFFF,&H00000000,&H00000000,0,0,2,10,10,10,1,2,0,0\n" \
-        "[Events]\nFormat: Start, End, Style, Text\nDialogue: 0,0:00:00.00,0:00:02.00,Default,Subtitle generation failed\n"
-    path.write_text(text)
 
 
 @dataclass
@@ -128,12 +83,3 @@ class PipelineContext:
     def archive(self):
         zip_path = zip_folder(self.output_dir, self.output_dir)
         return zip_path
-
-    def write_error_trace(self, exc: BaseException) -> None:
-        """Write traceback of *exc* to error_trace.txt"""
-        trace = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
-        (self.output_dir / "error_trace.txt").write_text(trace)
-
-    def save_config_snapshot(self, config: dict) -> None:
-        with open(self.output_dir / "session_config.json", "w") as f:
-            json.dump(config, f, indent=2)
