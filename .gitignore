@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.pyc
+
+# env
+.env
+
+# Output
+output/
+logs/
+temp/
