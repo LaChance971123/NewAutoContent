@@ -1,0 +1,41 @@
+/* PyDracula inspired dark theme */
+QWidget {
+    background-color: #282a36;
+    color: #f8f8f2;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 12pt;
+}
+QLineEdit, QPlainTextEdit, QTextEdit, QComboBox, QSpinBox {
+    background-color: #44475a;
+    border: 1px solid #6272a4;
+    padding: 4px;
+    border-radius: 4px;
+}
+QPushButton {
+    background-color: #6272a4;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+}
+QPushButton:hover {
+    background-color: #7082b6;
+}
+QToolButton {
+    background-color: transparent;
+    color: #f8f8f2;
+}
+QToolButton:checked {
+    background-color: #44475a;
+}
+QCheckBox {
+    spacing: 6px;
+}
+QStatusBar {
+    background-color: #21222c;
+}
+
+#PreviewPhone {
+    border: 8px solid #44475a;
+    border-radius: 20px;
+    background-color: #000;
+}

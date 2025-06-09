@@ -1,7 +1,11 @@
-venv/
-ffmpeg-7.1.1-full_build/
-*.dll
-*.lib
-*.exe
-*.dic
-*.db
+# Python
+__pycache__/
+*.pyc
+
+# env
+.env
+
+# Output
+output/
+logs/
+temp/
