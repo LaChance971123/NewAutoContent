@@ -4,7 +4,7 @@
   "watermark_opacity": 0.5,
   "watermark_enabled": true,
   "voice_engine": "elevenlabs",
-  "default_voice_id": "",
+  "default_voice_id": "your_voice_id_here",
   "coqui_model_name": "tts_models/en/ljspeech/tacotron2-DDC",
   "background_videos_path": "assets/backgrounds",
   "resolution": "1080x1920",

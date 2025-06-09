@@ -19,20 +19,75 @@ class VideoRenderer:
         log_file: Optional[Path] = None,
         debug: bool = False,
     ):
-        self.bg_folder = bg_folder
+        self.logger = setup_logger("renderer", log_file, debug)
+        self.bg_root = bg_folder.parent
+        self.bg_folder = self._resolve_folder(bg_folder)
         self.watermark = watermark if watermark and watermark.exists() else None
         self.opacity = opacity
         self.resolution = resolution
         self.ffmpeg = ffmpeg_path
-        self.logger = setup_logger("renderer", log_file, debug)
+
+    def _list_videos(self, folder: Path) -> list[Path]:
+        return [p for p in folder.glob("*") if p.suffix.lower() in {".mp4", ".webm"}]
+
+    def _resolve_folder(self, folder: Path) -> Path:
+        folder = folder.resolve()
+        if folder.exists():
+            videos = self._list_videos(folder)
+            if videos:
+                return folder
+            # if folder is a root containing subfolders, try them
+            subdirs = [p for p in folder.iterdir() if p.is_dir()]
+            for sub in subdirs:
+                vids = self._list_videos(sub)
+                if vids:
+                    self.logger.warning(
+                        f"Falling back to {sub} due to missing videos in {folder}"
+                    )
+                    return sub
+            self.logger.warning(
+                f"No background videos found in '{folder}'. Please add videos or pick another style."
+            )
+        # try case-insensitive search in root
+        root = folder.parent
+        if not root.exists():
+            raise FileNotFoundError(f"Background root {root} does not exist")
+        target = folder.name.lower()
+        for cand in root.iterdir():
+            if cand.is_dir() and cand.name.lower() == target:
+                videos = self._list_videos(cand)
+                if videos:
+                    self.logger.info(f"Resolved background folder to {cand}")
+                    return cand
+                self.logger.error(f"No background videos found in {cand}")
+                break
+        # fallback to default 'Rain' folder if available
+        for cand in root.iterdir():
+            if cand.is_dir() and cand.name.lower() == "rain" and self._list_videos(cand):
+                self.logger.warning(
+                    f"Falling back to {cand} due to missing {folder.name} videos"
+                )
+                return cand
+        # fallback to any folder with videos
+        for cand in root.iterdir():
+            if cand.is_dir() and self._list_videos(cand):
+                self.logger.warning(
+                    f"Falling back to {cand} due to missing {folder.name} videos"
+                )
+                return cand
+        raise FileNotFoundError(f"No background videos found in {root}")
 
     def pick_background(self) -> Path:
-        videos = list(self.bg_folder.glob("*.mp4"))
+        videos = self._list_videos(self.bg_folder)
         if not videos:
+            self.logger.error(f"No background videos found in {self.bg_folder}")
             raise FileNotFoundError("No background videos found")
-        return random.choice(videos)
+        choice = random.choice(videos)
+        self.logger.info(f"Selected background video {choice}")
+        return choice
 
     def render(self, audio_path: Path, subtitles: Path, output_path: Path):
+        self.logger.info("Starting FFmpeg render")
         bg_video = self.pick_background()
         # simple wav validation
         try:
@@ -43,6 +98,12 @@ class VideoRenderer:
             self.logger.error(f"Invalid audio file {audio_path}: {e}")
             raise
         self.logger.info(f"Using background video {bg_video}")
+        filters = [f"subtitles={subtitles}"]
+        if self.watermark:
+            filters.append(
+                f"movie={self.watermark}[wm];[0:v][wm]overlay=W-w-10:H-h-10:format=auto,format=yuv420p"
+            )
+        filter_str = ",".join(filters)
         cmd = [
             self.ffmpeg,
             "-y",
@@ -50,15 +111,21 @@ class VideoRenderer:
             str(bg_video),
             "-i",
             str(audio_path),
-            "-vf", f"subtitles={subtitles}",
-            "-s", self.resolution
+            "-vf",
+            filter_str,
+            "-s",
+            self.resolution,
+            str(output_path),
         ]
-        if self.watermark:
-            watermark_filter = f"movie={self.watermark}[wm];[in][wm]overlay=W-w-10:H-h-10:format=auto,format=yuv420p"
-            cmd.extend(["-vf", watermark_filter])
-        cmd.append(str(output_path))
         try:
-            subprocess.run(cmd, check=True)
+            result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+            if result.stdout:
+                self.logger.debug(result.stdout)
+            if result.stderr:
+                self.logger.debug(result.stderr)
         except subprocess.CalledProcessError as e:
-            self.logger.error(f"ffmpeg failed: {e}")
+            self.logger.error(f"ffmpeg failed: {e.stderr}")
             raise
+        if not output_path.exists() or output_path.stat().st_size == 0:
+            raise RuntimeError("Render produced no output")
+        self.logger.info(f"Render complete: {output_path}")

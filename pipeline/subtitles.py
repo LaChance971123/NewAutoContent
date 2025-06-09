@@ -23,6 +23,7 @@ class SubtitleGenerator:
         model = whisper.load_model("base")
         result = model.transcribe(str(audio_path), word_timestamps=True)
         words = result.get("segments", [])
+        self.logger.info(f"Transcription complete: {len(words)} segments")
         return words
 
     def generate_ass(self, words: List[dict], output_path: Path):
@@ -38,6 +39,7 @@ class SubtitleGenerator:
                 text = w.get('text', '').strip()
                 line = f"Dialogue: 0,{start},{end},Default,{self._style_tag(text)}\n"
                 f.write(line)
+        self.logger.info(f"Subtitles written to {output_path}")
 
     def _style_tag(self, text: str) -> str:
         if self.style == "karaoke":

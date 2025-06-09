@@ -12,6 +12,11 @@ def setup_logger(name: str, log_file: Path | None = None, debug: bool = False) -
         ch = logging.StreamHandler()
         ch.setFormatter(formatter)
         logger.addHandler(ch)
+    else:
+        if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+            ch = logging.StreamHandler()
+            ch.setFormatter(formatter)
+            logger.addHandler(ch)
 
     if log_file:
         log_file = Path(log_file)
