@@ -1,0 +1,25 @@
+2025-06-08 21:04:04,161 - INFO - Starting pipeline
+2025-06-08 21:04:04,162 - INFO - [1/3] Voiceover generation
+2025-06-08 21:04:04,163 - INFO - [2/3] Generating subtitles
+2025-06-08 21:04:04,164 - INFO - [3/3] Rendering video
+2025-06-08 21:04:04,167 - INFO - Pipeline completed. Video at output\test_20250608_210404\final_video.mp4
+2025-06-08 21:04:04,170 - INFO - Selected background video C:\Users\LaCha\AppData\Local\Temp\pytest-of-LaCha\pytest-78\test_case_insensitive_folder0\assets\backgrounds\minecraft\clip.mp4
+2025-06-08 21:04:04,173 - WARNING - Falling back to C:\Users\LaCha\AppData\Local\Temp\pytest-of-LaCha\pytest-78\test_fallback_folder0\assets\backgrounds\rain due to missing minecraft videos
+2025-06-08 21:04:04,173 - INFO - Selected background video C:\Users\LaCha\AppData\Local\Temp\pytest-of-LaCha\pytest-78\test_fallback_folder0\assets\backgrounds\rain\rain.mp4
+2025-06-08 21:04:04,176 - WARNING - No background videos found in 'C:\Users\LaCha\AppData\Local\Temp\pytest-of-LaCha\pytest-78\test_empty_background_folder0\assets\backgrounds\minecraft'. Please add videos or pick another style.
+2025-06-08 21:04:04,176 - ERROR - No background videos found in C:\Users\LaCha\AppData\Local\Temp\pytest-of-LaCha\pytest-78\test_empty_background_folder0\assets\backgrounds\minecraft
+2025-06-08 21:04:04,176 - WARNING - Falling back to C:\Users\LaCha\AppData\Local\Temp\pytest-of-LaCha\pytest-78\test_empty_background_folder0\assets\backgrounds\rain due to missing minecraft videos
+2025-06-08 21:04:04,177 - INFO - Selected background video C:\Users\LaCha\AppData\Local\Temp\pytest-of-LaCha\pytest-78\test_empty_background_folder0\assets\backgrounds\rain\rain.mp4
+2025-06-08 21:04:04,180 - INFO - Generating simple subtitles
+2025-06-08 21:04:04,180 - INFO - Subtitles written to C:\Users\LaCha\AppData\Local\Temp\pytest-of-LaCha\pytest-78\test_generate_ass0\sub.ass
+2025-06-08 21:04:04,182 - INFO - Generating voiceover using elevenlabs
+2025-06-08 21:04:04,182 - INFO - Voiceover saved to C:\Users\LaCha\AppData\Local\Temp\pytest-of-LaCha\pytest-78\test_elevenlabs_generation0\out.wav
+2025-06-08 21:04:04,184 - INFO - Generating voiceover using elevenlabs
+2025-06-08 21:04:04,184 - ERROR - ElevenLabs voice ID not found. Falling back to Coqui TTS.
+2025-06-08 21:04:04,186 - INFO - Generating voiceover using elevenlabs
+2025-06-08 21:04:04,186 - ERROR - ElevenLabs generation failed. Falling back to Coqui TTS.
+2025-06-08 21:04:04,188 - INFO - Generating voiceover using elevenlabs
+2025-06-08 21:04:04,188 - ERROR - ElevenLabs voice ID not found. Falling back to Coqui TTS.
+2025-06-08 21:04:04,188 - INFO - Using Coqui TTS
+2025-06-08 21:04:04,188 - INFO - Downloading Coqui TTS model...
+2025-06-08 21:04:04,188 - INFO - Coqui voiceover generated successfully at C:\Users\LaCha\AppData\Local\Temp\pytest-of-LaCha\pytest-78\test_coqui_download0\out.wav

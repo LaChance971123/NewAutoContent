@@ -1,0 +1,5 @@
+2025-06-08 21:13:27,937 - INFO - Starting pipeline
+2025-06-08 21:13:27,937 - INFO - [1/3] Voiceover generation
+2025-06-08 21:13:35,255 - INFO - [2/3] Generating subtitles
+2025-06-08 21:13:35,258 - INFO - [3/3] Rendering video
+2025-06-08 21:13:35,296 - ERROR - Pipeline failed: Command '['ffmpeg', '-y', '-i', 'B:\\NewAutoContent\\assets\\backgrounds\\minecraft\\Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY).webm', '-i', 'output\\voice.wav', '-vf', 'subtitles=output\\subtitles.ass,movie=assets\\watermark.png[wm];[0:v][wm]overlay=W-w-10:H-h-10:format=auto,format=yuv420p', '-s', '1080x1920', 'output\\my_story.mp4']' returned non-zero exit status 4294967294.

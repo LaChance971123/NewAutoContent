@@ -1,0 +1,4 @@
+Title: my_story
+Subtitle style: karaoke
+Voice engine: elevenlabs
+Timestamp: 2025-06-08T21:13:27

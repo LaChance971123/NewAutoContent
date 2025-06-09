@@ -1,0 +1,7 @@
+{
+  "script": "test.txt",
+  "voice": "Elevenlabs",
+  "style": "simple",
+  "duration": "0s",
+  "success": true
+}

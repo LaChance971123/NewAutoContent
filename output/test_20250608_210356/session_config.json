@@ -1,0 +1,20 @@
+{
+  "subtitle_style": "simple",
+  "watermark_path": null,
+  "watermark_opacity": 1.0,
+  "watermark_enabled": true,
+  "voice_engine": "elevenlabs",
+  "default_voice_id": null,
+  "coqui_model_name": "tts_models/en/ljspeech/tacotron2-DDC",
+  "background_videos_path": "C:\\Users\\LaCha\\AppData\\Local\\Temp\\pytest-of-LaCha\\pytest-77\\test_pipeline_success0\\rain",
+  "resolution": "1080x1920",
+  "ffmpeg_path": "ffmpeg",
+  "step_timeout": 120,
+  "safe_mode": false,
+  "developer_mode": false,
+  "voices": null,
+  "background_styles": {
+    "Rain": "C:\\Users\\LaCha\\AppData\\Local\\Temp\\pytest-of-LaCha\\pytest-77\\test_pipeline_success0\\rain"
+  },
+  "resolutions": null
+}
