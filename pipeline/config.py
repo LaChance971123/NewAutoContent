@@ -5,6 +5,7 @@ from pathlib import Path
 import json
 import shutil
 import logging
+import os
 
 
 @dataclass
@@ -16,6 +17,7 @@ class Config:
     voice_engine: str = "elevenlabs"
     default_voice_id: str | None = None
     coqui_model_name: str = "tts_models/en/ljspeech/tacotron2-DDC"
+    whisper_model: str | None = "base"
     background_videos_path: str = "assets/backgrounds"
     resolution: str = "1080x1920"
     ffmpeg_path: str = "ffmpeg"
@@ -54,4 +56,13 @@ class Config:
         if self.step_timeout <= 0:
             logger.warning("step_timeout must be > 0; using 120")
             self.step_timeout = 120
+
+        if not self.whisper_model:
+            logger.error("Whisper configuration missing 'model'")
+
+        if self.voice_engine == "elevenlabs":
+            api = os.getenv("ELEVENLABS_API_KEY")
+            vid = self.default_voice_id or os.getenv("ELEVENLABS_VOICE_ID")
+            if not api or not vid:
+                logger.error("ElevenLabs configuration missing api_key or voice_id")
 

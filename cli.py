@@ -20,6 +20,8 @@ class CLI:
         parser.add_argument("--background-style", help="Background style to use")
         parser.add_argument("--background", help=argparse.SUPPRESS)
         parser.add_argument("--output", help="Output video path")
+        parser.add_argument("--force-coqui", action="store_true", help="Use Coqui TTS instead of ElevenLabs")
+        parser.add_argument("--whisper-disable", action="store_true", help="Skip Whisper transcription")
         parser.add_argument("--no-watermark", action="store_true", help="Disable watermark")
         parser.add_argument("--dry-run", action="store_true")
         parser.add_argument("--debug", action="store_true")
@@ -90,7 +92,14 @@ def main(argv=None) -> None:
 
     pipeline = VideoPipeline(config, debug=args.debug, log_file=log_file)
     try:
-        ctx = pipeline.run(script_text, name, background=background, output=output_path)
+        ctx = pipeline.run(
+            script_text,
+            name,
+            background=background,
+            output=output_path,
+            force_coqui=args.force_coqui,
+            whisper_disable=args.whisper_disable,
+        )
     except Exception as exc:
         print(f"[ERROR] Pipeline failed: {exc}")
         return

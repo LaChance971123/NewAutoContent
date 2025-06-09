@@ -122,3 +122,20 @@ def test_coqui_download(monkeypatch, tmp_path):
     assert events["download"] is True
     assert out.exists()
 
+
+def test_force_coqui(monkeypatch, tmp_path):
+    called = {"coqui": False}
+
+    def fake_coqui(text, path):
+        called["coqui"] = True
+        path.write_text("ok")
+        return True
+
+    monkeypatch.setenv("ELEVENLABS_API_KEY", "key")
+    monkeypatch.setenv("ELEVENLABS_VOICE_ID", "voice")
+    gen = VoiceOverGenerator("elevenlabs", force_coqui=True)
+    monkeypatch.setattr(gen, "_generate_coqui", fake_coqui)
+    out = tmp_path / "out.wav"
+    assert gen.generate("hi", out) is True
+    assert called["coqui"] is True
+

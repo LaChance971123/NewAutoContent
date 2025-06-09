@@ -8,8 +8,9 @@ from .logger import setup_logger
 
 
 class SubtitleGenerator:
-    def __init__(self, style: str, log_file: Optional[Path] = None, debug: bool = False):
+    def __init__(self, style: str, model: str = "base", log_file: Optional[Path] = None, debug: bool = False):
         self.style = style
+        self.model_name = model
         self.logger = setup_logger("subtitles", log_file, debug)
 
     def transcribe(self, audio_path: Path) -> List[dict]:
@@ -20,7 +21,7 @@ class SubtitleGenerator:
         except Exception as e:
             self.logger.error(f"Whisper not available: {e}")
             return []
-        model = whisper.load_model("base")
+        model = whisper.load_model(self.model_name)
         result = model.transcribe(str(audio_path), word_timestamps=True)
         words = result.get("segments", [])
         self.logger.info(f"Transcription complete: {len(words)} segments")

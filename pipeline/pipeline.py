@@ -32,10 +32,14 @@ class VideoPipeline:
         script_name: str,
         background: str | None = None,
         output: Path | None = None,
+        force_coqui: bool = False,
+        whisper_disable: bool = False,
     ) -> PipelineContext:
         style = self.config.subtitle_style
         engine = self.config.voice_engine
         voice_id = self.config.default_voice_id
+        if force_coqui:
+            engine = "coqui"
 
         # resolve background folder
         bg_styles = self.config.background_styles or {}
@@ -79,6 +83,7 @@ class VideoPipeline:
                 engine,
                 voice_id,
                 self.config.coqui_model_name,
+                force_coqui=force_coqui,
                 debug=self.debug,
                 log_file=session_log,
             )
@@ -98,10 +103,16 @@ class VideoPipeline:
                     raise
 
             self.logger.info("[2/3] Generating subtitles")
-            # Subtitles
-            subs = SubtitleGenerator(style, log_file=session_log, debug=self.debug)
+            subs = SubtitleGenerator(style, model=self.config.whisper_model, log_file=session_log, debug=self.debug)
             try:
-                words = run_with_timeout(subs.transcribe, self.timeout, ctx.voiceover_path)
+                if whisper_disable:
+                    self.logger.info("Whisper disabled; generating basic subtitles")
+                    words = [
+                        {"start": i * 0.5, "end": (i + 1) * 0.5, "text": w}
+                        for i, w in enumerate(script_text.split())
+                    ]
+                else:
+                    words = run_with_timeout(subs.transcribe, self.timeout, ctx.voiceover_path)
                 run_with_timeout(subs.generate_ass, self.timeout, words, ctx.subtitles_path)
             except Exception as e:
                 self.logger.error(f"Subtitle step failed: {e}")

@@ -86,37 +86,72 @@ class VideoRenderer:
         self.logger.info(f"Selected background video {choice}")
         return choice
 
-    def render(self, audio_path: Path, subtitles: Path, output_path: Path):
+    def render(self, audio_path: Path, subtitles: Path | None, output_path: Path):
+        """Render the final video using *audio_path* and optional *subtitles*.
+
+        Automatically switches to ``-filter_complex`` when a watermark and
+        subtitles are both present. All paths are converted to POSIX style to
+        avoid Windows escaping issues.
+        """
         self.logger.info("Starting FFmpeg render")
+
+        if output_path.suffix.lower() != ".mp4":
+            raise ValueError("Output path must end with .mp4")
+
         bg_video = self.pick_background()
+
         # simple wav validation
         try:
             import wave
-            with wave.open(str(audio_path), 'rb') as _:
+
+            with wave.open(str(audio_path), "rb") as _:
                 pass
         except Exception as e:
             self.logger.error(f"Invalid audio file {audio_path}: {e}")
             raise
+
         self.logger.info(f"Using background video {bg_video}")
-        filters = [f"subtitles={subtitles}"]
-        if self.watermark:
-            filters.append(
-                f"movie={self.watermark}[wm];[0:v][wm]overlay=W-w-10:H-h-10:format=auto,format=yuv420p"
+
+        bg = bg_video.as_posix()
+        audio = audio_path.as_posix()
+        subs = subtitles.as_posix() if subtitles and subtitles.exists() else None
+        wm = self.watermark.as_posix() if self.watermark else None
+
+        base_cmd = [self.ffmpeg, "-y", "-i", bg, "-i", audio]
+
+        # Determine filters
+        if subs and wm:
+            filter_complex = (
+                f"[0:v]subtitles='{subs}'[vsubs];"
+                f"movie={wm}[wm];"
+                f"[vsubs][wm]overlay=W-w-10:H-h-10,format=yuv420p[v]"
             )
-        filter_str = ",".join(filters)
-        cmd = [
-            self.ffmpeg,
-            "-y",
-            "-i",
-            str(bg_video),
-            "-i",
-            str(audio_path),
-            "-vf",
-            filter_str,
-            "-s",
-            self.resolution,
-            str(output_path),
-        ]
+            cmd = base_cmd + [
+                "-filter_complex",
+                filter_complex,
+                "-map",
+                "[v]",
+                "-map",
+                "1:a",
+            ]
+        else:
+            vf_parts = []
+            if subs:
+                vf_parts.append(f"subtitles='{subs}'")
+            if wm:
+                vf_parts.append(
+                    "movie="
+                    + wm
+                    + "[wm];[in][wm]overlay=W-w-10:H-h-10:format=auto"
+                )
+            vf_parts.append("format=yuv420p")
+            vf = ";".join(vf_parts) if wm and not subs else ",".join(vf_parts)
+            cmd = base_cmd + ["-vf", vf]
+
+        cmd += ["-s", self.resolution, output_path.as_posix()]
+
+        self.logger.debug("FFmpeg command: " + " ".join(cmd))
+
         try:
             result = subprocess.run(cmd, check=True, capture_output=True, text=True)
             if result.stdout:
@@ -126,6 +161,8 @@ class VideoRenderer:
         except subprocess.CalledProcessError as e:
             self.logger.error(f"ffmpeg failed: {e.stderr}")
             raise
+
         if not output_path.exists() or output_path.stat().st_size == 0:
             raise RuntimeError("Render produced no output")
+
         self.logger.info(f"Render complete: {output_path}")

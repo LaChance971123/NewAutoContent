@@ -40,6 +40,8 @@ Other useful flags:
 --output <path/to/output.mp4>
 --resolution 1080x1920
 --no-watermark
+--force-coqui
+--whisper-disable
 --dry-run
 --debug
 --verbose
