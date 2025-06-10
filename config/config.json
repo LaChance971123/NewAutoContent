@@ -21,5 +21,14 @@
     "GTA": "assets/backgrounds/gta",
     "Rain": "assets/backgrounds/rain"
   },
-  "resolutions": ["1080x1920", "1080x1080", "1920x1080"]
+  "resolutions": ["1080x1920", "1080x1080", "1920x1080"],
+  "presets": {
+    "default": {
+      "voice": "SampleVoice",
+      "background_style": "Rain",
+      "subtitles": true,
+      "resolution": "1080x1920",
+      "watermark": true
+    }
+  }
 }
