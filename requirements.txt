@@ -4,3 +4,4 @@ whisper
 TTS
 PySide6
 yt_dlp
+playsound==1.3.0

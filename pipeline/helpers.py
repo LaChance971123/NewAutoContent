@@ -137,3 +137,63 @@ class PipelineContext:
     def save_config_snapshot(self, config: dict) -> None:
         with open(self.output_dir / "session_config.json", "w") as f:
             json.dump(config, f, indent=2)
+
+
+# ---------------------------------------------------------------------------
+# Utility functions for CLI feedback
+# ---------------------------------------------------------------------------
+
+RESET = "\033[0m"
+COLORS = {
+    "INFO": "\033[36m",
+    "ERROR": "\033[31m",
+    "SUCCESS": "\033[32m",
+}
+
+
+def color_print(tag: str, message: str) -> None:
+    """Print *message* with colored [TAG] prefix."""
+    color = COLORS.get(tag.upper(), "")
+    print(f"{color}[{tag.upper()}]{RESET} {message}")
+
+
+LOG_DIR = Path("logs")
+ERROR_TRACE_FILE = LOG_DIR / "error_trace.txt"
+
+
+def log_trace(exc: BaseException) -> None:
+    """Append traceback of *exc* to logs/error_trace.txt."""
+    LOG_DIR.mkdir(exist_ok=True)
+    trace = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+    with open(ERROR_TRACE_FILE, "a") as f:
+        f.write(f"{iso_timestamp()} - {type(exc).__name__}: {exc}\n")
+        f.write(trace + "\n")
+
+
+def validate_files(*paths: Path) -> list[Path]:
+    """Return a list of paths that are missing or empty."""
+    missing: list[Path] = []
+    for p in paths:
+        if not p.exists() or p.stat().st_size == 0:
+            missing.append(p)
+    return missing
+
+
+def preview_voice(engine: str, voice_id: str, coqui_model: str) -> Path:
+    """Generate and play a short voice preview."""
+    from .voiceover import VoiceOverGenerator
+
+    preview = Path("_preview.wav")
+    generator = VoiceOverGenerator(engine, voice_id, coqui_model)
+    try:
+        generator.generate(f"This is a sample of {voice_id}", preview)
+        try:
+            from playsound import playsound  # pragma: no cover - optional dep
+
+            playsound(str(preview))
+        except Exception:
+            pass
+    except Exception as e:  # pragma: no cover - runtime failures
+        color_print("ERROR", f"Voice preview failed: {e}")
+        log_trace(e)
+    return preview

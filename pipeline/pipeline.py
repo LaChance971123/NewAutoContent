@@ -10,6 +10,7 @@ from .helpers import (
     run_with_timeout,
     create_silence,
     create_dummy_subtitles,
+    log_trace,
 )
 from .voiceover import VoiceOverGenerator
 from .subtitles import SubtitleGenerator
@@ -34,6 +35,7 @@ class VideoPipeline:
         output: Path | None = None,
         force_coqui: bool = False,
         whisper_disable: bool = False,
+        no_subtitles: bool = False,
     ) -> PipelineContext:
         style = self.config.subtitle_style
         engine = self.config.voice_engine
@@ -102,25 +104,32 @@ class VideoPipeline:
                 else:
                     raise
 
-            self.logger.info("[2/3] Generating subtitles")
-            subs = SubtitleGenerator(style, model=self.config.whisper_model, log_file=session_log, debug=self.debug)
-            try:
-                if whisper_disable:
-                    self.logger.info("Whisper disabled; generating basic subtitles")
-                    words = [
-                        {"start": i * 0.5, "end": (i + 1) * 0.5, "text": w}
-                        for i, w in enumerate(script_text.split())
-                    ]
-                else:
-                    words = run_with_timeout(subs.transcribe, self.timeout, ctx.voiceover_path)
-                run_with_timeout(subs.generate_ass, self.timeout, words, ctx.subtitles_path)
-            except Exception as e:
-                self.logger.error(f"Subtitle step failed: {e}")
-                if self.config.developer_mode:
-                    create_dummy_subtitles(ctx.subtitles_path)
-                    self.logger.warning("Developer mode: using dummy subtitles")
-                else:
-                    raise
+            if not no_subtitles:
+                self.logger.info("[2/3] Generating subtitles")
+                subs = SubtitleGenerator(
+                    style, model=self.config.whisper_model, log_file=session_log, debug=self.debug
+                )
+                try:
+                    if whisper_disable:
+                        self.logger.info("Whisper disabled; generating basic subtitles")
+                        words = [
+                            {"start": i * 0.5, "end": (i + 1) * 0.5, "text": w}
+                            for i, w in enumerate(script_text.split())
+                        ]
+                    else:
+                        words = run_with_timeout(subs.transcribe, self.timeout, ctx.voiceover_path)
+                    run_with_timeout(subs.generate_ass, self.timeout, words, ctx.subtitles_path)
+                except Exception as e:
+                    self.logger.error(f"Subtitle step failed: {e}")
+                    if self.config.developer_mode:
+                        create_dummy_subtitles(ctx.subtitles_path)
+                        self.logger.warning("Developer mode: using dummy subtitles")
+                    else:
+                        raise
+            else:
+                ctx.subtitles_path = ctx.output_dir / "subtitles.ass"
+                ctx.subtitles_path.write_text("")
+                self.logger.info("Subtitles disabled")
 
             self.logger.info("[3/3] Rendering video")
             # Render
@@ -142,13 +151,14 @@ class VideoPipeline:
                 renderer.render,
                 self.timeout,
                 ctx.voiceover_path,
-                ctx.subtitles_path,
+                None if no_subtitles else ctx.subtitles_path,
                 ctx.final_video_path,
             )
         except Exception as e:
             status = "failed"
             self.logger.error(f"Pipeline failed: {e}")
             ctx.write_error_trace(e)
+            log_trace(e)
             ctx.save_metadata(status=status)
             ctx.save_config_snapshot(self.config.__dict__)
             ctx.write_summary()
