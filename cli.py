@@ -4,11 +4,24 @@ import argparse
 import random
 from pathlib import Path
 
+from pipeline import __version__
+try:
+    from dotenv import load_dotenv
+except Exception:  # pragma: no cover - missing dependency
+    def load_dotenv():
+        pass
+
 
 class CLI:
     @staticmethod
     def build_parser() -> argparse.ArgumentParser:
         parser = argparse.ArgumentParser(description="Video generation pipeline")
+        parser.add_argument(
+            "--version",
+            action="version",
+            version=f"AutoContent {__version__}",
+            help="Show program version and exit",
+        )
         parser.add_argument("--script-file", help="Path to script text file")
         parser.add_argument("--script-text", help="Inline script text")
         parser.add_argument(
@@ -67,7 +80,6 @@ def _read_script(args: argparse.Namespace) -> tuple[str, str]:
 
 
 def main(argv=None) -> None:
-    from dotenv import load_dotenv
     from pipeline.pipeline import VideoPipeline
     from pipeline.logger import setup_logger
     from pipeline.helpers import color_print, log_trace, validate_files
