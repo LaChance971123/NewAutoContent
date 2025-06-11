@@ -21,7 +21,11 @@
     "GTA": "assets/backgrounds/gta",
     "Rain": "assets/backgrounds/rain"
   },
-  "resolutions": ["1080x1920", "1080x1080", "1920x1080"],
+  "resolutions": [
+    "1080x1920",
+    "1080x1080",
+    "1920x1080"
+  ],
   "presets": {
     "default": {
       "voice": "SampleVoice",
@@ -30,5 +34,12 @@
       "resolution": "1080x1920",
       "watermark": true
     }
-  }
+  },
+  "default_preset": "default",
+  "auto_trim_silence": false,
+  "crop_safe_zone": false,
+  "summary_overlay": false,
+  "theme": "dark",
+  "always_on_top": false,
+  "first_launch": true
 }
