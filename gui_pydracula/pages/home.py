@@ -175,18 +175,26 @@ class HomePage(QtWidgets.QWidget):
         self.trim_check = QtWidgets.QCheckBox("Auto-Trim Silence")
         self.trim_check.setToolTip("Remove silence from voiceover")
         adv_layout.addRow(self.trim_check)
+
         self.crop_check = QtWidgets.QCheckBox("Crop Safe Zone")
         self.crop_check.setToolTip("Crop video to safe area")
         adv_layout.addRow(self.crop_check)
+
         self.summary_check = QtWidgets.QCheckBox("Summary Overlay")
         self.summary_check.setToolTip("Add summary card on video")
         adv_layout.addRow(self.summary_check)
+
+        # intro/outro toggles within advanced options
+        self.intro_check = QtWidgets.QCheckBox("Use Intro")
+        self.intro_check.setToolTip("Include intro video clip")
+        adv_layout.addRow(self.intro_check)
+        self.outro_check = QtWidgets.QCheckBox("Use Outro")
+        self.outro_check.setToolTip("Include outro video clip")
+        adv_layout.addRow(self.outro_check)
         form.addRow(self.adv_box)
         self.adv_box.toggled.connect(self._toggle_advanced)
-        self._toggle_advanced(False)
 
-        # intro/outro upload
-        self.intro_check = QtWidgets.QCheckBox("Use Intro")
+        # intro/outro upload paths
         intro_row = QtWidgets.QHBoxLayout()
         self.intro_path = QtWidgets.QLineEdit()
         self.intro_browse = QtWidgets.QPushButton("Browse")
@@ -198,7 +206,6 @@ class HomePage(QtWidgets.QWidget):
         intro_widget.setLayout(intro_row)
         form.addRow("Intro Video", intro_widget)
 
-        self.outro_check = QtWidgets.QCheckBox("Use Outro")
         outro_row = QtWidgets.QHBoxLayout()
         self.outro_path = QtWidgets.QLineEdit()
         self.outro_browse = QtWidgets.QPushButton("Browse")
@@ -238,8 +245,6 @@ class HomePage(QtWidgets.QWidget):
         self.generate_btn = QtWidgets.QPushButton("Generate Final Video")
         self.generate_btn.clicked.connect(self._emit_generate)
         form.addRow(self.generate_btn)
-
-        self._connect_signals()
 
         self.output_label = QtWidgets.QLabel()
         self.output_label.setOpenExternalLinks(True)
@@ -312,6 +317,10 @@ class HomePage(QtWidgets.QWidget):
         right_widget.setLayout(right)
         root.addWidget(right_widget)
 
+        # hide advanced widgets on startup after all fields exist
+        self._toggle_advanced(False)
+        self._connect_signals()
+
     def _connect_signals(self) -> None:
         widgets = [
             self.title_edit,
@@ -340,11 +349,14 @@ class HomePage(QtWidgets.QWidget):
         for widget in widgets:
             if isinstance(widget, QtWidgets.QComboBox):
                 widget.currentIndexChanged.connect(self._emit_config)
-            elif isinstance(widget, (QtWidgets.QCheckBox, QtWidgets.QPushButton)):
-                widget.toggled.connect(self._emit_config) if hasattr(widget, 'toggled') else widget.clicked.connect(self._emit_config)
             elif isinstance(widget, QtWidgets.QSlider):
                 widget.valueChanged.connect(self._emit_config)
-            else:
+            elif isinstance(widget, QtWidgets.QAbstractButton):
+                if hasattr(widget, "toggled"):
+                    widget.toggled.connect(self._emit_config)
+                else:
+                    widget.clicked.connect(self._emit_config)
+            elif hasattr(widget, "textChanged"):
                 widget.textChanged.connect(self._emit_config)
         self.script_edit.textChanged.connect(self._update_word_count)
         if isinstance(self.script_edit, ScriptEdit):
@@ -450,31 +462,36 @@ class HomePage(QtWidgets.QWidget):
         self.generateRequested.emit(self._collect_opts())
 
     def _collect_opts(self) -> dict:
-        return {
-            "title": self.title_edit.text().strip(),
-            "script": self.script_edit.toPlainText().strip(),
-            "folder": self.folder_edit.text().strip(),
-            "voice": self.voice_combo.currentData(),
-            "subtitle_style": self.style_combo.currentText(),
-            "background": self.bg_combo.currentText(),
-            "platform": self.platform_combo.currentText(),
-            "format": self.format_combo.currentText(),
-            "fps": int(self.fps_combo.currentText()),
-            "watermark": self.watermark_check.isChecked(),
-            "trim_silence": self.trim_check.isChecked(),
-            "crop_safe": self.crop_check.isChecked(),
-            "summary_overlay": self.summary_check.isChecked(),
-            "intro": self.intro_check.isChecked(),
-            "intro_path": self.intro_path.text().strip(),
-            "outro": self.outro_check.isChecked(),
-            "outro_path": self.outro_path.text().strip(),
-            "font": self.font_combo.currentFont().family(),
-            "font_size": self.font_size.value(),
-            "color": self.color_btn.palette().button().color().name(),
-            "outline": self.outline_check.isChecked(),
-            "height": self.position_slider.value(),
-            "developer_mode": self.dev_check.isChecked(),
-        }
+        try:
+            return {
+                "title": self.title_edit.text().strip(),
+                "script": self.script_edit.toPlainText().strip(),
+                "folder": self.folder_edit.text().strip(),
+                "voice": self.voice_combo.currentData(),
+                "subtitle_style": self.style_combo.currentText(),
+                "background": self.bg_combo.currentText(),
+                "platform": self.platform_combo.currentText(),
+                "format": self.format_combo.currentText(),
+                "fps": int(self.fps_combo.currentText()),
+                "watermark": self.watermark_check.isChecked(),
+                "trim_silence": self.trim_check.isChecked(),
+                "crop_safe": self.crop_check.isChecked(),
+                "summary_overlay": self.summary_check.isChecked(),
+                "intro": self.intro_check.isChecked(),
+                "intro_path": self.intro_path.text().strip(),
+                "outro": self.outro_check.isChecked(),
+                "outro_path": self.outro_path.text().strip(),
+                "font": self.font_combo.currentFont().family(),
+                "font_size": self.font_size.value(),
+                "color": self.color_btn.palette().button().color().name(),
+                "outline": self.outline_check.isChecked(),
+                "height": self.position_slider.value(),
+                "developer_mode": self.dev_check.isChecked(),
+            }
+        except Exception as e:
+            self.log_edit.appendPlainText(f"[ERR] collect opts: {e}")
+            QtWidgets.QMessageBox.warning(self, "Form Error", str(e))
+            return {}
 
     def _emit_config(self) -> None:
         opts = self._collect_opts()
