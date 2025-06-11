@@ -34,7 +34,7 @@ def run_self_test():
     def fake_generate_ass(self, words, path):
         path.write_text("sub")
 
-    def fake_render(self, audio, subs, output):
+    def fake_render(self, audio, subs, output, intro=None, outro=None, **kwargs):
         output.write_text("video")
 
     VoiceOverGenerator.generate = fake_generate

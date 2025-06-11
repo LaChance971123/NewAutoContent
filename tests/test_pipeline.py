@@ -24,7 +24,7 @@ def test_pipeline_success(monkeypatch, tmp_path):
     def fake_generate_ass(self, words, path):
         path.write_text("sub")
 
-    def fake_render(self, audio, subs, output):
+    def fake_render(self, audio, subs, output, intro=None, outro=None, **kwargs):
         output.write_text("video")
 
     monkeypatch.setattr("pipeline.voiceover.VoiceOverGenerator.generate", fake_generate)
@@ -53,7 +53,7 @@ def test_pipeline_whisper_disabled(monkeypatch, tmp_path):
         out.write_text("voice")
         return True
 
-    def fake_render(self, audio, subs, output):
+    def fake_render(self, audio, subs, output, intro=None, outro=None, **kwargs):
         output.write_text("video")
 
     monkeypatch.setattr("pipeline.voiceover.VoiceOverGenerator.generate", fake_generate)
@@ -89,7 +89,7 @@ def test_pipeline_no_subtitles(monkeypatch, tmp_path):
         out.write_text("voice")
         return True
 
-    def fake_render(self, audio, subs, output):
+    def fake_render(self, audio, subs, output, intro=None, outro=None, **kwargs):
         output.write_text("video")
 
     monkeypatch.setattr("pipeline.voiceover.VoiceOverGenerator.generate", fake_generate)
