@@ -86,7 +86,16 @@ class VideoRenderer:
         self.logger.info(f"Selected background video {choice}")
         return choice
 
-    def render(self, audio_path: Path, subtitles: Path | None, output_path: Path):
+    def render(
+        self,
+        audio_path: Path,
+        subtitles: Path | None,
+        output_path: Path,
+        intro: Path | None = None,
+        outro: Path | None = None,
+        crop_safe: bool = False,
+        overlay_text: str | None = None,
+    ):
         """Render the final video using *audio_path* and optional *subtitles*.
 
         Automatically switches to ``-filter_complex`` when a watermark and
@@ -121,11 +130,19 @@ class VideoRenderer:
 
         # Determine filters
         if subs and wm:
-            filter_complex = (
-                f"[0:v]subtitles='{subs}'[vsubs];"
-                f"movie={wm}[wm];"
-                f"[vsubs][wm]overlay=W-w-10:H-h-10,format=yuv420p[v]"
-            )
+            fc = [f"[0:v]subtitles='{subs}'[vsubs]"]
+            fc.append(f"movie={wm}[wm]")
+            chain = "[vsubs][wm]overlay=W-w-10:H-h-10"
+            if crop_safe:
+                chain += ",crop=iw*0.9:ih*0.9:(iw-iw*0.9)/2:(ih-ih*0.9)/2"
+            if overlay_text:
+                text = overlay_text.replace("'", r"\'")
+                chain += (
+                    f",drawtext=text='{text}':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=10:enable='lt(t,3)'"
+                )
+            chain += ",format=yuv420p[v]"
+            fc.append(chain)
+            filter_complex = ";".join(fc)
             cmd = base_cmd + [
                 "-filter_complex",
                 filter_complex,
@@ -144,11 +161,24 @@ class VideoRenderer:
                     + wm
                     + "[wm];[in][wm]overlay=W-w-10:H-h-10:format=auto"
                 )
+            if crop_safe:
+                vf_parts.append("crop=iw*0.9:ih*0.9:(iw-iw*0.9)/2:(ih-ih*0.9)/2")
+            if overlay_text:
+                draw = (
+                    "drawtext=text='"
+                    + overlay_text.replace("'", r"\'")
+                    + "':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=10:enable='lt(t,3)'"
+                )
+                vf_parts.append(draw)
             vf_parts.append("format=yuv420p")
             vf = ";".join(vf_parts) if wm and not subs else ",".join(vf_parts)
             cmd = base_cmd + ["-vf", vf]
 
-        cmd += ["-s", self.resolution, output_path.as_posix()]
+        main_output = output_path
+        if intro or outro:
+            main_output = output_path.with_name("_main.mp4")
+
+        cmd += ["-s", self.resolution, main_output.as_posix()]
 
         self.logger.debug("FFmpeg command: " + " ".join(cmd))
 
@@ -162,7 +192,32 @@ class VideoRenderer:
             self.logger.error(f"ffmpeg failed: {e.stderr}")
             raise
 
-        if not output_path.exists() or output_path.stat().st_size == 0:
+        if not main_output.exists() or main_output.stat().st_size == 0:
             raise RuntimeError("Render produced no output")
+
+        if intro or outro:
+            concat = output_path.with_name("concat.txt")
+            with open(concat, "w") as f:
+                if intro:
+                    f.write(f"file '{intro.as_posix()}'\n")
+                f.write(f"file '{main_output.as_posix()}'\n")
+                if outro:
+                    f.write(f"file '{outro.as_posix()}'\n")
+            cmd2 = [
+                self.ffmpeg,
+                "-y",
+                "-f",
+                "concat",
+                "-safe",
+                "0",
+                "-i",
+                concat.as_posix(),
+                "-c",
+                "copy",
+                output_path.as_posix(),
+            ]
+            subprocess.run(cmd2, check=True)
+            main_output.unlink(missing_ok=True)
+            concat.unlink(missing_ok=True)
 
         self.logger.info(f"Render complete: {output_path}")

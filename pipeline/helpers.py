@@ -8,6 +8,7 @@ import shutil
 import threading
 import traceback
 import wave
+import subprocess
 
 
 def sanitize_name(name: str) -> str:
@@ -197,3 +198,61 @@ def preview_voice(engine: str, voice_id: str, coqui_model: str) -> Path:
         color_print("ERROR", f"Voice preview failed: {e}")
         log_trace(e)
     return preview
+
+
+def trim_silence_ffmpeg(audio: Path, ffmpeg: str = "ffmpeg") -> None:
+    """Trim leading and trailing silence from *audio* using ffmpeg."""
+    trimmed = audio.with_name(audio.stem + "_trim.wav")
+    cmd = [
+        ffmpeg,
+        "-y",
+        "-i",
+        str(audio),
+        "-af",
+        "silenceremove=start_periods=1:start_duration=0.1:start_threshold=-45dB:stop_periods=1:stop_duration=0.1:stop_threshold=-45dB",
+        str(trimmed),
+    ]
+    try:
+        subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if trimmed.exists() and trimmed.stat().st_size > 0:
+            audio.unlink(missing_ok=True)
+            trimmed.rename(audio)
+    except Exception as e:  # pragma: no cover - runtime
+        color_print("ERROR", f"trim_silence failed: {e}")
+
+
+def validate_video(path: Path, subtitles_required: bool = True, ffprobe: str = "ffprobe") -> dict:
+    """Return basic validation info for *path*."""
+    info = {
+        "exists": path.exists() and path.stat().st_size > 0,
+        "duration": False,
+        "resolution": False,
+        "audio": False,
+        "subtitles": not subtitles_required,
+        "size": False,
+    }
+    if not info["exists"]:
+        return info
+    try:
+        result = subprocess.run(
+            [ffprobe, "-v", "error", "-show_entries", "format=duration,size", "-show_streams", "-of", "json", str(path)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        data = json.loads(result.stdout)
+        fmt = data.get("format", {})
+        dur = float(fmt.get("duration", 0))
+        info["duration"] = dur > 0
+        info["size"] = int(fmt.get("size", 0)) > 0
+        streams = data.get("streams", [])
+        for s in streams:
+            if s.get("codec_type") == "video" and s.get("width") and s.get("height"):
+                info["resolution"] = True
+            if s.get("codec_type") == "audio":
+                info["audio"] = True
+            if subtitles_required and s.get("codec_type") == "subtitle":
+                info["subtitles"] = True
+    except Exception:
+        pass
+    return info

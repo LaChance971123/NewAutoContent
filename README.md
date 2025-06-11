@@ -32,6 +32,10 @@ You can also run the CLI directly:
 ```
 python cli.py --script-file scripts/sample.txt
 ```
+Check your installed version with:
+```
+python cli.py --version
+```
 Use `--script-text` to pass a script inline or provide input via `stdin`.
 Other useful flags:
 ```

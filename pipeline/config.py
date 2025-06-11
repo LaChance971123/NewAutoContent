@@ -29,6 +29,12 @@ class Config:
     resolutions: list[str] | None = None
     presets: dict[str, dict] | None = None
     default_preset: str = "default"
+    auto_trim_silence: bool = False
+    crop_safe_zone: bool = False
+    summary_overlay: bool = False
+    theme: str = "dark"
+    always_on_top: bool = False
+    first_launch: bool = True
 
     @classmethod
     def load(cls, path: Path) -> "Config":
@@ -67,6 +73,10 @@ class Config:
             vid = self.default_voice_id or os.getenv("ELEVENLABS_VOICE_ID")
             if not api or not vid:
                 logger.error("ElevenLabs configuration missing api_key or voice_id")
+
+        if self.theme not in {"dark", "light"}:
+            logger.warning("Invalid theme; defaulting to 'dark'")
+            self.theme = "dark"
 
     def apply_preset(self, name: str) -> tuple[str | None, bool]:
         """Apply *name* preset. Returns (background_style, subtitles_enabled)."""
