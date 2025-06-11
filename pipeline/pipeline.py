@@ -36,6 +36,11 @@ class VideoPipeline:
         force_coqui: bool = False,
         whisper_disable: bool = False,
         no_subtitles: bool = False,
+        intro: Path | None = None,
+        outro: Path | None = None,
+        trim_silence: bool = False,
+        crop_safe: bool = False,
+        summary_overlay: bool = False,
     ) -> PipelineContext:
         style = self.config.subtitle_style
         engine = self.config.voice_engine
@@ -103,6 +108,14 @@ class VideoPipeline:
                     self.logger.warning("Developer mode: using silent audio")
                 else:
                     raise
+            if trim_silence:
+                self.logger.info("Trimming silence from voiceover")
+                try:
+                    from .helpers import trim_silence_ffmpeg
+
+                    trim_silence_ffmpeg(ctx.voiceover_path, self.config.ffmpeg_path)
+                except Exception as e:
+                    self.logger.warning(f"trim_silence failed: {e}")
 
             if not no_subtitles:
                 self.logger.info("[2/3] Generating subtitles")
@@ -153,6 +166,10 @@ class VideoPipeline:
                 ctx.voiceover_path,
                 None if no_subtitles else ctx.subtitles_path,
                 ctx.final_video_path,
+                intro,
+                outro,
+                crop_safe=crop_safe,
+                overlay_text=script_name if summary_overlay else None,
             )
         except Exception as e:
             status = "failed"
