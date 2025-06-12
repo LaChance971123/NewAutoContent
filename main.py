@@ -86,14 +86,17 @@ class MainWindow(QMainWindow):
         theme = self.themes["app_color"]
         layout = self.ui.load_pages.controls_layout
 
-        self.script_edit = PyLineEdit(
-            place_holder_text="Script text...",
-            bg_color=theme["dark_one"],
-            bg_color_active=theme["dark_three"],
-            selection_color=theme["white"],
-            context_color=theme["context_color"],
-            color=theme["text_foreground"],
+        header1 = QLabel("Script Input")
+        header1.setStyleSheet("font-weight: bold")
+        layout.addWidget(header1)
+
+        self.script_edit = QPlainTextEdit()
+        self.script_edit.setPlaceholderText("Script text...")
+        self.script_edit.setMinimumHeight(100)
+        self.script_edit.setStyleSheet(
+            f"background-color: {theme['dark_one']}; color: {theme['text_foreground']};"
         )
+        self.script_edit.textChanged.connect(self.update_create_btn)
         self.script_edit.setToolTip("Enter or load a script")
         layout.addWidget(self.script_edit)
 
@@ -107,6 +110,7 @@ class MainWindow(QMainWindow):
             bg_color_pressed=theme["dark_four"],
         )
         self.upload_btn.setToolTip("Open text file")
+        self.upload_btn.setIcon(QIcon(Functions.set_svg_icon("icon_folder_open.svg")))
         self.upload_btn.clicked.connect(self.upload_script)
         btn_row.addWidget(self.upload_btn)
 
@@ -119,6 +123,7 @@ class MainWindow(QMainWindow):
             bg_color_pressed=theme["dark_four"],
         )
         self.ai_btn.setToolTip("Generate script using AI")
+        self.ai_btn.setIcon(QIcon(Functions.set_svg_icon("icon_widgets.svg")))
         btn_row.addWidget(self.ai_btn)
 
         self.reset_btn = PyPushButton(
@@ -130,10 +135,15 @@ class MainWindow(QMainWindow):
             bg_color_pressed=theme["dark_four"],
         )
         self.reset_btn.setToolTip("Clear script")
+        self.reset_btn.setIcon(QIcon(Functions.set_svg_icon("icon_restore.svg")))
         self.reset_btn.clicked.connect(self.reset_form)
         btn_row.addWidget(self.reset_btn)
 
         layout.addLayout(btn_row)
+
+        header2 = QLabel("Voice & Subtitles")
+        header2.setStyleSheet("font-weight: bold")
+        layout.addWidget(header2)
 
         self.voice_combo = QComboBox()
         self.voice_combo.addItems(["Alice", "Drew", "Bob"])
@@ -144,6 +154,10 @@ class MainWindow(QMainWindow):
         self.subtitle_combo.addItems(["karaoke", "progressive", "simple"])
         self.subtitle_combo.setToolTip("Subtitle style")
         layout.addWidget(self.subtitle_combo)
+
+        header3 = QLabel("Background Style")
+        header3.setStyleSheet("font-weight: bold")
+        layout.addWidget(header3)
 
         bg_row = QHBoxLayout()
         self.bg_combo = QComboBox()
@@ -160,9 +174,14 @@ class MainWindow(QMainWindow):
             bg_color_pressed=theme["dark_four"],
         )
         self.surprise_btn.setToolTip("Randomize background")
+        self.surprise_btn.setIcon(QIcon(Functions.set_svg_icon("icon_more_options.svg")))
         self.surprise_btn.clicked.connect(self.surprise_me)
         bg_row.addWidget(self.surprise_btn)
         layout.addLayout(bg_row)
+
+        header4 = QLabel("Watermark")
+        header4.setStyleSheet("font-weight: bold")
+        layout.addWidget(header4)
 
         self.watermark_toggle = PyToggle(
             bg_color=theme["dark_two"],
@@ -171,6 +190,10 @@ class MainWindow(QMainWindow):
         )
         self.watermark_toggle.setToolTip("Toggle watermark")
         layout.addWidget(self.watermark_toggle)
+
+        header5 = QLabel("Create")
+        header5.setStyleSheet("font-weight: bold")
+        layout.addWidget(header5)
 
         self.create_btn = PyPushButton(
             text="Create Content",
@@ -181,13 +204,24 @@ class MainWindow(QMainWindow):
             bg_color_pressed=theme["context_pressed"],
         )
         self.create_btn.setToolTip("Generate the video")
+        self.create_btn.setIcon(QIcon(Functions.set_svg_icon("icon_send.svg")))
+        self.create_btn.setEnabled(False)
+        self.create_btn.clicked.connect(self.run_pipeline)
         layout.addWidget(self.create_btn)
         layout.addStretch()
 
         # Preview placeholder
+        self.preview_container = QFrame()
+        self.preview_container.setStyleSheet(
+            f"background-color: {theme['dark_one']}; border-radius: 10px;"
+        )
+        self.preview_container.setFixedSize(270, 480)
+        preview_layout = QVBoxLayout(self.preview_container)
+        preview_layout.setContentsMargins(10, 10, 10, 10)
         preview_label = QLabel("Video Preview")
         preview_label.setAlignment(Qt.AlignCenter)
-        self.ui.load_pages.preview_layout.addWidget(preview_label)
+        preview_layout.addWidget(preview_label, 1, Qt.AlignCenter)
+        self.ui.load_pages.preview_layout.addWidget(self.preview_container, 0, Qt.AlignTop | Qt.AlignHCenter)
 
     # ------------------------------------------------------------------
     def menu_clicked(self):
@@ -213,6 +247,14 @@ class MainWindow(QMainWindow):
         for combo in (self.voice_combo, self.subtitle_combo, self.bg_combo):
             combo.setCurrentIndex(0)
         self.watermark_toggle.setChecked(False)
+        self.update_create_btn()
+
+    def update_create_btn(self):
+        text = self.script_edit.toPlainText().strip()
+        self.create_btn.setEnabled(bool(text))
+
+    def run_pipeline(self):
+        print("Starting pipeline...")
 
     # Resize grips
     def resizeEvent(self, event):
