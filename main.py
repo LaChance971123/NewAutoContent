@@ -12,10 +12,38 @@ from gui.core.json_themes import Themes
 from gui.core.functions import Functions
 from gui.widgets import (
     PyPushButton,
-    PyLineEdit,
     PyToggle,
     PyGrips,
 )
+
+
+class ScriptEdit(QPlainTextEdit):
+    """Text editor that accepts .txt drops and loads file contents."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, e):
+        if e.mimeData().hasUrls():
+            url = e.mimeData().urls()[0]
+            if url.isLocalFile() and url.toLocalFile().lower().endswith(".txt"):
+                e.acceptProposedAction()
+                return
+        super().dragEnterEvent(e)
+
+    def dropEvent(self, e):
+        if e.mimeData().hasUrls():
+            url = e.mimeData().urls()[0]
+            if url.isLocalFile() and url.toLocalFile().lower().endswith(".txt"):
+                try:
+                    with open(url.toLocalFile(), "r", encoding="utf-8") as f:
+                        self.setPlainText(f.read())
+                except Exception:
+                    pass
+                e.acceptProposedAction()
+                return
+        super().dropEvent(e)
 from gui.uis.windows.main_window.ui_main import UI_MainWindow
 from gui.uis.windows.main_window.functions_main_window import MainFunctions
 
@@ -85,20 +113,32 @@ class MainWindow(QMainWindow):
     def build_controls(self):
         theme = self.themes["app_color"]
         layout = self.ui.load_pages.controls_layout
+        layout.setAlignment(Qt.AlignTop | Qt.AlignHCenter)
 
-        label = QLabel("Enter your script")
-        label.setStyleSheet("font-weight: bold; padding-bottom: 4px")
-        layout.addWidget(label)
+        def section(title):
+            frame = QFrame()
+            frame.setMaximumWidth(520)
+            fl = QVBoxLayout(frame)
+            fl.setContentsMargins(10, 10, 10, 10)
+            lbl = QLabel(title)
+            lbl.setStyleSheet("font-weight: bold")
+            fl.addWidget(lbl)
+            layout.addWidget(frame, alignment=Qt.AlignHCenter)
+            return fl
 
-        self.script_edit = QPlainTextEdit()
+        # Script input section
+        script_layout = section("Script Input")
+
+        self.script_edit = ScriptEdit()
         self.script_edit.setPlaceholderText("Tip: Drag and drop a file to load it")
         self.script_edit.setMinimumHeight(120)
+        self.script_edit.setMaximumWidth(500)
         self.script_edit.setStyleSheet(
             f"background-color: {theme['dark_one']}; color: {theme['text_foreground']};"
         )
         self.script_edit.textChanged.connect(self.update_create_btn)
         self.script_edit.setToolTip("Enter or load a script")
-        layout.addWidget(self.script_edit)
+        script_layout.addWidget(self.script_edit)
 
         btn_row = QHBoxLayout()
         self.upload_btn = PyPushButton(
@@ -111,8 +151,22 @@ class MainWindow(QMainWindow):
         )
         self.upload_btn.setToolTip("Open text file")
         self.upload_btn.setIcon(QIcon(Functions.set_svg_icon("icon_folder_open.svg")))
+        self.upload_btn.setMaximumWidth(500)
         self.upload_btn.clicked.connect(self.upload_script)
         btn_row.addWidget(self.upload_btn)
+
+        self.ai_btn = PyPushButton(
+            text="Generate with AI",
+            radius=8,
+            color=theme["text_foreground"],
+            bg_color=theme["dark_three"],
+            bg_color_hover=theme["context_hover"],
+            bg_color_pressed=theme["context_pressed"],
+        )
+        self.ai_btn.setEnabled(False)
+        self.ai_btn.setToolTip("Coming Soon")
+        self.ai_btn.setMaximumWidth(500)
+        btn_row.addWidget(self.ai_btn)
 
         self.reset_btn = PyPushButton(
             text="Reset",
@@ -124,14 +178,18 @@ class MainWindow(QMainWindow):
         )
         self.reset_btn.setToolTip("Clear script")
         self.reset_btn.setIcon(QIcon(Functions.set_svg_icon("icon_restore.svg")))
+        self.reset_btn.setMaximumWidth(500)
         self.reset_btn.clicked.connect(self.reset_form)
         btn_row.addWidget(self.reset_btn)
-        layout.addLayout(btn_row)
+        script_layout.addLayout(btn_row)
 
+        # Voice selection
+        voice_layout = section("Voice Selection")
         row1 = QHBoxLayout()
         self.voice_combo = QComboBox()
         self.voice_combo.addItems(["Alice", "Drew", "Bob"])
         self.voice_combo.setToolTip("Choose a voice")
+        self.voice_combo.setMaximumWidth(500)
         row1.addWidget(self.voice_combo)
 
         self.preview_btn = PyPushButton(
@@ -144,23 +202,20 @@ class MainWindow(QMainWindow):
         )
         self.preview_btn.setIcon(QIcon(Functions.set_svg_icon("icon_play.svg")))
         self.preview_btn.setToolTip("Preview selected voice")
+        self.preview_btn.setMaximumWidth(500)
         self.preview_btn.clicked.connect(self.preview_voice)
         row1.addWidget(self.preview_btn)
-        layout.addLayout(row1)
+        voice_layout.addLayout(row1)
 
-        row2 = QHBoxLayout()
+        # Video settings
+        video_layout = section("Video Settings")
         self.subtitle_combo = QComboBox()
         self.subtitle_combo.addItems(["karaoke", "progressive", "simple"])
         self.subtitle_combo.setToolTip("Choose subtitle style")
-        row2.addWidget(self.subtitle_combo)
+        self.subtitle_combo.setMaximumWidth(500)
+        video_layout.addWidget(self.subtitle_combo)
 
-        self.bg_combo = QComboBox()
-        self.bg_combo.addItems(["Default", "City", "Minecraft"])
-        self.bg_combo.setToolTip("Choose a background")
-        row2.addWidget(self.bg_combo)
-        layout.addLayout(row2)
-
-        row3 = QHBoxLayout()
+        wm_row = QHBoxLayout()
         self.watermark_toggle = PyToggle(
             bg_color=theme["dark_three"],
             circle_color=theme["icon_color"],
@@ -168,11 +223,20 @@ class MainWindow(QMainWindow):
         )
         self.watermark_toggle.setToolTip("Toggle watermark")
         self.watermark_toggle.toggled.connect(self.update_watermark_label)
-        row3.addWidget(self.watermark_toggle)
+        wm_row.addWidget(self.watermark_toggle)
         self.watermark_label = QLabel("Watermark: Off")
-        row3.addWidget(self.watermark_label)
-        row3.addStretch()
-        layout.addLayout(row3)
+        wm_row.addWidget(self.watermark_label)
+        wm_row.addStretch()
+        video_layout.addLayout(wm_row)
+
+        # Background style
+        bg_layout = section("Background Style")
+        row2 = QHBoxLayout()
+        self.bg_combo = QComboBox()
+        self.bg_combo.addItems(["Default", "City", "Minecraft"])
+        self.bg_combo.setToolTip("Choose a background")
+        self.bg_combo.setMaximumWidth(500)
+        row2.addWidget(self.bg_combo)
 
         self.surprise_btn = PyPushButton(
             text="Surprise Me",
@@ -184,24 +248,16 @@ class MainWindow(QMainWindow):
         )
         self.surprise_btn.setToolTip("Randomly select a background category")
         self.surprise_btn.setIcon(QIcon(Functions.set_svg_icon("icon_more_options.svg")))
+        self.surprise_btn.setMaximumWidth(500)
         self.surprise_btn.clicked.connect(self.surprise_me)
-        layout.addWidget(self.surprise_btn)
+        row2.addWidget(self.surprise_btn)
+        bg_layout.addLayout(row2)
 
-        self.ai_btn = PyPushButton(
-            text="Generate with AI",
-            radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["dark_three"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
-        )
-        self.ai_btn.setEnabled(False)
-        self.ai_btn.setToolTip("Coming Soon")
-        layout.addWidget(self.ai_btn)
-
+        # Action buttons
+        action_layout = section("Action Buttons")
         self.output_info = QLabel("MP4 | 1080p @30fps | Watermark Off")
         self.output_info.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.output_info)
+        action_layout.addWidget(self.output_info)
 
         self.create_btn = PyPushButton(
             text="Create Content",
@@ -214,8 +270,9 @@ class MainWindow(QMainWindow):
         self.create_btn.setToolTip("Start generating your AutoContent video")
         self.create_btn.setIcon(QIcon(Functions.set_svg_icon("icon_send.svg")))
         self.create_btn.setEnabled(False)
+        self.create_btn.setMaximumWidth(500)
         self.create_btn.clicked.connect(self.run_pipeline)
-        layout.addWidget(self.create_btn)
+        action_layout.addWidget(self.create_btn)
 
         status = QHBoxLayout()
         self.status_dot = QLabel("\u25CF")
