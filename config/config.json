@@ -41,5 +41,5 @@
   "summary_overlay": false,
   "theme": "dark",
   "always_on_top": false,
-  "first_launch": true
+  "first_launch": false
 }
