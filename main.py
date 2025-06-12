@@ -1,222 +1,99 @@
-# ///////////////////////////////////////////////////////////////
-#
-# BY: WANDERSON M.PIMENTA
-# PROJECT MADE WITH: Qt Designer and PySide6
-# V: 1.0.0
-#
-# This project can be used freely for all uses, as long as they maintain the
-# respective credits only in the Python scripts, any information in the visual
-# interface (GUI) can be modified without any implication.
-#
-# There are limitations on Qt licenses if you want to use your products
-# commercially, I recommend reading them on the official website:
-# https://doc.qt.io/qtforpython/licenses.html
-#
-# ///////////////////////////////////////////////////////////////
+import json
+import random
+from pathlib import Path
+from PySide6 import QtWidgets, QtCore
 
-# IMPORT PACKAGES AND MODULES
-# ///////////////////////////////////////////////////////////////
-from gui.uis.windows.main_window.functions_main_window import *
-import sys
-import os
+THEME_PATH = Path(__file__).parent / "PyOneDark_GUI_Core" / "gui" / "themes" / "default.json"
 
-# IMPORT QT CORE
-# ///////////////////////////////////////////////////////////////
-from qt_core import *
-
-# IMPORT SETTINGS
-# ///////////////////////////////////////////////////////////////
-from gui.core.json_settings import Settings
-
-# IMPORT PY ONE DARK WINDOWS
-# ///////////////////////////////////////////////////////////////
-# MAIN WINDOW
-from gui.uis.windows.main_window import *
-
-# IMPORT PY ONE DARK WIDGETS
-# ///////////////////////////////////////////////////////////////
-from gui.widgets import *
-
-# ADJUST QT FONT DPI FOR HIGHT SCALE AN 4K MONITOR
-# ///////////////////////////////////////////////////////////////
-os.environ["QT_FONT_DPI"] = "96"
-# IF IS 4K MONITOR ENABLE 'os.environ["QT_SCALE_FACTOR"] = "2"'
-
-# MAIN WINDOW
-# ///////////////////////////////////////////////////////////////
-class MainWindow(QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("AutoContent")
+        self._apply_theme()
+        central = QtWidgets.QWidget()
+        self.setCentralWidget(central)
+        layout = QtWidgets.QHBoxLayout(central)
+        layout.setContentsMargins(0, 0, 0, 0)
 
-        # SETUP MAIN WINDOw
-        # Load widgets from "gui\uis\main_window\ui_main.py"
-        # ///////////////////////////////////////////////////////////////
-        self.ui = UI_MainWindow()
-        self.ui.setup_ui(self)
+        self.left_scroll = QtWidgets.QScrollArea()
+        self.left_scroll.setWidgetResizable(True)
+        self.left_widget = QtWidgets.QWidget()
+        self.left_scroll.setWidget(self.left_widget)
+        self.left_layout = QtWidgets.QVBoxLayout(self.left_widget)
+        self.left_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
 
-        # LOAD SETTINGS
-        # ///////////////////////////////////////////////////////////////
-        settings = Settings()
-        self.settings = settings.items
+        layout.addWidget(self.left_scroll)
 
-        # SETUP MAIN WINDOW
-        # ///////////////////////////////////////////////////////////////
-        self.hide_grips = True # Show/Hide resize grips
-        SetupMainWindow.setup_gui(self)
+        self.right_panel = QtWidgets.QFrame()
+        self.right_layout = QtWidgets.QVBoxLayout(self.right_panel)
+        self.preview = QtWidgets.QLabel("Video Preview")
+        self.preview.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.right_layout.addWidget(self.preview)
+        layout.addWidget(self.right_panel)
 
-        # SHOW MAIN WINDOW
-        # ///////////////////////////////////////////////////////////////
-        self.show()
+        self._build_left()
+        self.reset_form()
 
-    # LEFT MENU BTN IS CLICKED
-    # Run function when btn is clicked
-    # Check funtion by object name / btn_id
-    # ///////////////////////////////////////////////////////////////
-    def btn_clicked(self):
-        # GET BT CLICKED
-        btn = SetupMainWindow.setup_btns(self)
+    # ----- UI helpers -----
+    def _apply_theme(self):
+        if THEME_PATH.exists():
+            theme = json.loads(THEME_PATH.read_text())
+            colors = theme.get("app_color", {})
+            bg = colors.get("bg_one", "#2c313c")
+            fg = colors.get("text_foreground", "#ffffff")
+            self.setStyleSheet(f"background:{bg};color:{fg};")
 
-        # Remove Selection If Clicked By "btn_close_left_column"
-        if btn.objectName() != "btn_settings":
-            self.ui.left_menu.deselect_all_tab()
+    def _build_left(self):
+        self.script_edit = QtWidgets.QLineEdit()
+        self.script_edit.setPlaceholderText("Upload or generate script...")
+        self.script_edit.setToolTip("Enter or load the script text.")
+        self.left_layout.addWidget(self.script_edit)
 
-        # Get Title Bar Btn And Reset Active         
-        top_settings = MainFunctions.get_title_bar_btn(self, "btn_top_settings")
-        top_settings.set_active(False)
+        self.voice_combo = QtWidgets.QComboBox()
+        self.voice_combo.addItems(["Alice", "Bob", "Robot"])
+        self.voice_combo.setToolTip("Select the narrator voice.")
+        self.left_layout.addWidget(self.voice_combo)
 
-        # LEFT MENU
-        # ///////////////////////////////////////////////////////////////
-        
-        # HOME BTN
-        if btn.objectName() == "btn_home":
-            # Select Menu
-            self.ui.left_menu.select_only_one(btn.objectName())
+        self.subtitle_combo = QtWidgets.QComboBox()
+        self.subtitle_combo.addItems(["karaoke", "progressive", "simple"])
+        self.subtitle_combo.setToolTip("Choose subtitle style.")
+        self.left_layout.addWidget(self.subtitle_combo)
 
-            # Load Page 1
-            MainFunctions.set_page(self, self.ui.load_pages.page_1)
+        self.bg_combo = QtWidgets.QComboBox()
+        self.bg_combo.addItems(["Default", "Minecraft", "City"])
+        self.bg_combo.setToolTip("Select background style.")
+        self.left_layout.addWidget(self.bg_combo)
 
-        # WIDGETS BTN
-        if btn.objectName() == "btn_widgets":
-            # Select Menu
-            self.ui.left_menu.select_only_one(btn.objectName())
+        btn_row = QtWidgets.QHBoxLayout()
+        self.surprise_btn = QtWidgets.QPushButton("Surprise Me")
+        self.surprise_btn.setToolTip("Randomize settings")
+        self.surprise_btn.clicked.connect(self.surprise_me)
+        self.reset_btn = QtWidgets.QPushButton("Reset")
+        self.reset_btn.setToolTip("Reset form")
+        self.reset_btn.clicked.connect(self.reset_form)
+        btn_row.addWidget(self.surprise_btn)
+        btn_row.addWidget(self.reset_btn)
+        self.left_layout.addLayout(btn_row)
 
-            # Load Page 2
-            MainFunctions.set_page(self, self.ui.load_pages.page_2)
+        self.create_btn = QtWidgets.QPushButton("Create Content")
+        self.create_btn.setToolTip("Start generating the video")
+        self.left_layout.addWidget(self.create_btn)
+        self.left_layout.addStretch()
 
-        # LOAD USER PAGE
-        if btn.objectName() == "btn_add_user":
-            # Select Menu
-            self.ui.left_menu.select_only_one(btn.objectName())
+    # ----- Actions -----
+    def surprise_me(self):
+        for combo in (self.voice_combo, self.subtitle_combo, self.bg_combo):
+            if combo.count():
+                combo.setCurrentIndex(random.randrange(combo.count()))
 
-            # Load Page 3 
-            MainFunctions.set_page(self, self.ui.load_pages.page_3)
-
-        # BOTTOM INFORMATION
-        if btn.objectName() == "btn_info":
-            # CHECK IF LEFT COLUMN IS VISIBLE
-            if not MainFunctions.left_column_is_visible(self):
-                self.ui.left_menu.select_only_one_tab(btn.objectName())
-
-                # Show / Hide
-                MainFunctions.toggle_left_column(self)
-                self.ui.left_menu.select_only_one_tab(btn.objectName())
-            else:
-                if btn.objectName() == "btn_close_left_column":
-                    self.ui.left_menu.deselect_all_tab()
-                    # Show / Hide
-                    MainFunctions.toggle_left_column(self)
-                
-                self.ui.left_menu.select_only_one_tab(btn.objectName())
-
-            # Change Left Column Menu
-            if btn.objectName() != "btn_close_left_column":
-                MainFunctions.set_left_column_menu(
-                    self, 
-                    menu = self.ui.left_column.menus.menu_2,
-                    title = "Info tab",
-                    icon_path = Functions.set_svg_icon("icon_info.svg")
-                )
-
-        # SETTINGS LEFT
-        if btn.objectName() == "btn_settings" or btn.objectName() == "btn_close_left_column":
-            # CHECK IF LEFT COLUMN IS VISIBLE
-            if not MainFunctions.left_column_is_visible(self):
-                # Show / Hide
-                MainFunctions.toggle_left_column(self)
-                self.ui.left_menu.select_only_one_tab(btn.objectName())
-            else:
-                if btn.objectName() == "btn_close_left_column":
-                    self.ui.left_menu.deselect_all_tab()
-                    # Show / Hide
-                    MainFunctions.toggle_left_column(self)
-                self.ui.left_menu.select_only_one_tab(btn.objectName())
-
-            # Change Left Column Menu
-            if btn.objectName() != "btn_close_left_column":
-                MainFunctions.set_left_column_menu(
-                    self, 
-                    menu = self.ui.left_column.menus.menu_1,
-                    title = "Settings Left Column",
-                    icon_path = Functions.set_svg_icon("icon_settings.svg")
-                )
-        
-        # TITLE BAR MENU
-        # ///////////////////////////////////////////////////////////////
-        
-        # SETTINGS TITLE BAR
-        if btn.objectName() == "btn_top_settings":
-            # Toogle Active
-            if not MainFunctions.right_column_is_visible(self):
-                btn.set_active(True)
-
-                # Show / Hide
-                MainFunctions.toggle_right_column(self)
-            else:
-                btn.set_active(False)
-
-                # Show / Hide
-                MainFunctions.toggle_right_column(self)
-
-            # Get Left Menu Btn            
-            top_settings = MainFunctions.get_left_menu_btn(self, "btn_settings")
-            top_settings.set_active_tab(False)            
-
-        # DEBUG
-        print(f"Button {btn.objectName()}, clicked!")
-
-    # LEFT MENU BTN IS RELEASED
-    # Run function when btn is released
-    # Check funtion by object name / btn_id
-    # ///////////////////////////////////////////////////////////////
-    def btn_released(self):
-        # GET BT CLICKED
-        btn = SetupMainWindow.setup_btns(self)
-
-        # DEBUG
-        print(f"Button {btn.objectName()}, released!")
-
-    # RESIZE EVENT
-    # ///////////////////////////////////////////////////////////////
-    def resizeEvent(self, event):
-        SetupMainWindow.resize_grips(self)
-
-    # MOUSE CLICK EVENTS
-    # ///////////////////////////////////////////////////////////////
-    def mousePressEvent(self, event):
-        # SET DRAG POS WINDOW
-        self.dragPos = event.globalPos()
+    def reset_form(self):
+        self.script_edit.clear()
+        for combo in (self.voice_combo, self.subtitle_combo, self.bg_combo):
+            combo.setCurrentIndex(0)
 
 
-# SETTINGS WHEN TO START
-# Set the initial class and also additional parameters of the "QApplication" class
-# ///////////////////////////////////////////////////////////////
 if __name__ == "__main__":
-    # APPLICATION
-    # ///////////////////////////////////////////////////////////////
-    app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon("icon.ico"))
-    window = MainWindow()
-
-    # EXEC APP
-    # ///////////////////////////////////////////////////////////////
-    sys.exit(app.exec_())
+    app = QtWidgets.QApplication([])
+    win = MainWindow()
+    win.show()
+    app.exec()
