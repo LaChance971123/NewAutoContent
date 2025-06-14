@@ -114,11 +114,6 @@ class MainWindow(QMainWindow):
         self.build_home_page()
         self.build_settings_page()
         self.build_help_page()
-        self.status_timer = QTimer(self)
-        self.status_timer.setSingleShot(True)
-        self.status_timer.timeout.connect(lambda: self.set_status("Idle", self.themes["app_color"].get("green")))
-        self.reset_form()
-        self.restore_state()
         self.show()
 
     # ------------------------------------------------------------------
@@ -159,6 +154,15 @@ class MainWindow(QMainWindow):
         self.ui.left_column_frame.setMaximumWidth(0)
         self.ui.right_column_frame.setMinimumWidth(0)
         self.ui.right_column_frame.setMaximumWidth(0)
+
+    # ------------------------------------------------------------------
+    def clear_layout(self, layout: QLayout):
+        while layout.count():
+            item = layout.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
+            elif item.layout():
+                self.clear_layout(item.layout())
 
     # ------------------------------------------------------------------
     def build_sidebar(self):
@@ -203,410 +207,33 @@ class MainWindow(QMainWindow):
 
     # ------------------------------------------------------------------
     def build_home_page(self):
-        theme = self.themes["app_color"]
-        layout = self.ui.load_pages.controls_layout
-        layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        layout.setContentsMargins(PAD, PAD, PAD, PAD)
-        self.ui.load_pages.preview_layout.setContentsMargins(PAD, PAD, PAD, PAD)
-
-        def section(title: str):
-            frame = QFrame()
-            frame.setMaximumWidth(520)
-            fl = QVBoxLayout(frame)
-            fl.setContentsMargins(PAD, PAD, PAD, PAD)
-            fl.setSpacing(6)
-            lbl = QLabel(title)
-            lbl.setObjectName("section")
-            lbl.setStyleSheet(SECTION_STYLE)
-            fl.addWidget(lbl)
-            layout.addWidget(frame, alignment=Qt.AlignHCenter)
-            return fl
-
-        # "🎬 Script Input" section with title and script boxes
-        title_layout = section("\U0001F3AC Script Input")
-        self.title_edit = QLineEdit()
-        self.title_edit.setPlaceholderText("Title / Output Filename")
-        self.title_edit.setMaximumWidth(500)
-        self.title_edit.textEdited.connect(self.disable_auto_title)
-        title_layout.addWidget(self.title_edit)
-        script_layout = title_layout
-        self.script_edit = ScriptEdit()
-        self.script_edit.setPlaceholderText(
-            "Drop your story here or click 'Generate with AI' to begin..."
-        )
-        self.script_edit.setMinimumHeight(120)
-        self.script_edit.setMaximumWidth(500)
-        self.script_edit.setStyleSheet(
-            f"background-color: {theme['dark_one']}; color: {theme['text_foreground']};"
-        )
-        self.script_edit.setToolTip("Drag .txt or .docx files here")
-        self.script_edit.textChanged.connect(self.on_script_changed)
-        self.script_edit.fileLoaded.connect(self.on_script_loaded)
-        script_layout.addWidget(self.script_edit)
-
-        btn_row = QHBoxLayout()
-        self.upload_btn = PyPushButton(
-            text="Upload",
-            radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["dark_three"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
-        )
-        self.upload_btn.clicked.connect(self.upload_script)
-        self.upload_btn.setMaximumWidth(500)
-        btn_row.addWidget(self.upload_btn)
-
-        self.ai_btn = PyPushButton(
-            text="Generate with AI",
-            radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["dark_three"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
-        )
-        self.ai_btn.setToolTip("Generate a horror story using the local model")
-        self.ai_btn.clicked.connect(self.generate_ai_story)
-        self.ai_btn.setMaximumWidth(500)
-        btn_row.addWidget(self.ai_btn)
-
-        self.reset_btn = PyPushButton(
-            text="Reset",
-            radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["dark_three"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
-        )
-        self.reset_btn.setToolTip("Clear script")
-        self.reset_btn.clicked.connect(self.reset_form)
-        self.reset_btn.setMaximumWidth(500)
-        btn_row.addWidget(self.reset_btn)
-        script_layout.addLayout(btn_row)
-
-        voice_layout = section("\U0001F399\ufe0f Voice Settings")
-        row1 = QHBoxLayout()
-        self.voice_combo = QComboBox()
-        voices = (self.settings.get("voices") or {}).keys()
-        self.voice_combo.addItems(list(voices) or ["Default"])
-        self.voice_combo.setMaximumWidth(500)
-        self.voice_combo.currentTextChanged.connect(lambda t: self.update_setting("last_voice", t))
-        row1.addWidget(self.voice_combo)
-        self.preview_btn = PyPushButton(
-            text="Preview",
-            radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["dark_three"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
-        )
-        self.preview_btn.setToolTip("Preview selected voice")
-        self.preview_btn.setMaximumWidth(500)
-        self.preview_btn.clicked.connect(self.preview_voice)
-        row1.addWidget(self.preview_btn)
-        voice_layout.addLayout(row1)
-
-        output_layout = section("\u2699\ufe0f Output Options")
-        self.subtitle_combo = QComboBox()
-        self.subtitle_combo.addItems(["karaoke", "progressive", "simple"])
-        self.subtitle_combo.setToolTip("Subtitle style")
-        self.subtitle_combo.setMaximumWidth(500)
-        self.subtitle_combo.currentTextChanged.connect(lambda t: self.update_setting("last_subtitle", t))
-        output_layout.addWidget(self.subtitle_combo)
-
-        wm_row = QHBoxLayout()
-        self.watermark_toggle = PyToggle(
-            bg_color=theme["dark_three"],
-            circle_color=theme["icon_color"],
-            active_color=theme["context_color"],
-        )
-        self.watermark_toggle.toggled.connect(self.update_watermark_label)
-        self.watermark_toggle.toggled.connect(lambda v: self.update_setting("watermark", v))
-        wm_row.addWidget(self.watermark_toggle)
-        self.watermark_label = QLabel("Watermark: Off")
-        wm_row.addWidget(self.watermark_label)
-        wm_row.addStretch()
-        output_layout.addLayout(wm_row)
-
-        bg_layout = section("\U0001F39E\ufe0f Background Style")
-        row2 = QHBoxLayout()
-        self.bg_combo = QComboBox()
-        bg_styles = (self.settings.get("background_styles") or {}).keys()
-        self.bg_combo.addItems(list(bg_styles) or ["Default"])
-        self.bg_combo.setMaximumWidth(500)
-        self.bg_combo.currentTextChanged.connect(lambda t: self.update_setting("last_background", t))
-        row2.addWidget(self.bg_combo)
-        self.surprise_btn = PyPushButton(
-            text="Surprise Me",
-            radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["dark_three"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
-        )
-        self.surprise_btn.setToolTip("Randomly select options")
-        self.surprise_btn.setMaximumWidth(500)
-        self.surprise_btn.clicked.connect(self.surprise_me)
-        row2.addWidget(self.surprise_btn)
-        bg_layout.addLayout(row2)
-
-        self.output_info = QLabel("1080p @30fps | Watermark Off")
-        self.output_info.setAlignment(Qt.AlignCenter)
-        output_layout.addWidget(self.output_info)
-
-        self.create_btn = PyPushButton(
-            text="Create Content",
-            radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["context_color"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
-        )
-        self.create_btn.setEnabled(False)
-        self.create_btn.setToolTip("Run the full pipeline")
-        self.create_btn.setMaximumWidth(500)
-        self.create_btn.clicked.connect(self.run_pipeline)
-        output_layout.addWidget(self.create_btn)
-
-        status = QHBoxLayout()
-        self.status_dot = QLabel("\u25CF")
-        self.status_dot.setStyleSheet(f"color: {theme['green']}")
-        status.addWidget(self.status_dot)
-        self.status_text = QLabel("Idle")
-        status.addWidget(self.status_text)
-        status.addStretch()
-        self.ready_label = QLabel("Ready")
-        status.addWidget(self.ready_label, alignment=Qt.AlignRight)
-        output_layout.addLayout(status)
-
-        layout.addStretch()
-
-        # preview placeholder
-        self.preview_container = QFrame(objectName="preview")
-        self.preview_container.setStyleSheet(
-            f"#preview {{"
-            f"background-color: {theme['dark_one']};"
-            f"border-radius: 12px;"
-            f"border: 1px solid {theme['dark_four']};"
-            f"}}"
-        )
-        self.preview_container.setToolTip(
-            "This is a mockup of how your video will appear on mobile."
-        )
-        shadow = QGraphicsDropShadowEffect(self.preview_container)
-        shadow.setBlurRadius(15)
-        shadow.setOffset(0, 0)
-        shadow.setColor(QColor(theme.get("dark_two", "#000000")))
-        self.preview_container.setGraphicsEffect(shadow)
-        preview_layout = QVBoxLayout(self.preview_container)
-        preview_layout.setContentsMargins(PAD, PAD, PAD, PAD)
-        preview_layout.addStretch()
-        preview_label = QLabel("Video Preview")
-        preview_label.setAlignment(Qt.AlignCenter)
-        preview_layout.addWidget(preview_label, 0, Qt.AlignCenter)
-        preview_layout.addStretch()
-        self.ui.load_pages.preview_layout.addStretch()
-        self.ui.load_pages.preview_layout.addWidget(
-            self.preview_container, 0, Qt.AlignCenter
-        )
-        self.ui.load_pages.preview_layout.addStretch()
-        self.adjust_preview_size()
+        layout = self.ui.load_pages.page_1_layout
+        self.clear_layout(layout)
+        placeholder = QLabel("\ud83d\udd27 Rebuilding GUI...")
+        placeholder.setAlignment(Qt.AlignCenter)
+        layout.addWidget(placeholder)
 
     # ------------------------------------------------------------------
     def build_settings_page(self):
-        theme = self.themes["app_color"]
-        self.ui.load_pages.title_label.setText("Settings")
-        self.ui.load_pages.description_label.setText("Application preferences")
-
-        root = self.ui.load_pages.page_2
         layout = self.ui.load_pages.page_2_layout
-
-        # clear existing widgets
-        while layout.count():
-            item = layout.takeAt(0)
-            if item.widget():
-                item.widget().deleteLater()
-
-        scroll = QScrollArea()
-        scroll.setFrameShape(QFrame.NoFrame)
-        scroll.setWidgetResizable(True)
-        container = QWidget()
-        scroll.setWidget(container)
-        vbox = QVBoxLayout(container)
-        vbox.setAlignment(Qt.AlignTop)
-
-        def section(title: str) -> QVBoxLayout:
-            frame = QFrame()
-            frame.setMaximumWidth(520)
-            fl = QVBoxLayout(frame)
-            fl.setContentsMargins(PAD, PAD, PAD, PAD)
-            fl.setSpacing(6)
-            lbl = QLabel(title)
-            lbl.setObjectName("section")
-            lbl.setStyleSheet(SECTION_STYLE)
-            lbl.setToolTip(title)
-            fl.addWidget(lbl)
-            vbox.addWidget(frame, alignment=Qt.AlignHCenter)
-            return fl
-
-        # General Settings -------------------------------------------------
-        gen_layout = section("\U0001F3A7 General Settings")
-
-        self.resolution_combo = QComboBox()
-        self.resolution_combo.addItems(self.settings.get("resolutions", ["1080x1920", "720x1280"]))
-        self.resolution_combo.setCurrentText(self.app_settings.data.get("output_resolution", DEFAULTS["output_resolution"]))
-        self.resolution_combo.currentTextChanged.connect(lambda t: self.update_setting("output_resolution", t))
-        self.resolution_combo.setToolTip("Output resolution")
-        gen_layout.addWidget(self.resolution_combo)
-
-        wm_row = QHBoxLayout()
-        self.wm_check = QCheckBox("Enable watermark")
-        self.wm_check.setChecked(self.app_settings.data.get("watermark", DEFAULTS["watermark"]))
-        self.wm_check.toggled.connect(lambda v: self.update_setting("watermark", v))
-        self.wm_check.setToolTip("Toggle watermark on output video")
-        wm_row.addWidget(self.wm_check)
-        wm_row.addStretch()
-        gen_layout.addLayout(wm_row)
-
-        out_row = QHBoxLayout()
-        self.output_edit = QLineEdit(self.app_settings.data.get("output_folder", DEFAULTS["output_folder"]))
-        self.output_edit.setReadOnly(True)
-        self.output_edit.setToolTip("Folder where videos are saved")
-        out_row.addWidget(self.output_edit)
-        self.output_btn = PyPushButton(
-            text="Browse",
-            radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["dark_three"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
-        )
-        self.output_btn.clicked.connect(self.choose_output_folder)
-        out_row.addWidget(self.output_btn)
-        gen_layout.addLayout(out_row)
-
-        # Voice Settings ---------------------------------------------------
-        voice_layout = section("\U0001F399\ufe0f Voice Settings")
-
-        self.default_voice_combo = QComboBox()
-        voices = (self.settings.get("voices") or {}).keys()
-        self.default_voice_combo.addItems(list(voices) or ["Default"])
-        self.default_voice_combo.setCurrentText(self.app_settings.data.get("last_voice", DEFAULTS["last_voice"]))
-        self.default_voice_combo.currentTextChanged.connect(lambda t: (self.update_setting("last_voice", t), self.sync_voice_combo(t)))
-        self.default_voice_combo.setToolTip("Default narration voice")
-        voice_layout.addWidget(self.default_voice_combo)
-
-        self.coqui_check = QCheckBox("Enable fallback TTS")
-        self.coqui_check.setChecked(self.app_settings.data.get("use_coqui_fallback", DEFAULTS["use_coqui_fallback"]))
-        self.coqui_check.toggled.connect(lambda v: self.update_setting("use_coqui_fallback", v))
-        self.coqui_check.setToolTip("Use Coqui if ElevenLabs fails")
-        voice_layout.addWidget(self.coqui_check)
-
-        # AI Settings ------------------------------------------------------
-        ai_layout = section("\U0001F9E0 AI Settings")
-
-        self.prompt_edit = QPlainTextEdit()
-        self.prompt_edit.setPlaceholderText("Default AI prompt")
-        self.prompt_edit.setPlainText(self.app_settings.data.get("ai_prompt", DEFAULTS["ai_prompt"]))
-        self.prompt_edit.textChanged.connect(lambda: self.update_setting("ai_prompt", self.prompt_edit.toPlainText()))
-        ai_layout.addWidget(self.prompt_edit)
-
-        len_row = QHBoxLayout()
-        self.len_spin = QSpinBox()
-        self.len_spin.setRange(50, 1000)
-        self.len_spin.setValue(self.app_settings.data.get("max_story_len", DEFAULTS["max_story_len"]))
-        self.len_spin.valueChanged.connect(lambda v: self.update_setting("max_story_len", v))
-        self.len_spin.setToolTip("Maximum story length")
-        len_row.addWidget(QLabel("Max length"))
-        len_row.addWidget(self.len_spin)
-        len_row.addStretch()
-        ai_layout.addLayout(len_row)
-
-        # Buttons ----------------------------------------------------------
-        btn_row = QHBoxLayout()
-        self.restore_btn = PyPushButton(
-            text="Restore Defaults",
-            radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["dark_three"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
-        )
-        self.restore_btn.clicked.connect(self.restore_defaults)
-        btn_row.addWidget(self.restore_btn)
-
-        self.save_btn = PyPushButton(
-            text="Save Settings",
-            radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["context_color"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
-        )
-        self.save_btn.clicked.connect(self.save_settings)
-        btn_row.addWidget(self.save_btn)
-        btn_row.addStretch()
-        vbox.addLayout(btn_row)
-
-        layout.addWidget(scroll)
+        self.clear_layout(layout)
+        placeholder = QLabel("\ud83d\udd27 Rebuilding GUI...")
+        placeholder.setAlignment(Qt.AlignCenter)
+        layout.addWidget(placeholder)
 
     # ------------------------------------------------------------------
     def build_help_page(self):
         layout = self.ui.load_pages.page_3_layout
-        while layout.count():
-            item = layout.takeAt(0)
-            if item.widget():
-                item.widget().deleteLater()
-
-        scroll = QScrollArea()
-        scroll.setFrameShape(QFrame.NoFrame)
-        scroll.setWidgetResizable(True)
-        cont = QWidget()
-        scroll.setWidget(cont)
-        vbox = QVBoxLayout(cont)
-        vbox.setAlignment(Qt.AlignTop)
-
-        def add_section(title: str, text: str):
-            lbl = QLabel(title)
-            lbl.setObjectName("section")
-            lbl.setStyleSheet(SECTION_STYLE)
-            lbl.setToolTip(title)
-            vbox.addWidget(lbl)
-            body = QLabel(text)
-            body.setWordWrap(True)
-            vbox.addWidget(body)
-            vbox.addSpacing(10)
-
-        add_section(
-            "\U0001F4D6 Getting Started",
-            "Write or drop your story on the Home page, adjust options, then press 'Create Content'.",
-        )
-        add_section(
-            "\U0001F3A5 Output Overview",
-            "Videos are saved in the output folder using the title plus a timestamp. They work on TikTok, Shorts and Reels.",
-        )
-        add_section(
-            "\u2699\ufe0f Troubleshooting",
-            "If voiceover fails or subtitles are missing, check your settings and logs.",
-        )
-
-        btn = PyPushButton(
-            text="Copy Logs",
-            radius=8,
-            color=self.themes["app_color"]["text_foreground"],
-            bg_color=self.themes["app_color"]["dark_three"],
-            bg_color_hover=self.themes["app_color"]["context_hover"],
-            bg_color_pressed=self.themes["app_color"]["context_pressed"],
-        )
-        btn.clicked.connect(self.copy_logs)
-        vbox.addWidget(btn, alignment=Qt.AlignLeft)
-        vbox.addSpacing(10)
-
-        layout.addWidget(scroll)
+        self.clear_layout(layout)
+        placeholder = QLabel("\ud83d\udd27 Rebuilding GUI...")
+        placeholder.setAlignment(Qt.AlignCenter)
+        layout.addWidget(placeholder)
 
     # ------------------------------------------------------------------
     def set_status(self, text: str, color: str | None = None):
         """Update bottom status bar and reset after 5 seconds."""
+        if not hasattr(self, "status_text"):
+            return
         self.status_text.setText(text)
         if color:
             self.status_dot.setStyleSheet(f"color: {color}")
@@ -617,7 +244,8 @@ class MainWindow(QMainWindow):
         anim.setStartValue(0)
         anim.setEndValue(1)
         anim.start(QPropertyAnimation.DeleteWhenStopped)
-        self.status_timer.start(5000)
+        if hasattr(self, "status_timer"):
+            self.status_timer.start(5000)
 
     # ------------------------------------------------------------------
     def update_setting(self, key: str, value):
