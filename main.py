@@ -68,22 +68,27 @@ if QT_OK:
     class MainWindow(QMainWindow):
         def __init__(self) -> None:
             super().__init__()
-        theme_path = GUI_DIR / "gui/themes/default.json"
-        if theme_path.exists():
-            Themes.settings_path = str(theme_path)
-        else:
-            print(f"Warning: missing theme file {theme_path}, using defaults")
-        self.settings = Settings().items
-        self.themes = Themes().items
-        self.app_settings = SettingsManager()
-        self._threads: list[WorkerThread] = []
+            theme_path = GUI_DIR / "gui/themes/default.json"
+            if theme_path.exists():
+                Themes.settings_path = str(theme_path)
+            else:
+                print(f"Warning: missing theme file {theme_path}, using defaults")
+            self.settings = Settings().items
+            self.themes = Themes().items
+            self.app_settings = SettingsManager()
+            self._threads: list[WorkerThread] = []
 
-        self.setup_ui()
-        self.setup_sidebar()
-        self.setup_pages()
-        print("MainWindow initialized")
-        self.show()
-        print("\u2705 GUI launched successfully")
+            self.setup_ui()
+            self.setup_sidebar()
+            self.setup_pages()
+            print("MainWindow initialized")
+            self.show()
+
+        # -----------------------------------------------------------
+
+    def showEvent(self, event) -> None:  # type: ignore[override]
+        super().showEvent(event)
+        print("GUI started successfully")
 
     # ---------------------------------------------------------------
     def setup_ui(self) -> None:
