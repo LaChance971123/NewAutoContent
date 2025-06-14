@@ -15,7 +15,8 @@ class HomePageWidget(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.theme = Themes().items["app_color"]
+        theme = Themes().items["app_color"]
+        self.theme = theme
         font_family = Settings().items["font"]["family"]
 
         self.state = {}
@@ -45,7 +46,7 @@ class HomePageWidget(QWidget):
         self.script_edit = QPlainTextEdit()
         self.script_edit.setPlaceholderText("Enter or drop your story/script here...")
         self.script_edit.setStyleSheet(
-            f"background-color: {theme['dark_one']}; color: {theme['text_foreground']}"
+            f"background-color: {self.theme['dark_one']}; color: {self.theme['text_foreground']}"
         )
         left_col.addWidget(self.script_edit)
 
@@ -71,9 +72,9 @@ class HomePageWidget(QWidget):
 
         watermark_row = QHBoxLayout()
         self.watermark_toggle = PyToggle(
-            bg_color=theme["dark_three"],
-            circle_color=theme["icon_color"],
-            active_color=theme["context_color"],
+            bg_color=self.theme["dark_three"],
+            circle_color=self.theme["icon_color"],
+            active_color=self.theme["context_color"],
         )
         self.watermark_toggle.setToolTip("Toggle watermark on or off")
         watermark_row.addWidget(QLabel("Include Watermark"))
@@ -85,10 +86,10 @@ class HomePageWidget(QWidget):
         self.ai_btn = PyPushButton(
             text="Generate with AI",
             radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["dark_three"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
+            color=self.theme["text_foreground"],
+            bg_color=self.theme["dark_three"],
+            bg_color_hover=self.theme["context_hover"],
+            bg_color_pressed=self.theme["context_pressed"],
         )
         self.ai_btn.setToolTip("Generate a script with AI")
         btn_row.addWidget(self.ai_btn)
@@ -96,10 +97,10 @@ class HomePageWidget(QWidget):
         self.create_btn = PyPushButton(
             text="Create Content",
             radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["context_color"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
+            color=self.theme["text_foreground"],
+            bg_color=self.theme["context_color"],
+            bg_color_hover=self.theme["context_hover"],
+            bg_color_pressed=self.theme["context_pressed"],
         )
         self.create_btn.setToolTip("Build final video content")
         btn_row.addWidget(self.create_btn)
@@ -107,10 +108,10 @@ class HomePageWidget(QWidget):
         self.surprise_btn = PyPushButton(
             text="Surprise Me",
             radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["dark_three"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
+            color=self.theme["text_foreground"],
+            bg_color=self.theme["dark_three"],
+            bg_color_hover=self.theme["context_hover"],
+            bg_color_pressed=self.theme["context_pressed"],
         )
         self.surprise_btn.setToolTip("Randomize settings")
         btn_row.addWidget(self.surprise_btn)
@@ -118,10 +119,10 @@ class HomePageWidget(QWidget):
         self.reset_btn = PyPushButton(
             text="Reset",
             radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["dark_three"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
+            color=self.theme["text_foreground"],
+            bg_color=self.theme["dark_three"],
+            bg_color_hover=self.theme["context_hover"],
+            bg_color_pressed=self.theme["context_pressed"],
         )
         self.reset_btn.setToolTip("Clear all fields")
         btn_row.addWidget(self.reset_btn)
@@ -141,7 +142,7 @@ class HomePageWidget(QWidget):
         self.preview_frame = QFrame()
         self.preview_frame.setObjectName("preview_frame")
         self.preview_frame.setStyleSheet(
-            f"background-color: {theme['dark_one']}; border-radius: 8px;"
+            f"background-color: {self.theme['dark_one']}; border-radius: 8px;"
         )
         preview_layout = QVBoxLayout(self.preview_frame)
         preview_layout.setContentsMargins(10, 10, 10, 10)

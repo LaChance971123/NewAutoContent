@@ -15,6 +15,7 @@ from gui.widgets import PyGrips
 from pipeline import generator
 from pipeline.pipeline import VideoPipeline
 from pipeline.config import Config
+from pipeline.helpers import sanitize_name
 
 
 class SettingsManager:
@@ -166,6 +167,16 @@ class MainWindow(QMainWindow):
             self.help_page.copy_logs_requested.connect(self.handle_copy_logs)
         self.home_state: dict[str, Any] = {}
         self.processing = False
+
+    # ---------------------------------------------------------------
+    def menu_clicked(self, btn: QPushButton) -> None:
+        if isinstance(btn, QPushButton):
+            self.handle_left_menu_clicked(btn)
+
+    # ---------------------------------------------------------------
+    def menu_released(self, btn: QPushButton) -> None:
+        # Stub for future behavior
+        pass
 
     # ---------------------------------------------------------------
     def handle_left_menu_clicked(self, btn: QPushButton) -> None:
