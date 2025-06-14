@@ -4,6 +4,7 @@ import random
 import subprocess
 from pathlib import Path
 from typing import Optional
+import shutil
 
 from .logger import setup_logger
 
@@ -26,6 +27,8 @@ class VideoRenderer:
         self.opacity = opacity
         self.resolution = resolution
         self.ffmpeg = ffmpeg_path
+        if not shutil.which(self.ffmpeg):
+            self.logger.warning(f"ffmpeg executable '{self.ffmpeg}' not found")
 
     def _list_videos(self, folder: Path) -> list[Path]:
         return [p for p in folder.glob("*") if p.suffix.lower() in {".mp4", ".webm"}]
@@ -103,6 +106,17 @@ class VideoRenderer:
         avoid Windows escaping issues.
         """
         self.logger.info("Starting FFmpeg render")
+
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        if not audio_path.exists():
+            raise FileNotFoundError(f"Audio file not found: {audio_path}")
+        if subtitles and not subtitles.exists():
+            self.logger.warning(f"Subtitle file not found: {subtitles}")
+            subtitles = None
+        if intro and not intro.exists():
+            raise FileNotFoundError(f"Intro clip not found: {intro}")
+        if outro and not outro.exists():
+            raise FileNotFoundError(f"Outro clip not found: {outro}")
 
         if output_path.suffix.lower() != ".mp4":
             raise ValueError("Output path must end with .mp4")
@@ -221,3 +235,4 @@ class VideoRenderer:
             concat.unlink(missing_ok=True)
 
         self.logger.info(f"Render complete: {output_path}")
+

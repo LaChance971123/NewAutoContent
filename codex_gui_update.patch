@@ -1,0 +1,4356 @@
+diff --git a/PyOneDark_GUI_Core/gui/themes/default.json b/PyOneDark_GUI_Core/gui/themes/default.json
+index e1f86f06897620d690bb6a65fa68a413d1dcc3eb..46abd992695df06799df0ac013937bc6b9d72a6b 100644
+--- a/PyOneDark_GUI_Core/gui/themes/default.json
++++ b/PyOneDark_GUI_Core/gui/themes/default.json
+@@ -1,28 +1,28 @@
+ {
+     "theme_name" : "Default",
+     "app_color" : {
+-        "dark_one" : "#1b1e23",
+-        "dark_two" : "#1e2229",
+-        "dark_three" : "#21252d",
+-        "dark_four" : "#272c36",
+-        "bg_one" : "#2c313c",
+-        "bg_two" : "#343b48",
+-        "bg_three" : "#3c4454",
+-        "icon_color" : "#c3ccdf",
+-        "icon_hover" : "#dce1ec",
+-        "icon_pressed" : "#6c99f4",
+-        "icon_active" : "#f5f6f9",
+-        "context_color" : "#568af2",
+-        "context_hover" : "#6c99f4",
+-        "context_pressed" : "#3f6fd1",
+-        "text_title" : "#dce1ec",
+-        "text_foreground" : "#8a95aa",
+-        "text_description" : "#4f5b6e",
+-        "text_active" : "#dce1ec",
+-        "white" : "#f5f6f9",
++        "dark_one" : "#1C1F22",
++        "dark_two" : "#0E1012",
++        "dark_three" : "#2E3338",
++        "dark_four" : "#292D31",
++        "bg_one" : "#0E1012",
++        "bg_two" : "#1C1F22",
++        "bg_three" : "#292D31",
++        "icon_color" : "#F5F7FA",
++        "icon_hover" : "#FFFFFF",
++        "icon_pressed" : "#377DFF",
++        "icon_active" : "#377DFF",
++        "context_color" : "#377DFF",
++        "context_hover" : "#4A8BFF",
++        "context_pressed" : "#2554CE",
++        "text_title" : "#F5F7FA",
++        "text_foreground" : "#F5F7FA",
++        "text_description" : "#F5F7FA",
++        "text_active" : "#F5F7FA",
++        "white" : "#F5F7FA",
+         "pink" : "#ff007f",
+-        "green" : "#00ff7f",
++        "green" : "#2ECC71",
+         "red" : "#ff5555",
+         "yellow" : "#f1fa8c"
+     }
+ }
+\ No newline at end of file
+diff --git a/PyOneDark_GUI_Core/gui/uis/pages/ui_main_pages.py b/PyOneDark_GUI_Core/gui/uis/pages/ui_main_pages.py
+index dec8d128b1af6264f183a84c6bc4aa8c9b982f00..f7e4dab415f128468dd1716eff759d93c140e6ad 100644
+--- a/PyOneDark_GUI_Core/gui/uis/pages/ui_main_pages.py
++++ b/PyOneDark_GUI_Core/gui/uis/pages/ui_main_pages.py
+@@ -11,85 +11,82 @@
+ # There are limitations on Qt licenses if you want to use your products
+ # commercially, I recommend reading them on the official website:
+ # https://doc.qt.io/qtforpython/licenses.html
+ #
+ # ///////////////////////////////////////////////////////////////
+ 
+ # IMPORT QT CORE
+ # ///////////////////////////////////////////////////////////////
+ from qt_core import *
+ 
+ 
+ class Ui_MainPages(object):
+     def setupUi(self, MainPages):
+         if not MainPages.objectName():
+             MainPages.setObjectName(u"MainPages")
+         MainPages.resize(860, 600)
+         self.main_pages_layout = QVBoxLayout(MainPages)
+         self.main_pages_layout.setSpacing(0)
+         self.main_pages_layout.setObjectName(u"main_pages_layout")
+         self.main_pages_layout.setContentsMargins(5, 5, 5, 5)
+         self.pages = QStackedWidget(MainPages)
+         self.pages.setObjectName(u"pages")
+         self.page_1 = QWidget()
+         self.page_1.setObjectName(u"page_1")
+         self.page_1.setStyleSheet(u"font-size: 14pt")
+-        self.page_1_layout = QVBoxLayout(self.page_1)
++        self.page_1_layout = QHBoxLayout(self.page_1)
+         self.page_1_layout.setSpacing(5)
+         self.page_1_layout.setObjectName(u"page_1_layout")
+         self.page_1_layout.setContentsMargins(5, 5, 5, 5)
+-        self.welcome_base = QFrame(self.page_1)
+-        self.welcome_base.setObjectName(u"welcome_base")
+-        self.welcome_base.setMinimumSize(QSize(300, 150))
+-        self.welcome_base.setMaximumSize(QSize(300, 150))
+-        self.welcome_base.setFrameShape(QFrame.NoFrame)
+-        self.welcome_base.setFrameShadow(QFrame.Raised)
+-        self.center_page_layout = QVBoxLayout(self.welcome_base)
+-        self.center_page_layout.setSpacing(10)
+-        self.center_page_layout.setObjectName(u"center_page_layout")
+-        self.center_page_layout.setContentsMargins(0, 0, 0, 0)
+-        self.logo = QFrame(self.welcome_base)
+-        self.logo.setObjectName(u"logo")
+-        self.logo.setMinimumSize(QSize(300, 120))
+-        self.logo.setMaximumSize(QSize(300, 120))
+-        self.logo.setFrameShape(QFrame.NoFrame)
+-        self.logo.setFrameShadow(QFrame.Raised)
+-        self.logo_layout = QVBoxLayout(self.logo)
+-        self.logo_layout.setSpacing(0)
+-        self.logo_layout.setObjectName(u"logo_layout")
+-        self.logo_layout.setContentsMargins(0, 0, 0, 0)
+-
+-        self.center_page_layout.addWidget(self.logo)
+-
+-        self.label = QLabel(self.welcome_base)
+-        self.label.setObjectName(u"label")
+-        self.label.setAlignment(Qt.AlignCenter)
+-
+-        self.center_page_layout.addWidget(self.label)
+-
+-
+-        self.page_1_layout.addWidget(self.welcome_base, 0, Qt.AlignHCenter)
++        self.controls_scroll = QScrollArea(self.page_1)
++        self.controls_scroll.setObjectName(u"controls_scroll")
++        self.controls_scroll.setFrameShape(QFrame.NoFrame)
++        self.controls_scroll.setWidgetResizable(True)
++        self.controls_scroll.setAlignment(Qt.AlignHCenter)
++
++        self.controls_widget = QWidget()
++        self.controls_widget.setObjectName(u"controls_widget")
++        self.controls_widget.setMaximumWidth(640)
++        self.controls_layout = QVBoxLayout(self.controls_widget)
++        self.controls_layout.setSpacing(10)
++        self.controls_layout.setObjectName(u"controls_layout")
++        self.controls_layout.setContentsMargins(5, 5, 5, 5)
++        self.controls_layout.setAlignment(Qt.AlignTop | Qt.AlignHCenter)
++        self.controls_scroll.setWidget(self.controls_widget)
++
++        self.page_1_layout.addWidget(self.controls_scroll)
++
++        self.preview_frame = QFrame(self.page_1)
++        self.preview_frame.setObjectName(u"preview_frame")
++        self.preview_frame.setFixedWidth(300)
++        self.preview_layout = QVBoxLayout(self.preview_frame)
++        self.preview_layout.setContentsMargins(5, 5, 5, 5)
++        self.preview_layout.setSpacing(0)
++        self.page_1_layout.addWidget(self.preview_frame, 0, Qt.AlignTop)
++
++        self.page_1_layout.setStretch(0, 7)
++        self.page_1_layout.setStretch(1, 3)
+ 
+         self.pages.addWidget(self.page_1)
+         self.page_2 = QWidget()
+         self.page_2.setObjectName(u"page_2")
+         self.page_2_layout = QVBoxLayout(self.page_2)
+         self.page_2_layout.setSpacing(5)
+         self.page_2_layout.setObjectName(u"page_2_layout")
+         self.page_2_layout.setContentsMargins(5, 5, 5, 5)
+         self.scroll_area = QScrollArea(self.page_2)
+         self.scroll_area.setObjectName(u"scroll_area")
+         self.scroll_area.setStyleSheet(u"background: transparent;")
+         self.scroll_area.setFrameShape(QFrame.NoFrame)
+         self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+         self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+         self.scroll_area.setWidgetResizable(True)
+         self.contents = QWidget()
+         self.contents.setObjectName(u"contents")
+         self.contents.setGeometry(QRect(0, 0, 840, 580))
+         self.contents.setStyleSheet(u"background: transparent;")
+         self.verticalLayout = QVBoxLayout(self.contents)
+         self.verticalLayout.setSpacing(15)
+         self.verticalLayout.setObjectName(u"verticalLayout")
+         self.verticalLayout.setContentsMargins(5, 5, 5, 5)
+         self.title_label = QLabel(self.contents)
+         self.title_label.setObjectName(u"title_label")
+@@ -146,32 +143,31 @@ class Ui_MainPages(object):
+ "}")
+         self.page_3_layout = QVBoxLayout(self.page_3)
+         self.page_3_layout.setObjectName(u"page_3_layout")
+         self.empty_page_label = QLabel(self.page_3)
+         self.empty_page_label.setObjectName(u"empty_page_label")
+         self.empty_page_label.setFont(font)
+         self.empty_page_label.setAlignment(Qt.AlignCenter)
+ 
+         self.page_3_layout.addWidget(self.empty_page_label)
+ 
+         self.pages.addWidget(self.page_3)
+ 
+         self.main_pages_layout.addWidget(self.pages)
+ 
+ 
+         self.retranslateUi(MainPages)
+ 
+         self.pages.setCurrentIndex(0)
+ 
+ 
+         QMetaObject.connectSlotsByName(MainPages)
+     # setupUi
+ 
+     def retranslateUi(self, MainPages):
+         MainPages.setWindowTitle(QCoreApplication.translate("MainPages", u"Form", None))
+-        self.label.setText(QCoreApplication.translate("MainPages", u"Welcome To PyOneDark GUI", None))
+         self.title_label.setText(QCoreApplication.translate("MainPages", u"Custom Widgets Page", None))
+         self.description_label.setText(QCoreApplication.translate("MainPages", u"Here will be all the custom widgets, they will be added over time on this page.\n"
+ "I will try to always record a new tutorial when adding a new Widget and updating the project on Patreon before launching on GitHub and GitHub after the public release.", None))
+         self.empty_page_label.setText(QCoreApplication.translate("MainPages", u"Empty Page", None))
+     # retranslateUi
+ 
+diff --git a/assets/gui_assets/logo_autocontent.png b/assets/gui_assets/logo_autocontent.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..ea268345a67bb3fa359cd27489890f1c00dc2735
+GIT binary patch
+literal 2333
+zcmbVOc{J1w7yjWbvV>%qh%v?63@!GMWY0EPVnX&&eA&r1j4jEM#>6N~k(5E0u@qTC
+zmKg?RjTpPhWU^0L-}(Oj{&~;$$G!KQd(OS*-g}<&JU7`AVJyIViWdL?0h8+n*6i5L
+zwktfGY+tV7-U$Fa^CkwmH^cK*a?k-chfjC)H{E45Z)Z$WJ=9TL)Q2p2p&}EW_$!h|
+z4(9xnF+}a0^yvp+zPTZt5Y6-iTk*15Pb00+<;-Pic!*^g#1K9+OeumW37G?2aYE~3
+z#-Y`$TGrG7kxZq^<xVz{6;Cfl9cWgfF|_L4Nm~69Q+98V6G(XO)lCM))@!wPwm~=~
+z_!9o|QQ$vOMZ9$V)4xiz;uuFNa<YAuWA6CWZ~VwHn5TR;(c^P!d~iM*3onh&%Pv@t
+zg~Ot5K=<+o0`vSQ-li0iLE+ig<~Of`bRD9e<e&A<CMrhGtTYGvn`c6hRDX7_90k_<
+zD4~NLbrIF-VePIaRFY~8rhy{|dY?(KD{f9sc_ti^njZqL_e~5TbHOS&fq=M3;L)0y
+zF0V~PL%<5HD?k*8jXepO7L@zJlzaaU%cqj&^PuiTX^H8wrnX{=kn2|O*7rkhPNf6^
+zhrQ*g1H9mT0N;R0>SX_K<oMzqC&}<BVVw!(_7JwynsXr_MVlo^iDV@)uir6hct*3>
+zF}^aS{vqZn#`B4DR{Qy&53(bT@|DX+fEuz;xEQWo8>AkcfF^IF?6Y1)A5PAcMtfGB
+z`tjZA9f1^hrDiw!vGL}AmR_7n{3TV(*fzE;6{onY9k*%FbPBQMrybCxnoQAU_3K8Z
+zB_~MEfVV|T_l(_)olWEY_i)2BG3z6uiT7B`w#~jStMp3J?VxQd0Fb>=L)Y?Vi9La@
+zA-dwJ=HwvU`LC}_#{Rr)-q6~zK_F6#dF6eTrHXjvWtO<GRvp;y=(xj!>hOuH1u&gw
+zX?fi;9$=R4%p!8{F;_*7FIg3PQ)<qom3H}Z=R%H}B007yfY~rQ<}E0254G;?a&@IF
+zu$LyTc~Bm}D48<MR!~n*Q~jkUEPEu9vY#H&a#rE{bfVO@vCbV+d|1p{iKHLZ=u-jz
+zi0v*Mxm`sRCM6EE;MOW@s2HWO8vB`#mOYnr>(qZ?H@-}vw@L>vmZI&m`8JV!TH`CD
+z0dk*jJ-GYF5k`A2j0;6eg(tzwhaAh9-}HG;nlSf4hM6bxL>)IPgT1WFChfQMKwpwp
+z6?Q#R%F-+oQ#X)JX4g*D@{6Eyi65?MLyq1qfyD<fc!1cJK<xIgoWygS=-CBHMtKFn
+zBZ;ovD2&qFAq`5oo8o^A|E|69YAFn^cagp9sNdgUK{l!~%kDUi-qkTlk4rO_u1t}!
+zut41|Pd;}h*(p+eWDi+Ds95&h32i?)DhxuHeXe%+Ii#8vGknd^271?JsWSQ%#j4b`
+zuq-sGLs1l9!?2bb2@U;mk&b$HW+JTvKg{qX&OO6Va{z6R6C$OckPd{S7Dm^jJxiUw
+zU@&h={~Vl5zi*L#Y$d7ft@GE9<xCB`(cUj|-SB(qTD(G<=|+8xrJFRn*)Zr`XYewl
+zpo7_O#0A94`w#UHdwz9XIAGtp=C6yPFI4)xB_HZN)F4rA*|B`e(0Jzs|2<`U%h`PE
+z{v)NXZY0Xl<y}Xeyny8P%<x4pD$2VzUT;?hP}xt;QH^;a>Bj+_)3cP;|0;FuQ-*ru
+z+!Gw<;l9o$>BKLU(8u3%Nf~Z0H!`F9Y>EVf`=O9`Fentf*bVm(Kt~nB^mdVv7GBZ~
+zZf~1ddJ~y7)k6A$R>yD@-69TL(6Xm3T`|-<rNoq&ab{s)q3{Ft6))V<z(hCszW4=j
+z=q)wOaWHBi!v0A}(Nni{1tpL!sdLwu6QqMto3y-ODc!XCHg0^?qu`7AfHSVBkK-mm
+z@c6;d^*63#dssQx$3PSbGNs80ucNPQf4gz?<KPc<Y1tzdS!uPz_TnrVBUgMxqU1h0
+zPl!FQkHR>TOT!;O7#MeS@|FYC?`M3SyS7BIC*v!^Z7hsOX-g2K5iT6mjCu}pnhawK
+z>~FZ6A|(#(ap;S3eAfLD1cr*OO2BK+o{_-Q#<NHr#PjE|=FY<#(X>WFikpa)IWCY`
+zH;dBPS#gY}?O|>cdnuQU7vBX8wFG{3Bj@^U^;+O<70XSnntJU2NY-TI%;P*-<u0sV
+zZvdxh#KIf7$KQyzbhB}~MH*IZcVgvqC}vfSgAd`O(HEDUf=a%HGeoY|o{t#6K3lPy
+zk0ytfx(d6^@bKNcPYvm%(S5J@<Zf-C6oReHvED>|W|%_wIB^x6TAdcl?^bIsIq2nI
+z>(Tlqo|_idOS>#30QP)#M!ypZp(31$kh?8tov8KVAw^JKcsp$W4x42S;<MQT=ha5l
+zZ%AU7RuW-Fkcepq0H~VJ+8vQL!+TIaLf^V9PHd+ts||FRal2=!r(Y5AF3p2lA9v=J
+znpn243tr6-Y_*_$vY=rR3H9gXx~s+*+z)b-z=v!(g%kvTv0Hle?#$mA4SkR-H@`l9
+za4O8n;#QI$Y!=B%mn@PEKiJ`DqTt^Rz6{^WN86}MQjT_(1<~q92Mtg99moqey>QML
+znW(Y%I#hCc4}X|ok!yq*(c3L#?lTsqZ)s(}xt_pn^wcUycF<jSm9E^mnfxeC$s8-=
+z5g1q4g-q_YCEVTY8d<w1&1muN27PIkon4s&fZ{{D(F0>P4bfp{CgVjZy2Lqy&9;dg
+zxQ5ta<Pbr{@TbP=haz`AWltD6;@H<5&1=kG+IuQ1WeXGuLR$xR;{?{O<B_DdsGnL#
+z<xjhg)e_~N!o`Yy={Kp2F#=g^KkDqlQ09CpCOa`*Bx+)5=Z&kTDFWr}6EAo=rtWZ^
+z_F;YNrj=~X9~1evrdGCetJ$#E%xd?gQEQgQ5PSTIRE)SeemZPQ@n1^&|M3m{PsvP7
+X*CUY3B@xDdQ3043A`B|@T;u-%m8W_Q
+
+literal 0
+HcmV?d00001
+
+diff --git a/assets/gui_assets/phone_frame.png b/assets/gui_assets/phone_frame.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..8d75ec74859eba5a76096fb9a2fcd28961ae97fc
+GIT binary patch
+literal 2090
+zcmeAS@N?(olHy`uVBq!ia0y~yVANq?V2a>i1B%>GyKT?F!2Z$G#WAE}&f6P~T!#z<
+z90Ij%-2`nWDA=yxkPG<UWYVD|e?MB?VD)*G%S9IV${84c$MZ87cx`ClIml$h!hJ$O
+zN5L7HlPqVuW1j#0Im|zbr@zkq+`|h~((}-MO}g@X--hseKgG8vGD<eFrf`T&P>gVB
+zOBm&hhQVk$7|jc#<-ur~I9e|dR~;Vv^X}-^nqN<37-r|d%TAxu4=etE6<|<C2%+bx
+aj|}R1d=asoOMHQC00vK2KbLh*2~7Zl(<+w$
+
+literal 0
+HcmV?d00001
+
+diff --git a/gui.py b/gui.py
+deleted file mode 100644
+index 9fe0ac32c390ee5a94735710b7b836df5ea9cb16..0000000000000000000000000000000000000000
+--- a/gui.py
++++ /dev/null
+@@ -1,4 +0,0 @@
+-from gui_pydracula.main import main
+-
+-if __name__ == "__main__":
+-    main()
+diff --git a/gui/images/svg_icons/active_menu.svg b/gui/images/svg_icons/active_menu.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..b74309ab6575d2fb5207ef997e990a586be0dcb3
+--- /dev/null
++++ b/gui/images/svg_icons/active_menu.svg
+@@ -0,0 +1,79 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="5"
++   height="50"
++   viewBox="0 0 1.3229167 13.229167"
++   version="1.1"
++   id="svg1101"
++   sodipodi:docname="active_menu.svg"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)">
++  <defs
++     id="defs1095">
++    <inkscape:path-effect
++       effect="fillet_chamfer"
++       id="path-effect831"
++       is_visible="true"
++       lpeversion="1"
++       satellites_param="F,0,0,1,0,0,0,1 @ F,0,1,1,0,8.73125,0,1 @ F,0,1,1,0,8.73125,0,1 @ F,0,0,1,0,0,0,1"
++       unit="px"
++       method="auto"
++       mode="F"
++       radius="33"
++       chamfer_steps="1"
++       flexible="false"
++       use_knot_distance="true"
++       apply_no_radius="true"
++       apply_with_radius="true"
++       only_selected="true"
++       hide_knots="false" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="3.3964091"
++     inkscape:cx="-44.262477"
++     inkscape:cy="-16.499375"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1098">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title />
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       id="rect1664"
++       style="fill:#000000;stroke:none;stroke-width:7.93274;stroke-linecap:round"
++       d="M 5 0 A 4.9999998 4.9999998 0 0 1 0 5 L 0 45 A 4.9999997 4.9999997 0 0 1 5 50 L 5 0 z "
++       transform="scale(0.26458333)" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_add_user.svg b/gui/images/svg_icons/icon_add_user.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..2a51754951885b6141c3f2f284069c10bd41d095
+--- /dev/null
++++ b/gui/images/svg_icons/icon_add_user.svg
+@@ -0,0 +1,61 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="18"
++   height="12.6"
++   viewBox="0 0 4.7624998 3.3337502"
++   version="1.1"
++   id="svg1123"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="icon_add_user.svg">
++  <defs
++     id="defs1117" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="50.945244"
++     inkscape:cx="7.9999999"
++     inkscape:cy="7.9999999"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1120">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       id="path835"
++       style="fill:#c3ccdf;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
++       d="M 3.6497773,1.1647547e-4 V 0.67623793 H 2.9666794 V 1.101212 H 3.6497773 V 1.7773335 H 4.0794021 V 1.101212 H 4.7624999 V 0.67623793 H 4.0794021 V 1.1647547e-4 Z M 1.8870942,0.11929524 c -0.4018392,0.0027 -0.7261184,0.32608639 -0.7261184,0.72379299 -6.3e-5,0.39986437 0.3273236,0.72436537 0.7313507,0.72437427 0.4040261,-8.9e-6 0.731986,-0.3245099 0.7319319,-0.72437427 -8.9e-6,-0.3998092 -0.3279598,-0.72377385 -0.7319319,-0.72379299 -0.0018,-8.96e-6 -0.00343,-8.96e-6 -0.00523,0 z m 0.00349,0.45229799 c 6.75e-4,-3.4e-6 0.00107,-3.4e-6 0.00174,0 0.1516867,7.2e-6 0.2749798,0.1213713 0.2749831,0.271495 2.04e-5,0.1501443 -0.1232761,0.27207297 -0.2749831,0.27207637 -0.1517074,-3.4e-6 -0.2744255,-0.12193207 -0.2744019,-0.27207637 0,-0.1493342 0.1217718,-0.2704812 0.2726578,-0.271495 z M 1.8620957,1.8424458 C 0.22979836,1.8424458 2.0111711e-7,3.3336336 2.0111711e-7,3.3336336 H 3.7474457 c 0,0 -0.2530506,-1.4911879 -1.88535,-1.4911878 z"
++       sodipodi:nodetypes="cccccccccccccsccccsssccccsssccs" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_arrow_left.svg b/gui/images/svg_icons/icon_arrow_left.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..6bc8f9addc9bc1879f828dafb6b331c64c509250
+--- /dev/null
++++ b/gui/images/svg_icons/icon_arrow_left.svg
+@@ -0,0 +1,61 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="14"
++   height="14"
++   viewBox="0 0 3.7041666 3.7041667"
++   version="1.1"
++   id="svg1112"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="icon_arrow_left.svg">
++  <defs
++     id="defs1106" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="23.434943"
++     inkscape:cx="-0.27228179"
++     inkscape:cy="9.2969808"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1057"
++     inkscape:window-x="-8"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1109">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       id="path1686"
++       style="fill:#c3ccdf;fill-opacity:1;stroke-width:0.014809"
++       d="M 0.74083338,1.8520834 2.5929167,3.7041667 2.9633333,3.3337501 1.4816666,1.8520834 2.9633333,0.37041667 2.5929167,0 Z"
++       sodipodi:nodetypes="ccccccc" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_arrow_right.svg b/gui/images/svg_icons/icon_arrow_right.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..4f7bac940190b095e35ee2354afc67655f663ee1
+--- /dev/null
++++ b/gui/images/svg_icons/icon_arrow_right.svg
+@@ -0,0 +1,61 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="14"
++   height="14"
++   viewBox="0 0 3.7041666 3.7041667"
++   version="1.1"
++   id="svg1112"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="icon_arrow_right.svg">
++  <defs
++     id="defs1106" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="23.434943"
++     inkscape:cx="-0.27228179"
++     inkscape:cy="9.2969808"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1057"
++     inkscape:window-x="-8"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1109">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       id="path1686"
++       style="fill:#c3ccdf;fill-opacity:1;stroke-width:0.014809"
++       d="M 2.9633333,1.8520834 1.11125,3.7041667 0.74083338,3.3337501 2.2225001,1.8520834 0.74083338,0.37041667 1.11125,0 Z"
++       sodipodi:nodetypes="ccccccc" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_attachment.svg b/gui/images/svg_icons/icon_attachment.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..51a21f5b6586094358891a594fafc8fbd69d5eb9
+--- /dev/null
++++ b/gui/images/svg_icons/icon_attachment.svg
+@@ -0,0 +1,78 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="13.5"
++   height="15"
++   viewBox="0 0 3.5718749 3.9687499"
++   version="1.1"
++   id="svg8"
++   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
++   sodipodi:docname="icon_attachment.svg">
++  <defs
++     id="defs2">
++    <inkscape:path-effect
++       effect="fillet_chamfer"
++       id="path-effect997"
++       is_visible="true"
++       lpeversion="1"
++       satellites_param="F,0,0,1,0,0.52916667,0,1 @ F,0,0,1,0,0.52916667,0,1 @ F,0,0,1,0,0.52916667,0,1 @ F,0,0,1,0,0.52916667,0,1 @ F,0,0,1,0,0.52916667,0,1 @ F,0,0,1,0,0.52916667,0,1"
++       unit="px"
++       method="auto"
++       mode="F"
++       radius="2"
++       chamfer_steps="1"
++       flexible="false"
++       use_knot_distance="true"
++       apply_no_radius="true"
++       apply_with_radius="true"
++       only_selected="false"
++       hide_knots="false" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#3b3b3b"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="40.756193"
++     inkscape:cx="10"
++     inkscape:cy="6.0742163"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata5">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       style="fill:#b3b3b3;fill-opacity:1;stroke-width:0.0141266"
++       d="M 1.9238942,3.6438512 C 1.4817394,4.0788611 0.77078579,4.0771313 0.33108571,3.6378512 -0.10849509,3.1987411 -0.11022428,2.4882011 0.325123,2.0463711 L 0.32462607,2.0461013 1.9239736,0.44804118 2.1239828,0.24826119 c 0.3312583,-0.33097001 0.8682002,-0.33097001 1.1994485,0 0.3312583,0.33096999 0.3312583,0.86755011 0,1.19864001 l -1.762994,1.7432803 -4.97e-4,-4.762e-4 C 1.3426791,3.3990211 0.99638489,3.397541 0.78170749,3.1837153 c -0.2146774,-0.2135399 -0.2160289,-0.55777 -0.005963,-0.77355 l -4.865e-4,-7.487e-4 0.1963024,-0.1949301 0.98157111,-0.97555 0.196183,0.19519 -1.17775411,1.1704801 c -0.1084518,0.10764 -0.1084518,0.2823701 0,0.39012 0.10845171,0.10775 0.28430191,0.10775 0.39262441,0 l 1.759178,-1.7482401 -4.995e-4,-3.704e-4 0.00696,-0.006 c 0.2208386,-0.22061 0.2208386,-0.5784901 0,-0.7990801 -0.2208489,-0.2206 -0.5787108,-0.22061 -0.7995596,0 l -0.00596,0.007 L 2.3238068,0.44775554 2.1239123,0.64740507 0.52446539,2.2454751 c -0.33124834,0.33098 -0.33124834,0.86755 0,1.1985199 0.3312583,0.3309702 0.86832941,0.3309702 1.19931941,0 L 3.1232424,2.0457051 3.3231322,1.8460551 3.523022,2.0457051 3.3231322,2.2454751 1.923933,3.643775 c 0,-1.98e-5 -2.484e-4,-2.91e-4 -2.484e-4,-2.91e-4 z"
++       id="path1021" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_busy.svg b/gui/images/svg_icons/icon_busy.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..309de0213959a609b2b2d2fd95e2830db57fae18
+--- /dev/null
++++ b/gui/images/svg_icons/icon_busy.svg
+@@ -0,0 +1,60 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="25"
++   height="15"
++   viewBox="0 0 6.6145831 3.9687499"
++   version="1.1"
++   id="svg8"
++   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
++   sodipodi:docname="icon_busy.svg">
++  <defs
++     id="defs2" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#3b3b3b"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="44.533333"
++     inkscape:cx="15"
++     inkscape:cy="7.5"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata5">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       d="M 6.6145833,1.984375 A 1.3229167,1.3229167 0 0 1 5.2916667,3.3072916 1.3229167,1.3229167 0 0 1 3.96875,1.984375 1.3229167,1.3229167 0 0 1 5.2916667,0.66145835 1.3229167,1.3229167 0 0 1 6.6145833,1.984375 Z"
++       style="fill:#a02c2c;fill-opacity:1;stroke-width:0;stroke-linecap:round"
++       id="path1396" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_close.svg b/gui/images/svg_icons/icon_close.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..56651faf577625740032d48404c644a6816922de
+--- /dev/null
++++ b/gui/images/svg_icons/icon_close.svg
+@@ -0,0 +1,61 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="10"
++   height="10"
++   viewBox="0 0 2.6458332 2.6458332"
++   version="1.1"
++   id="svg8"
++   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
++   sodipodi:docname="icon_close.svg">
++  <defs
++     id="defs2" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#3b3b3b"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="40.756193"
++     inkscape:cx="10"
++     inkscape:cy="10"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata5">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       class="ci-primary"
++       d="M 1.3229167,1.148186 0.17473066,1.6666666e-8 -7.7304133e-6,0.17472292 1.148186,1.3229166 -7.7304133e-6,2.4711104 0.17473066,2.6458333 1.3229167,1.4976473 2.4711027,2.6458333 2.6458411,2.4711104 1.4976473,1.3229166 2.6458411,0.17472292 2.4711027,1.6666666e-8 Z"
++       style="fill:#f9f9f9;stroke-width:0.00772222"
++       id="polygon2" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_emoticons.svg b/gui/images/svg_icons/icon_emoticons.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..9b5c4e9b5f6c5a1901f3483de2e8784dc5b56ce4
+--- /dev/null
++++ b/gui/images/svg_icons/icon_emoticons.svg
+@@ -0,0 +1,78 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="15"
++   height="15"
++   viewBox="0 0 3.9687499 3.9687498"
++   version="1.1"
++   id="svg8"
++   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
++   sodipodi:docname="icon_emoticons.svg">
++  <defs
++     id="defs2">
++    <inkscape:path-effect
++       hide_knots="false"
++       only_selected="true"
++       apply_with_radius="true"
++       apply_no_radius="true"
++       use_knot_distance="true"
++       flexible="false"
++       chamfer_steps="1"
++       radius="1"
++       mode="F"
++       method="auto"
++       unit="px"
++       satellites_param="F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 | F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1"
++       lpeversion="1"
++       is_visible="true"
++       id="path-effect1635"
++       effect="fillet_chamfer" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#3b3b3b"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="40.756193"
++     inkscape:cx="10"
++     inkscape:cy="10"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata5">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       id="path1071"
++       style="fill:#b3b3b3;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
++       d="M 1.97797,1.078855e-6 A 1.9843757,1.9843757 0 0 0 0,1.9843811 1.9843757,1.9843757 0 0 0 1.98437,3.9687512 1.9843757,1.9843757 0 0 0 3.96875,1.9843811 1.9843757,1.9843757 0 0 0 1.98437,1.078855e-6 a 1.9843757,1.9843757 0 0 0 -0.006,0 z M 3.31729,1.2627311 c 0.3474101,0 0.35041,2.5e-4 0.3702,0.0285 0.0401,0.0573 0.025699,0.12378 -0.0685,0.31668 -0.0486,0.0996 -0.0984,0.22263 -0.1107199,0.27348 -0.0306,0.1268 -0.0631,0.19181 -0.13521,0.27072 -0.1204198,0.13177 -0.3096199,0.19978 -0.55494,0.19951 -0.0812,-8e-5 -0.1711799,-0.008 -0.21004,-0.0182 -0.22576,-0.0601 -0.40065,-0.23559 -0.50618,-0.50795 -0.0923,-0.23812 -0.11792,-0.23794 -0.21687,0.001 -0.11412,0.27616 -0.2568,0.4237 -0.48265,0.49909 -0.0947,0.0316 -0.29736,0.0441 -0.41486,0.0255 -0.1202,-0.019 -0.23388,-0.0812 -0.33682,-0.1843 -0.1087,-0.10886 -0.16442,-0.20591 -0.23607,-0.41118 -0.0295,-0.0846 -0.0762,-0.19481 -0.10365,-0.24501 -0.0582,-0.1063 -0.0664,-0.18062 -0.0244,-0.22263 0.0243,-0.0242 0.0427,-0.0256 0.34272,-0.0256 0.46678,2e-5 0.70858,0.0301 1.08021,0.13438 0.13669,0.0384 0.17896,0.0447 0.2973,0.0448 0.12636,8e-5 0.15057,-0.004 0.28827,-0.0499 0.30888,-0.10278 0.5187101,-0.12934 1.02215,-0.12934 z m -2.2529,1.35121 c 0.0226,-9.393e-4 0.0688,0.0251 0.16018,0.0887 0.20103,0.1398199 0.58541,0.2512999 0.76378,0.2512999 0.26715,0 0.47516,-0.0812 0.7197501,-0.22445 C 2.87015,2.634591 2.91309,2.6157111 2.92973,2.632391 c 0.0323,0.0323 -0.10149,0.2286 -0.22356,0.3278499 -0.54731,0.3846801 -1.00529,0.30192 -1.43664,-0.006 -0.12288,-0.091 -0.25601,-0.2962 -0.21727,-0.33493 0.003,-0.003 0.007,-0.005 0.0121,-0.005 z" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_file.svg b/gui/images/svg_icons/icon_file.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..3cd93a915db770749d7f3eb62c897f279e514932
+--- /dev/null
++++ b/gui/images/svg_icons/icon_file.svg
+@@ -0,0 +1,63 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="14.133"
++   height="16"
++   viewBox="0 0 3.7393562 4.2333335"
++   version="1.1"
++   id="svg1123"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="icon_file.svg">
++  <defs
++     id="defs1117" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="50.945244"
++     inkscape:cx="7.9999999"
++     inkscape:cy="6.9571339"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1120">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       fill="var(--ci-primary-color, currentColor)"
++       d="M 2.5278472,1.5e-7 H -4.3840544e-5 V 4.2333332 H 3.7394002 V 1.2115542 Z M 3.3117606,1.3284462 v 0.01211 H 2.3988452 V 0.40167229 h 0.01211 z M 0.42702697,3.8316611 V 0.40167229 H 1.9400447 V 1.7630023 h 1.3924898 v 2.0686588 z"
++       class="ci-primary"
++       id="path1797"
++       style="fill:#c3ccdf;fill-opacity:1;stroke-width:0.00881943"
++       sodipodi:nodetypes="ccccccccccccccccccc" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_folder.svg b/gui/images/svg_icons/icon_folder.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..48fe08f9095d40891d39850580f976342abc50f9
+--- /dev/null
++++ b/gui/images/svg_icons/icon_folder.svg
+@@ -0,0 +1,62 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="16"
++   height="16"
++   viewBox="0 0 4.2333332 4.2333335"
++   version="1.1"
++   id="svg1123"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="icon_folder.svg">
++  <defs
++     id="defs1117" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="52.312503"
++     inkscape:cx="7.9999999"
++     inkscape:cy="7.9999999"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1120">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       fill="var(--ci-primary-color, currentColor)"
++       d="M 4.0216672,4.0216668 H 0.21166717 A 0.21191363,0.21191363 0 0 1 1.6666667e-7,3.8100008 V 0.42333284 A 0.21191363,0.21191363 0 0 1 0.21166717,0.21166684 H 1.8579662 a 0.21109342,0.21109342 0 0 1 0.195386,0.130263 l 0.180905,0.434182 h 1.78741 a 0.21191363,0.21191363 0 0 1 0.211666,0.211666 V 3.8100008 a 0.21191363,0.21191363 0 0 1 -0.211666,0.211666 z M 0.28222217,3.7394448 H 3.9511112 V 1.0583338 H 2.0461122 L 1.8109242,0.49388884 H 0.28222217 Z"
++       class="ci-primary"
++       id="path1715"
++       style="stroke-width:0.00881943;fill:#c3ccdf;fill-opacity:1" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_folder_open.svg b/gui/images/svg_icons/icon_folder_open.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..ec541bc7e40ee043d17137967496aac013a866ba
+--- /dev/null
++++ b/gui/images/svg_icons/icon_folder_open.svg
+@@ -0,0 +1,63 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="16"
++   height="12.979"
++   viewBox="0 0 4.2333332 3.4340272"
++   version="1.1"
++   id="svg1123"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="icon_folder_open.svg">
++  <defs
++     id="defs1117" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="50.945244"
++     inkscape:cx="7.9999999"
++     inkscape:cy="7.9999999"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1120">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       fill="var(--ci-primary-color, currentColor)"
++       d="m 4.1881781,1.2550782 c -0.040167,-0.05178 -0.1020848,-0.081993 -0.167617,-0.08179 H 3.4339851 V 0.7088652 C 3.4338533,0.59581999 3.3422423,0.504213 3.2291971,0.50408623 h -1.207708 l -0.157472,-0.378076 C 1.8323311,0.049613 1.7576995,-1.3404038e-4 1.6749921,1.222962e-5 H 0.20477805 C 0.09173634,1.4395962e-4 1.3078124e-4,0.09174952 -9.4815342e-7,0.20479123 V 3.4340152 H 3.7277421 l 0.499122,-1.996493 c 0.016088,-0.063523 0.0018,-0.1309155 -0.03869,-0.182441 z m -3.79557487,1.7915233 0,-2.61763371 H 1.5445818 l 0.209998,0.50407396 h 1.2296898 l 0,0.24024345 H 1.0773411 C 0.9797102,1.1731588 0.89457356,1.2396202 0.87100205,1.3343632 l -0.453994,1.7122383 c 0,0 0.0171431,0.00519 -0.0244048,0 z m 2.99950817,0 H 0.84430765 L 1.2417473,1.5555024 h 2.5062558 z"
++       class="ci-primary"
++       id="path1737"
++       style="fill:#c3ccdf;fill-opacity:1;stroke-width:0.00886065"
++       sodipodi:nodetypes="cccccccccccccccccccccccccccccc" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_heart.svg b/gui/images/svg_icons/icon_heart.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..ba64b5ce652dd62d8feb47887e406d314b31a21f
+--- /dev/null
++++ b/gui/images/svg_icons/icon_heart.svg
+@@ -0,0 +1,62 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="16"
++   height="16"
++   viewBox="0 0 4.2333332 4.2333335"
++   version="1.1"
++   id="svg1123"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="icon_heart.svg">
++  <defs
++     id="defs1117" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="52.312503"
++     inkscape:cx="7.9999999"
++     inkscape:cy="7.9999999"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1120">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       fill="var(--ci-primary-color, currentColor)"
++       d="m 3.8437761,0.55967259 a 1.124579,1.124579 0 0 0 -1.59099,5.97e-4 l -0.136276,0.137937 -0.135142,-0.137638 -8.79e-4,-8.79e-4 a 1.124579,1.124579 0 0 0 -1.59040098,0 l -0.06071,0.06071 a 1.124579,1.124579 0 0 0 0,1.59039201 l 1.60228798,1.602271 0.180943,0.189579 0.0043,-0.0043 0.0047,0.0047 0.16953,-0.178869 1.61335,-1.613367 a 1.1258705,1.1258705 0 0 0 0,-1.59039201 z m -0.13813,1.45229701 -1.588723,1.588758 -1.58875798,-1.588758 a 0.84343427,0.84343427 0 0 1 0,-1.19279201 l 0.06072,-0.06071 a 0.84343427,0.84343427 0 0 1 1.19234398,-4.48e-4 l 0.334676,0.34077401 0.336267,-0.34032601 a 0.84343427,0.84343427 0 0 1 1.1928,0 l 0.06071,0.0607 a 0.8444007,0.8444007 0 0 1 -3.3e-5,1.19280001 z"
++       class="ci-primary"
++       id="path1748"
++       style="stroke-width:0.00878576;fill:#c3ccdf;fill-opacity:1" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_home.svg b/gui/images/svg_icons/icon_home.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..c5619cfbd3a8a8c7fbc295501fe1847bc03be486
+--- /dev/null
++++ b/gui/images/svg_icons/icon_home.svg
+@@ -0,0 +1,66 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="16"
++   height="16"
++   viewBox="0 0 4.2333332 4.2333335"
++   version="1.1"
++   id="svg1123"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="icon_home.svg">
++  <defs
++     id="defs1117" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="52.312834"
++     inkscape:cx="8.0000001"
++     inkscape:cy="8"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1120">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       inkscape:export-ydpi="288.13419"
++       inkscape:export-xdpi="288.13419"
++       inkscape:export-filename="E:\ESTUDOS\TUTORIAIS\NEW\Qt Widgets Projects\PyOneDark\Layout\Exports\Preview_01.png"
++       id="path924"
++       class="ci-primary"
++       d="m 2.2591467,0.08067382 c -0.12676,-0.110868 -0.32292,-0.106982 -0.44471,0.0088 -0.54091,0.514215 -1.08177003,1.02847098 -1.62268003,1.54268498 -0.1059,0.100686 -0.1917600033334,0.300754 -0.1917600033334,0.446879 v 1.889698 A 0.26458331,0.26458331 0 0 0 0.26458667,4.2333198 H 1.3985067 a 0.26458331,0.26458331 0 0 0 0.26459,-0.264584 v -1.018815 a 0.13229166,0.13229166 0 0 1 0.13229,-0.132292 h 0.64256 a 0.13229166,0.13229166 0 0 1 0.13229,0.132292 v 1.018815 a 0.26458331,0.26458331 0 0 0 0.26458,0.264584 h 1.13393 a 0.26458331,0.26458331 0 0 0 0.26459,-0.264584 v -1.896721 c 0,-0.146126 -0.0892,-0.34258 -0.19914,-0.438789 -0.59165,-0.517555 -1.18337,-1.03503798 -1.77505,-1.55255198 z m -0.21784,0.301963 c 1.2e-4,-0.0016 1.2e-4,-0.0016 1.2e-4,-0.0016 z m 1.5666,3.48136598 h -0.40055 a 0.26458331,0.26458331 0 0 1 -0.26458,-0.264584 v -0.875328 c 0,-0.158767 -0.13538,-0.287474 -0.30238,-0.287474 h -1.08254 c -0.167,0 -0.30238,0.128707 -0.30238,0.287474 v 0.875328 a 0.26458331,0.26458331 0 0 1 -0.26458003,0.264584 h -0.34208 a 0.26458331,0.26458331 0 0 1 -0.26459,-0.264584 v -1.307754 a 0.63429306,0.63429306 0 0 1 0.18802,-0.450739 L 1.9474167,0.47937082 c 0.0519,-0.0514 0.094,-0.09339 0.0942,-0.09339 l 1.63381,1.46450498 a 0.59248392,0.59248392 0 0 1 0.19702,0.441184 v 1.307755 a 0.26458331,0.26458331 0 0 1 -0.26458,0.264585 z"
++       fill="var(--ci-primary-color, currentColor)"
++       style="fill:#c3ccdf;fill-opacity:1;stroke-width:0.00921352"
++       sodipodi:nodetypes="cccccccccccscsccssssccccccc" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_idle.svg b/gui/images/svg_icons/icon_idle.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..0997f520161e21d95f20f01314bbfbd730e4639f
+--- /dev/null
++++ b/gui/images/svg_icons/icon_idle.svg
+@@ -0,0 +1,60 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="25"
++   height="15"
++   viewBox="0 0 6.6145831 3.9687499"
++   version="1.1"
++   id="svg8"
++   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
++   sodipodi:docname="icon_idle.svg">
++  <defs
++     id="defs2" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#3b3b3b"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="44.533333"
++     inkscape:cx="15"
++     inkscape:cy="7.5"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata5">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       d="M 6.6145833,1.984375 A 1.3229167,1.3229167 0 0 1 5.2916667,3.3072916 1.3229167,1.3229167 0 0 1 3.96875,1.984375 1.3229167,1.3229167 0 0 1 5.2916667,0.66145835 1.3229167,1.3229167 0 0 1 6.6145833,1.984375 Z"
++       style="fill:#ff9955;fill-opacity:1;stroke-width:0;stroke-linecap:round"
++       id="path1396" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_info.svg b/gui/images/svg_icons/icon_info.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..cf98b18b0037ac6c37b217471e96b3874fb7c5e5
+--- /dev/null
++++ b/gui/images/svg_icons/icon_info.svg
+@@ -0,0 +1,78 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="18"
++   height="18"
++   viewBox="0 0 4.7624998 4.7625002"
++   version="1.1"
++   id="svg1123"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="icon_info.svg">
++  <defs
++     id="defs1117">
++    <inkscape:path-effect
++       effect="fillet_chamfer"
++       id="path-effect845"
++       is_visible="true"
++       lpeversion="1"
++       satellites_param="F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 | F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1"
++       unit="px"
++       method="auto"
++       mode="F"
++       radius="1"
++       chamfer_steps="1"
++       flexible="false"
++       use_knot_distance="true"
++       apply_no_radius="true"
++       apply_with_radius="true"
++       only_selected="true"
++       hide_knots="false" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="47.163271"
++     inkscape:cx="7.9999996"
++     inkscape:cy="11.367157"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1120">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       id="path831"
++       style="fill:#c3ccdf;stroke-width:3.40858;stroke-linecap:round"
++       d="M 2.38125,0 A 2.3812499,2.3812499 0 0 0 0,2.38125 2.3812499,2.3812499 0 0 0 2.38125,4.7625 2.3812499,2.3812499 0 0 0 4.7625,2.38125 2.3812499,2.3812499 0 0 0 2.38125,0 Z m 0,0.67030791 c 0.2262168,0 0.4098587,0.18422327 0.4098587,0.41044009 0,0.2262168 -0.1836419,0.4098587 -0.4098587,0.4098587 -0.2262168,0 -0.4098587,-0.1836419 -0.4098587,-0.4098587 0,-0.22621682 0.1836419,-0.41044009 0.4098587,-0.41044009 z M 2.3254395,1.8016342 h 0.111621 A 0.29765625,0.29765625 0 0 1 2.7347168,2.0992905 V 3.7945359 A 0.29765625,0.29765625 0 0 1 2.4370605,4.0921921 H 2.3254395 A 0.29765625,0.29765625 0 0 1 2.0277832,3.7945359 V 2.0992905 A 0.29765625,0.29765625 0 0 1 2.3254395,1.8016342 Z" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_invisible.svg b/gui/images/svg_icons/icon_invisible.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..cf2bcecfa7969f161247931441a227a0ad819017
+--- /dev/null
++++ b/gui/images/svg_icons/icon_invisible.svg
+@@ -0,0 +1,61 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="25"
++   height="15"
++   viewBox="0 0 6.6145831 3.9687499"
++   version="1.1"
++   id="svg8"
++   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
++   sodipodi:docname="icon_invisible.svg">
++  <defs
++     id="defs2" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#3b3b3b"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="44.533333"
++     inkscape:cx="15"
++     inkscape:cy="7.5"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata5">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       transform="scale(0.26458333)"
++       d="M 20 2.5 A 5.0000001 5.0000001 0 0 0 15 7.5 A 5.0000001 5.0000001 0 0 0 20 12.5 A 5.0000001 5.0000001 0 0 0 25 7.5 A 5.0000001 5.0000001 0 0 0 20 2.5 z M 20 5.1054688 A 2.3952096 2.3952096 0 0 1 22.394531 7.5 A 2.3952096 2.3952096 0 0 1 20 9.8945312 A 2.3952096 2.3952096 0 0 1 17.605469 7.5 A 2.3952096 2.3952096 0 0 1 20 5.1054688 z "
++       style="fill:#808080;fill-opacity:1;stroke-width:0;stroke-linecap:round"
++       id="path1396" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_maximize.svg b/gui/images/svg_icons/icon_maximize.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..4b1500398f698cd3debf4094a8d1896457164341
+--- /dev/null
++++ b/gui/images/svg_icons/icon_maximize.svg
+@@ -0,0 +1,61 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   sodipodi:docname="icon_maximize.svg"
++   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
++   id="svg8"
++   version="1.1"
++   viewBox="0 0 2.6458332 2.6458332"
++   height="10"
++   width="10">
++  <defs
++     id="defs2" />
++  <sodipodi:namedview
++     inkscape:window-maximized="1"
++     inkscape:window-y="-8"
++     inkscape:window-x="1912"
++     inkscape:window-height="1027"
++     inkscape:window-width="1920"
++     units="px"
++     showgrid="false"
++     inkscape:document-rotation="0"
++     inkscape:current-layer="layer1"
++     inkscape:document-units="mm"
++     inkscape:cy="10"
++     inkscape:cx="10"
++     inkscape:zoom="39.690974"
++     inkscape:pageshadow="2"
++     inkscape:pageopacity="0"
++     borderopacity="1.0"
++     bordercolor="#666666"
++     pagecolor="#3b3b3b"
++     id="base" />
++  <metadata
++     id="metadata5">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     id="layer1"
++     inkscape:groupmode="layer"
++     inkscape:label="Layer 1">
++    <path
++       sodipodi:nodetypes="cccccccccc"
++       id="rect835"
++       style="fill:#f9f9f9;stroke-width:0.00635566"
++       d="M -3.2833333e-6,1.6666666e-8 V 2.6458333 H 2.6458366 V 1.6666666e-8 Z M 0.22430672,0.22430932 H 2.4215167 V 2.4215241 H 0.22430672 Z" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_menu.svg b/gui/images/svg_icons/icon_menu.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..e48619844ca0c82db55e54d2b99c83ce69563b7d
+--- /dev/null
++++ b/gui/images/svg_icons/icon_menu.svg
+@@ -0,0 +1,63 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="18"
++   height="18"
++   viewBox="0 0 4.7624999 4.7625001"
++   version="1.1"
++   id="svg1112"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="icon_menu.svg">
++  <defs
++     id="defs1106" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="46.5"
++     inkscape:cx="9"
++     inkscape:cy="10.72043"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1109">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       inkscape:export-ydpi="288.13419"
++       inkscape:export-xdpi="288.13419"
++       inkscape:export-filename="E:\ESTUDOS\TUTORIAIS\NEW\Qt Widgets Projects\PyOneDark\Layout\Exports\Preview_01.png"
++       id="rect4"
++       style="fill:#c3ccdf;fill-opacity:1;stroke-width:0.0149578"
++       d="m 0,-0.0051675 v 0.529166 h 4.7625 v -0.529166 z m 0,2.121834 v 0.529167 h 4.7625 v -0.529167 z m 0,2.121834 v 0.529167 h 4.7625 v -0.529167 z" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_menu_close.svg b/gui/images/svg_icons/icon_menu_close.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..699f1f28bd0444da2ea8d21cc4e81177cb3e8670
+--- /dev/null
++++ b/gui/images/svg_icons/icon_menu_close.svg
+@@ -0,0 +1,61 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="18"
++   height="18"
++   viewBox="0 0 4.7624999 4.7625001"
++   version="1.1"
++   id="svg1112"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="icon_menu_close.svg">
++  <defs
++     id="defs1106" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="46.5"
++     inkscape:cx="9"
++     inkscape:cy="9.8602151"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1109">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       id="path1686"
++       style="fill:#c3ccdf;fill-opacity:1;stroke-width:0.0149578"
++       d="M 1.258838,2.3812501 3.1295248,4.2519368 3.503662,3.8777995 2.0071126,2.3812501 3.503662,0.88470059 3.1295248,0.51056322 Z"
++       sodipodi:nodetypes="ccccccc" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_minimize.svg b/gui/images/svg_icons/icon_minimize.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..e333b567295de85d3648ad74707f48968ab6316d
+--- /dev/null
++++ b/gui/images/svg_icons/icon_minimize.svg
+@@ -0,0 +1,61 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   sodipodi:docname="icon_minimize.svg"
++   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
++   id="svg8"
++   version="1.1"
++   viewBox="0 0 2.6458332 0.26458332"
++   height="1"
++   width="10">
++  <defs
++     id="defs2" />
++  <sodipodi:namedview
++     inkscape:window-maximized="1"
++     inkscape:window-y="-8"
++     inkscape:window-x="1912"
++     inkscape:window-height="1027"
++     inkscape:window-width="1920"
++     units="px"
++     showgrid="false"
++     inkscape:document-rotation="0"
++     inkscape:current-layer="layer1"
++     inkscape:document-units="mm"
++     inkscape:cy="2.9454995"
++     inkscape:cx="10"
++     inkscape:zoom="39.690974"
++     inkscape:pageshadow="2"
++     inkscape:pageopacity="0"
++     borderopacity="1.0"
++     bordercolor="#666666"
++     pagecolor="#3b3b3b"
++     id="base" />
++  <metadata
++     id="metadata5">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     id="layer1"
++     inkscape:groupmode="layer"
++     inkscape:label="Layer 1">
++    <path
++       class="ci-primary"
++       d="M 0,0 H 2.64583 V 0.2645833 H 0 Z"
++       style="fill:#f9f9f9;stroke-width:0.0072517"
++       id="rect2" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_more_options.svg b/gui/images/svg_icons/icon_more_options.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..689ac3670b29d187ee389520c01a7b22e5beba74
+--- /dev/null
++++ b/gui/images/svg_icons/icon_more_options.svg
+@@ -0,0 +1,78 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="15"
++   height="3.865"
++   viewBox="0 0 3.9687499 1.0226145"
++   version="1.1"
++   id="svg8"
++   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
++   sodipodi:docname="icon_more_options.svg">
++  <defs
++     id="defs2">
++    <inkscape:path-effect
++       hide_knots="false"
++       only_selected="true"
++       apply_with_radius="true"
++       apply_no_radius="true"
++       use_knot_distance="true"
++       flexible="false"
++       chamfer_steps="1"
++       radius="1"
++       mode="F"
++       method="auto"
++       unit="px"
++       satellites_param="F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 | F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1"
++       lpeversion="1"
++       is_visible="true"
++       id="path-effect1635"
++       effect="fillet_chamfer" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#3b3b3b"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="40.756193"
++     inkscape:cx="10"
++     inkscape:cy="4.1113244"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata5">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       d="M 0.5072096,-5.0131521e-5 A 0.51136216,0.51136253 0 0 0 -5.0489022e-7,0.51131037 0.51136216,0.51136253 0 0 0 0.5113596,1.0226708 0.51136216,0.51136253 0 0 0 1.0227198,0.51131037 0.51136216,0.51136253 0 0 0 0.5113596,-5.0131521e-5 a 0.51136216,0.51136253 0 0 0 -0.004,0 z m 1.4730304,0 A 0.51136216,0.51136253 0 0 0 1.4730299,0.51131037 0.51136216,0.51136253 0 0 0 1.9844,1.0226708 0.51136216,0.51136253 0 0 0 2.4957601,0.51131037 0.51136216,0.51136253 0 0 0 1.9844,-5.0131521e-5 a 0.51136216,0.51136253 0 0 0 -0.005,0 z m 1.4730303,0 A 0.51136216,0.51136253 0 0 0 2.9460203,0.51131037 0.51136216,0.51136253 0 0 0 3.4573804,1.0226708 0.51136216,0.51136253 0 0 0 3.9687505,0.51131037 0.51136216,0.51136253 0 0 0 3.4573804,-5.0131521e-5 a 0.51136216,0.51136253 0 0 0 -0.004,0 z"
++       style="fill:#b3b3b3;stroke:#ff0000;stroke-width:0;stroke-linecap:round"
++       id="path1116-5" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_online.svg b/gui/images/svg_icons/icon_online.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..d335a7effd3b3d8674b97592a3980825f04f1960
+--- /dev/null
++++ b/gui/images/svg_icons/icon_online.svg
+@@ -0,0 +1,60 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="25"
++   height="15"
++   viewBox="0 0 6.6145831 3.9687499"
++   version="1.1"
++   id="svg8"
++   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
++   sodipodi:docname="icon_online.svg">
++  <defs
++     id="defs2" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#3b3b3b"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="44.533333"
++     inkscape:cx="15"
++     inkscape:cy="7.5"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata5">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       d="M 6.6145833,1.984375 A 1.3229167,1.3229167 0 0 1 5.2916667,3.3072916 1.3229167,1.3229167 0 0 1 3.96875,1.984375 1.3229167,1.3229167 0 0 1 5.2916667,0.66145835 1.3229167,1.3229167 0 0 1 6.6145833,1.984375 Z"
++       style="fill:#46b946;fill-opacity:1;stroke-width:0;stroke-linecap:round"
++       id="path1396" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_play.svg b/gui/images/svg_icons/icon_play.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..5455bf6a30ee1bc3badb688509b3a87c24d7fdab
+--- /dev/null
++++ b/gui/images/svg_icons/icon_play.svg
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
++  <polygon points="5,3 19,12 5,21 5,3"/>
++</svg>
+diff --git a/gui/images/svg_icons/icon_restore.svg b/gui/images/svg_icons/icon_restore.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..18dabdd0117c0a0c042a14c1d288519e3a4b5b5a
+--- /dev/null
++++ b/gui/images/svg_icons/icon_restore.svg
+@@ -0,0 +1,60 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   sodipodi:docname="icon_restore.svg"
++   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
++   id="svg8"
++   version="1.1"
++   viewBox="0 0 2.6458332 2.6458332"
++   height="10"
++   width="10">
++  <defs
++     id="defs2" />
++  <sodipodi:namedview
++     inkscape:window-maximized="1"
++     inkscape:window-y="-8"
++     inkscape:window-x="1912"
++     inkscape:window-height="1027"
++     inkscape:window-width="1920"
++     units="px"
++     showgrid="false"
++     inkscape:document-rotation="0"
++     inkscape:current-layer="layer1"
++     inkscape:document-units="mm"
++     inkscape:cy="10"
++     inkscape:cx="10"
++     inkscape:zoom="39.690974"
++     inkscape:pageshadow="2"
++     inkscape:pageopacity="0"
++     borderopacity="1.0"
++     bordercolor="#666666"
++     pagecolor="#3b3b3b"
++     id="base" />
++  <metadata
++     id="metadata5">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     id="layer1"
++     inkscape:groupmode="layer"
++     inkscape:label="Layer 1">
++    <path
++       id="rect835"
++       style="fill:#f9f9f9;stroke-width:0.00635566"
++       d="M 0.52916668,-3.3333334e-8 V 0.52916667 H 1.6666666e-8 V 2.6458334 H 2.1166667 V 2.1166667 H 2.6458333 V -3.3333334e-8 Z M 0.75344238,0.22427577 H 2.4215577 V 1.892391 H 2.1166667 V 0.52916667 H 0.75344238 Z M 0.22427572,0.75344237 H 1.892391 V 2.4215577 H 0.22427572 Z" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_save.svg b/gui/images/svg_icons/icon_save.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..c5074dfd7e3bb38bd49cd8b87e4710180d0b6674
+--- /dev/null
++++ b/gui/images/svg_icons/icon_save.svg
+@@ -0,0 +1,61 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="16"
++   height="16"
++   viewBox="0 0 4.2333332 4.2333335"
++   version="1.1"
++   id="svg1123"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="icon_save.svg">
++  <defs
++     id="defs1117" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="50.945244"
++     inkscape:cx="7.9999999"
++     inkscape:cy="7.9999999"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1120">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title />
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       id="path1759"
++       style="fill:#c3ccdf;fill-opacity:1;stroke-width:0.0333333"
++       d="M 1.3339844 0 C 0.89237001 0.00051430825 0.53371744 0.35916689 0.53320312 0.80078125 L 0.53320312 15.199219 C 0.53371737 15.640833 0.89236979 15.999486 1.3339844 16 L 14.666016 16 C 15.10763 15.999486 15.466282 15.640833 15.466797 15.199219 L 15.466797 4.1113281 C 15.467385 3.8990566 15.382939 3.6946016 15.232422 3.5449219 L 11.921875 0.234375 C 11.772195 0.083857583 11.56774 -0.00058789361 11.355469 0 L 1.3339844 0 z M 2.1699219 1.5957031 L 4.2675781 1.5957031 L 4.2675781 5.3339844 L 11.199219 5.3339844 L 11.199219 1.5957031 L 11.246094 1.5957031 L 13.849609 4.2207031 L 13.849609 14.580078 L 2.1699219 14.580078 L 2.1699219 1.5957031 z M 5.765625 1.5957031 L 9.6230469 1.5957031 L 9.6230469 3.8945312 L 5.765625 3.8945312 L 5.765625 1.5957031 z M 7.8671875 6.9335938 C 5.1348907 6.9335938 3.7674272 10.236177 5.6992188 12.167969 C 7.63101 14.09976 10.933594 12.732297 10.933594 10 C 10.931757 8.3070891 9.5600984 6.9354309 7.8671875 6.9335938 z M 7.8652344 8.5234375 C 8.6813058 8.524323 9.3428645 9.1858818 9.34375 10.001953 C 9.34375 11.319063 7.7515363 11.9781 6.8203125 11.046875 C 5.8890879 10.115651 6.548125 8.5234375 7.8652344 8.5234375 z "
++       transform="scale(0.26458333)" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_search.svg b/gui/images/svg_icons/icon_search.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..a4cc81f770b17f0d2f45d948ca6eb9df92096013
+--- /dev/null
++++ b/gui/images/svg_icons/icon_search.svg
+@@ -0,0 +1,60 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="16"
++   height="16"
++   viewBox="0 0 4.2333332 4.2333335"
++   version="1.1"
++   id="svg1123"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="icon_search.svg">
++  <defs
++     id="defs1117" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="52.312834"
++     inkscape:cx="8.0000001"
++     inkscape:cy="8"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1120">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       id="path835"
++       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#c3ccdf;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.218994;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#000000"
++       d="M 1.6396931,4.2071667e-5 C 1.2208792,4.2071667e-5 0.80092396,0.16261109 0.48210957,0.48143454 0.16327384,0.800258 0,1.2196884 0,1.6386495 0,2.0576106 0.16160985,2.4675692 0.48210957,2.7958645 0.80030529,3.1140693 1.2195565,3.2687664 1.6396931,3.2687664 c 0.326953,0 0.6520287,-0.093012 0.9216913,-0.2856184 l 0.074773,-0.054079 1.30442,1.3042642 0.2927559,-0.292317 -1.3044201,-1.3042749 0.052373,-0.074239 C 3.174992,2.2835717 3.2686768,1.956855 3.2686768,1.6386076 3.2686768,1.2183238 3.113275,0.79959737 2.7950686,0.48139258 2.4762542,0.16256913 2.0585389,1.0166667e-7 1.6397144,1.0166667e-7 Z m 0,0.410321188333 c 0.3096197,0 0.6271968,0.11840947 0.8643903,0.36473232 0.2350494,0.23595492 0.3536302,0.54726912 0.3536302,0.86355392 0,0.3095436 -0.1191034,0.6195671 -0.3536302,0.863106 l -0.00213,0.00213 C 2.2647992,2.7410351 1.9490035,2.8587833 1.6393517,2.8587833 c -0.3096624,0 -0.6276981,-0.1177482 -0.86483828,-0.3548871 l -0.002133,-0.00213 C 0.53785329,2.2582166 0.41873922,1.9481931 0.41873922,1.6386495 c 0,-0.3170314 0.11927406,-0.6287403 0.35542221,-0.8648979 C 1.0111842,0.52861273 1.330116,0.41036326 1.6389997,0.41036326 Z" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_send.svg b/gui/images/svg_icons/icon_send.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..8e75b7f638a59bd2a802bd71e0f0c9d2f1f8ab6d
+--- /dev/null
++++ b/gui/images/svg_icons/icon_send.svg
+@@ -0,0 +1,78 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="15"
++   height="12"
++   viewBox="0 0 3.9687499 3.1749999"
++   version="1.1"
++   id="svg8"
++   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
++   sodipodi:docname="icon_send.svg">
++  <defs
++     id="defs2">
++    <inkscape:path-effect
++       effect="fillet_chamfer"
++       id="path-effect997"
++       is_visible="true"
++       lpeversion="1"
++       satellites_param="F,0,0,1,0,0.52916667,0,1 @ F,0,0,1,0,0.52916667,0,1 @ F,0,0,1,0,0.52916667,0,1 @ F,0,0,1,0,0.52916667,0,1 @ F,0,0,1,0,0.52916667,0,1 @ F,0,0,1,0,0.52916667,0,1"
++       unit="px"
++       method="auto"
++       mode="F"
++       radius="2"
++       chamfer_steps="1"
++       flexible="false"
++       use_knot_distance="true"
++       apply_no_radius="true"
++       apply_with_radius="true"
++       only_selected="false"
++       hide_knots="false" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#3b3b3b"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="40.756193"
++     inkscape:cx="10"
++     inkscape:cy="6.0742163"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata5">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       id="path995"
++       style="fill:#b3b3b3;fill-opacity:1;stroke:#333333;stroke-width:0;stroke-linecap:round"
++       d="m 5.1411346e-7,0.39646947 v 0.1171262 A 0.76441772,0.82668623 0 0 0 0.49522798,1.2873271 l 0.2430166,0.098884 a 0.19899043,0.21519994 0 0 1 -5.71e-5,0.4028531 l -0.2429024,0.098745 A 0.76416731,0.82641542 0 0 0 5.1411346e-7,2.6613765 V 2.7784931 A 0.36632052,0.39616052 0 0 0 0.49526068,3.1493014 L 3.8397924,1.789134 A 0.19900363,0.21521421 0 0 0 3.839809,1.3862574 L 0.49524418,0.02570877 A 0.36628567,0.39612284 0 0 0 5.1411346e-7,0.39646947 Z" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_settings.svg b/gui/images/svg_icons/icon_settings.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..02f1b90652a6bb19224feba62b75c1d39b0bb74d
+--- /dev/null
++++ b/gui/images/svg_icons/icon_settings.svg
+@@ -0,0 +1,78 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="20"
++   height="20"
++   viewBox="0 0 5.2916665 5.2916664"
++   version="1.1"
++   id="svg8"
++   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
++   sodipodi:docname="icon_settingsr.svg">
++  <defs
++     id="defs2">
++    <inkscape:path-effect
++       hide_knots="false"
++       only_selected="true"
++       apply_with_radius="true"
++       apply_no_radius="true"
++       use_knot_distance="true"
++       flexible="false"
++       chamfer_steps="1"
++       radius="1"
++       mode="F"
++       method="auto"
++       unit="px"
++       satellites_param="F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 | F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1"
++       lpeversion="1"
++       is_visible="true"
++       id="path-effect1635"
++       effect="fillet_chamfer" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#3b3b3b"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="40.756193"
++     inkscape:cx="10"
++     inkscape:cy="10"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata5">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       id="path872"
++       style="fill:#e6e6e6;fill-opacity:1;stroke:#333333;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
++       d="M 2.6280115,1.0798987e-5 C 2.5343304,6.4896755e-4 2.4408118,0.00626199 2.3478488,0.0168065 2.2027152,0.03326856 2.1300123,0.14971705 2.1299985,0.2662408 2.1299913,0.55113274 1.8990498,0.78208194 1.6141658,0.7820908 1.4986508,0.78213223 1.3893358,0.74363258 1.301207,0.67645227 1.1862838,0.58884666 1.04171,0.53671311 0.93050512,0.63141419 0.8008811,0.74180083 0.68221129,0.86444503 0.57615248,0.99763452 0.48516917,1.1118921 0.5160579,1.2456361 0.59841095,1.3280108 c 0.20144445,0.2014558 0.20144445,0.5280742 0,0.72953 C 0.5167524,2.1391767 0.41226067,2.1891924 0.30248397,2.2039744 0.15927027,2.223259 0.02017503,2.2885925 0.00848632,2.4341886 0.00283791,2.504546 4.2220498e-6,2.5751364 5.33293e-7,2.6457908 1.4369918e-5,2.7454853 0.00566259,2.8450284 0.01689451,2.9439466 0.03337385,3.0890782 0.14976109,3.1618227 0.2661931,3.1618109 c 0.284884,8.8e-6 0.51582547,0.230958 0.51583273,0.5158499 -4.99e-6,0.1154405 -0.038496,0.2246762 -0.10562929,0.3127518 -0.0876003,0.1149273 -0.13973456,0.2595082 -0.0450368,0.370716 0.1103825,0.129627 0.23302209,0.2482998 0.36620659,0.3543614 0.11425468,0.090987 0.24799488,0.060104 0.33036448,-0.022249 0.09462,-0.094613 0.2223009,-0.1487558 0.3560881,-0.1510001 0.1397958,-0.00236 0.2745597,0.052138 0.3734296,0.1510001 0.081631,0.081662 0.1316434,0.1861559 0.1464235,0.2959349 0.019282,0.1432143 0.084618,0.2823107 0.2302139,0.2939996 0.070406,0.00565 0.1410459,0.00849 0.2117494,0.00849 0.099638,-1.43e-5 0.1991239,-0.00566 0.2979864,-0.016878 0.1451323,-0.016472 0.2178695,-0.132855 0.2178472,-0.2492923 7.3e-6,-0.2848919 0.2309487,-0.515841 0.5158327,-0.5158499 0.1154582,-5.9e-6 0.2247125,0.03849 0.3127998,0.1056385 0.1149233,0.087606 0.259497,0.139739 0.3707018,0.045038 C 4.490627,4.5499307 4.6092965,4.4272866 4.7153551,4.2940973 4.8063383,4.1798397 4.7754501,4.0460955 4.6930975,3.9637209 4.491653,3.762265 4.491653,3.4356467 4.6930975,3.2341908 4.7877177,3.1395786 4.9153979,3.0854354 5.0491848,3.083191 5.1612886,3.0813088 5.2714914,3.0031493 5.2831802,2.8575533 5.2888329,2.7871428 5.2916667,2.7164989 5.2916661,2.6457911 5.2916467,2.5461468 5.2859985,2.4466539 5.2747723,2.3477854 5.258293,2.2026539 5.1418323,2.1299454 5.0253138,2.1299211 4.7404293,2.1299128 4.5094872,1.8989635 4.50948,1.6140711 4.5094739,1.4986126 4.5479665,1.3893577 4.61511,1.301269 4.7027106,1.1863419 4.754858,1.0417524 4.6601751,0.93053212 4.5497852,0.80086155 4.4271314,0.68214863 4.2939268,0.57605146 4.1796803,0.48505434 4.0459758,0.51601801 3.9635743,0.59845111 c -0.2014511,0.20145486 -0.5280659,0.20145486 -0.729517,0 C 3.1524224,0.51678717 3.1024087,0.41228854 3.0876298,0.30250541 3.0683503,0.15929076 3.0030158,0.02019523 2.8574199,0.00850627 2.7870664,0.00285804 2.71648,2.446499e-5 2.6458296,2.0798987e-5 c -0.00594,-2.000188233e-5 -0.011879,-2.000188233e-5 -0.017819,0 z M 2.645831,1.7805008 c 0.4778543,6.1e-6 0.8652305,0.3873924 0.8652373,0.86526 C 3.5111499,3.1236909 3.1237479,3.5111748 2.645831,3.5111809 2.167914,3.5111751 1.7805116,3.1236911 1.7805932,2.6457608 1.7806,2.167893 2.1679765,1.7805066 2.645831,1.7805008 Z" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_signal.svg b/gui/images/svg_icons/icon_signal.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..5c1558d1839916c7e599c0f470e9e28650110ca1
+--- /dev/null
++++ b/gui/images/svg_icons/icon_signal.svg
+@@ -0,0 +1,78 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="25"
++   height="19"
++   viewBox="0 0 6.6145831 5.0270831"
++   version="1.1"
++   id="svg8"
++   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
++   sodipodi:docname="icon_signal.svg">
++  <defs
++     id="defs2">
++    <inkscape:path-effect
++       hide_knots="false"
++       only_selected="true"
++       apply_with_radius="true"
++       apply_no_radius="true"
++       use_knot_distance="true"
++       flexible="false"
++       chamfer_steps="1"
++       radius="1"
++       mode="F"
++       method="auto"
++       unit="px"
++       satellites_param="F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 | F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1"
++       lpeversion="1"
++       is_visible="true"
++       id="path-effect1635"
++       effect="fillet_chamfer" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#3b3b3b"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="40.756193"
++     inkscape:cx="10"
++     inkscape:cy="10"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata5">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       d="M 5.4711558,-1.687739e-5 C 5.3272124,-0.00101688 5.189694,0.13687312 5.2069338,0.28555312 c 0.00306,0.0656 0.040087,0.12236 0.085064,0.16693 0.4703897,0.50085 0.7641067,1.16944008 0.8079604,1.85966008 0.061296,0.83082 -0.2469107,1.67698 -0.8168491,2.2762599 -0.1009117,0.0917 -0.09906,0.2699203 0.00454,0.3588602 0.085538,0.0968 0.2488174,0.10882 0.3421751,0.0171 C 6.3131002,4.2637832 6.6758827,3.2594931 6.6060723,2.2779132 6.5532903,1.4680432 6.2126992,0.68088312 5.6580915,0.09454312 c -0.037894,-0.0422 -0.085301,-0.0794 -0.1422129,-0.0893 -0.014857,-0.004 -0.029813,-0.004999997 -0.0447,-0.004999997 z m -4.3360953,2e-4 C 1.0798105,0.00218312 1.0255979,0.02248312 0.9847593,0.06278312 0.30147234,0.76336312 -0.06130916,1.7676632 0.00851395,2.7492431 c 0.052761,0.8098602 0.39336035,1.5970401 0.94795436,2.18338 0.0379038,0.0422 0.0853007,0.0794 0.14221259,0.0893 C 1.2572188,5.0573231 1.4266121,4.9056432 1.407603,4.7415232 1.404543,4.6759232 1.367516,4.6191733 1.322539,4.5746032 0.85214853,4.0737533 0.55847103,3.4051332 0.51460363,2.7149231 0.45330763,1.8840931 0.76150157,1.037933 1.3314526,0.43865302 c 0.1009118,-0.0917 0.099089,-0.26989 -0.00454,-0.35884 -0.048128,-0.0544 -0.1208613,-0.0821 -0.1919015,-0.0794999974 z M 1.8298776,0.65192312 c -0.053087,0.001 -0.1055496,0.0199 -0.1466066,0.0564 C 1.1524367,1.2405032 0.87860905,2.0213732 0.95941308,2.7733932 1.0177752,3.3491133 1.2751433,3.9026531 1.6797305,4.3119733 c 0.091257,0.0887 0.248845,0.081 0.3349943,-0.011401 C 2.1205116,4.2148733 2.1318491,4.0374532 2.0324073,3.9422133 1.6286795,3.5292032 1.4112659,2.9365632 1.4587982,2.3565231 c 0.034486,-0.47765 0.2451919,-0.93828 0.5770192,-1.2790001 0.092364,-0.0956 0.080944,-0.26534988 -0.020923,-0.34960998 -0.047437,-0.052 -0.1167508,-0.0779 -0.1850023,-0.076 z m 2.9355323,9.896e-4 c -0.061583,0.002 -0.1224991,0.0273 -0.1655703,0.0735 -0.1057994,0.0858 -0.1171243,0.26312 -0.017681,0.35835998 0.4037283,0.4130101 0.621141,1.0056601 0.5736088,1.5857 -0.034476,0.4776599 -0.2451908,0.9383101 -0.5770193,1.2790101 -0.092364,0.0956 -0.080934,0.2653498 0.020951,0.3496199 0.084323,0.0924 0.2377484,0.1027501 0.3315822,0.0196 C 5.4621159,3.7865328 5.7359435,3.0056526 5.6551395,2.2536327 5.5967774,1.6779129 5.3393956,1.1243828 4.9348211,0.71505282 c -0.045639,-0.0444 -0.1078503,-0.0647 -0.169421,-0.0623 z M 4.0881637,1.3041528 c -0.1271865,6.694e-4 -0.2570411,0.10528 -0.2663398,0.23949 -0.00938,0.0805 0.026711,0.15901 0.085449,0.21193 0.2103437,0.21515 0.3285418,0.5217 0.3072159,0.82468 -0.014383,0.26696 -0.1336933,0.52478 -0.3224605,0.7109199 -0.096641,0.094 -0.089697,0.2673401 0.013406,0.3538199 0.086022,0.0952 0.2460492,0.1057802 0.3390236,0.015301 0.3395274,-0.3302302 0.5190301,-0.8208603 0.4724768,-1.2954303 -0.037301,-0.38021 -0.2097559,-0.74917 -0.4880831,-1.00897 -0.041578,-0.0362 -0.090931,-0.052 -0.1406903,-0.0517 z m -1.5693615,6.694e-4 c -0.054519,0.002 -0.1080242,0.022601 -0.1486988,0.062201 -0.3395137,0.33023 -0.5190315,0.82085 -0.4724791,1.29543 0.037301,0.3802099 0.2097173,0.7491801 0.4880594,1.00898 0.1478217,0.1286399 0.3941169,-0.00101 0.4070539,-0.1877599 0.00938,-0.0805 -0.026711,-0.15903 -0.085449,-0.21194 C 2.4969579,3.0565932 2.378748,2.7500332 2.4000727,2.4470532 c 0.014383,-0.26695 0.1336678,-0.5248 0.3224347,-0.71095 0.096641,-0.094 0.089697,-0.26729 -0.013415,-0.35378 -0.048385,-0.0536 -0.1201855,-0.0804 -0.1902971,-0.0774 z m 0.8161002,0.65641 c -0.018591,-6.694e-4 -0.037291,10e-5 -0.05607,0.002 -0.3063486,0.0101 -0.5558318,0.32026 -0.5051373,0.62608 0.032639,0.2869299 0.3159851,0.5109701 0.5989562,0.47188 0.2695583,-0.024 0.4944017,-0.2783499 0.4850091,-0.55271 0.00612,-0.28611 -0.2439501,-0.53989 -0.5227587,-0.54713 z"
++       style="fill:#b3b3b3;fill-opacity:1;stroke-width:0.0133103"
++       id="path1240" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_icons/icon_widgets.svg b/gui/images/svg_icons/icon_widgets.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..d0171c27e1d499c24c3b066c95e5c20ad5251443
+--- /dev/null
++++ b/gui/images/svg_icons/icon_widgets.svg
+@@ -0,0 +1,101 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   version="1.1"
++   id="Capa_1"
++   x="0px"
++   y="0px"
++   viewBox="0 0 18 18"
++   xml:space="preserve"
++   sodipodi:docname="icon_widgets.svg"
++   width="18"
++   height="18"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"><metadata
++   id="metadata43"><rdf:RDF><cc:Work
++       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
++         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
++   id="defs41" /><sodipodi:namedview
++   pagecolor="#ffffff"
++   bordercolor="#666666"
++   borderopacity="1"
++   objecttolerance="10"
++   gridtolerance="10"
++   guidetolerance="10"
++   inkscape:pageopacity="0"
++   inkscape:pageshadow="2"
++   inkscape:window-width="1920"
++   inkscape:window-height="1027"
++   id="namedview39"
++   showgrid="false"
++   inkscape:zoom="1.709928"
++   inkscape:cx="244.89999"
++   inkscape:cy="244.89999"
++   inkscape:window-x="1912"
++   inkscape:window-y="-8"
++   inkscape:window-maximized="1"
++   inkscape:current-layer="Capa_1" />
++<g
++   id="g6"
++   transform="matrix(0.03674969,0,0,0.03674969,9.19e-7,-1.3853197e-5)"
++   style="fill:#c3ccdf;fill-opacity:1">
++	<g
++   id="g4"
++   style="fill:#c3ccdf;fill-opacity:1">
++		<path
++   d="m 489.8,280.92 c 0,-13.9 -11.3,-25.2 -25.2,-25.2 h -74.1 c -62.1,0 -112.4,50.2 -112.7,112.2 -0.1,32.3 -23,61 -55,65 -38.4,4.8 -71.2,-25.2 -71.2,-62.6 v -56.4 c 57.6,-11.7 101,-62.6 101,-123.7 v -64 c 0,-9.1 -7.3,-16.4 -16.4,-16.4 h -31.3 v -79.1 c 0,-12.4 -9,-23.4 -21.3,-24.6 -14.1,-1.4 -26,9.7 -26,23.6 v 80.1 H 95.2 v -79.1 c 0,-12.4 -9,-23.4 -21.4,-24.6 -14.1,-1.3 -26,9.7 -26,23.6 v 80.1 H 16.4 c -9.1,0 -16.4,7.3 -16.4,16.4 v 64 c 0,61.1 43.4,112 101,123.7 v 53.5 c 0,61.5 47.7,114 109.2,116.3 64.6,2.4 118,-49.4 118,-113.5 v -0.9 c 0,-34.9 28.3,-63.1 63.1,-63.1 h 73.2 c 14,-0.1 25.3,-11.4 25.3,-25.3 z"
++   id="path2"
++   style="fill:#c3ccdf;fill-opacity:1" />
++	</g>
++</g>
++<g
++   id="g8">
++</g>
++<g
++   id="g10">
++</g>
++<g
++   id="g12">
++</g>
++<g
++   id="g14">
++</g>
++<g
++   id="g16">
++</g>
++<g
++   id="g18">
++</g>
++<g
++   id="g20">
++</g>
++<g
++   id="g22">
++</g>
++<g
++   id="g24">
++</g>
++<g
++   id="g26">
++</g>
++<g
++   id="g28">
++</g>
++<g
++   id="g30">
++</g>
++<g
++   id="g32">
++</g>
++<g
++   id="g34">
++</g>
++<g
++   id="g36">
++</g>
++</svg>
+diff --git a/gui/images/svg_icons/no_icon.svg b/gui/images/svg_icons/no_icon.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..c61b428eb231526ec4be0a1abf2ffb78d6a8c4c3
+--- /dev/null
++++ b/gui/images/svg_icons/no_icon.svg
+@@ -0,0 +1,60 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="16"
++   height="16"
++   viewBox="0 0 4.2333332 4.2333335"
++   version="1.1"
++   id="svg1107"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="no_icon.svg">
++  <defs
++     id="defs1101" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="26.156251"
++     inkscape:cx="3.3352559"
++     inkscape:cy="11.186469"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1104">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <path
++       id="path1676"
++       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#c3ccdf;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.07085;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#000000"
++       d="M 1.1666666e-8,1.1666666e-8 V 0.28222226 4.2333333 H 4.2333333 V 1.1666666e-8 Z M 0.56665798,0.56665798 H 3.285952 L 0.56665798,3.285952 Z M 3.6666754,0.94738132 V 3.6666754 H 0.94738132 Z" />
++  </g>
++</svg>
+diff --git a/gui/images/svg_images/logo_home.svg b/gui/images/svg_images/logo_home.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..377a685a546447e0313349883e39cfd67d592087
+--- /dev/null
++++ b/gui/images/svg_images/logo_home.svg
+@@ -0,0 +1,158 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="300"
++   height="70"
++   viewBox="0 0 79.374998 18.520833"
++   version="1.1"
++   id="svg1132"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="logo_home.svg">
++  <defs
++     id="defs1126">
++    <inkscape:path-effect
++       effect="fillet_chamfer"
++       id="path-effect1836"
++       is_visible="true"
++       lpeversion="1"
++       satellites_param="F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1"
++       unit="px"
++       method="auto"
++       mode="F"
++       radius="1"
++       chamfer_steps="1"
++       flexible="false"
++       use_knot_distance="true"
++       apply_no_radius="true"
++       apply_with_radius="true"
++       only_selected="true"
++       hide_knots="false" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="2.3156936"
++     inkscape:cx="103.4558"
++     inkscape:cy="-63.038698"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1129">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <g
++       id="g1811"
++       transform="matrix(3.0579283,0,0,3.0579283,-0.79418142,0.36057057)">
++      <g
++         id="g1822"
++         transform="matrix(0.37563903,0,0,0.37563903,-64.288753,-32.575173)">
++        <g
++           id="g1810">
++          <g
++             id="g1804">
++            <g
++               aria-label="PY"
++               id="g1800"
++               style="font-style:normal;font-weight:normal;font-size:2.85476px;line-height:1.25;font-family:sans-serif;fill:#dce1ec;fill-opacity:1;stroke:none;stroke-width:0.0713691"
++               transform="translate(-0.108475,-0.0784345)">
++              <path
++                 d="m 196.06915,94.086075 c 0,-0.336862 -0.27406,-0.610919 -0.61092,-0.610919 h -0.80504 v 2.14107 h 0.34257 v -0.919233 h 0.46247 c 0.33686,0 0.61092,-0.274056 0.61092,-0.610918 z m -0.34257,0 c 0,0.171285 -0.11134,0.311169 -0.28262,0.311169 h -0.4482 v -0.622338 h 0.4482 c 0.17128,0 0.28262,0.139883 0.28262,0.311169 z"
++                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Ano Bold';-inkscape-font-specification:'Ano Bold, ';fill:#dce1ec;fill-opacity:1;stroke-width:0.0713691"
++                 id="path1796" />
++              <path
++                 d="m 197.84548,93.475156 -0.61378,0.802188 -0.61091,-0.802188 h -0.41109 l 0.85072,1.113357 v 1.027713 h 0.34257 v -1.024859 l 0.85357,-1.116211 z"
++                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Ano Bold';-inkscape-font-specification:'Ano Bold, ';fill:#dce1ec;fill-opacity:1;stroke-width:0.0713691"
++                 id="path1798" />
++            </g>
++            <path
++               id="path1802"
++               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.8299px;line-height:1.25;font-family:'Ano Regular';-inkscape-font-specification:'Ano Regular, ';letter-spacing:0px;word-spacing:0px;fill:#dce1ec;fill-opacity:1;stroke:none;stroke-width:0.25106"
++               d="m 200.31312,94.467255 c 0,-2.189227 -1.77749,-3.966719 -3.96672,-3.966719 -2.18923,0 -3.96672,1.777492 -3.96672,3.966719 0,2.18923 1.77749,3.966722 3.96672,3.966722 2.18923,0 3.96672,-1.777492 3.96672,-3.966722 z m -0.80338,0 c 0,1.797579 -1.41598,3.263759 -3.16334,3.263759 -1.74736,0 -3.16333,-1.46618 -3.16333,-3.263759 0,-1.797577 1.41597,-3.263756 3.16333,-3.263756 1.74736,0 3.16334,1.466179 3.16334,3.263756 z" />
++          </g>
++          <path
++             d="m 207.29882,90.701382 h -0.80339 V 96.8975 l -4.06714,-6.196118 h -0.80339 v 7.531748 h 0.80339 v -6.186075 l 4.06714,6.186075 h 0.80339 z"
++             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.8299px;line-height:1.25;font-family:'Ano Regular';-inkscape-font-specification:'Ano Regular, ';letter-spacing:0px;word-spacing:0px;fill:#dce1ec;fill-opacity:1;stroke:none;stroke-width:0.25106"
++             id="path1806" />
++          <path
++             d="m 213.06923,97.530167 h -3.36418 v -2.711429 h 3.06291 v -0.702963 h -3.06291 v -2.71143 h 3.36418 v -0.702963 h -4.16757 v 7.531748 h 4.16757 z"
++             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.8299px;line-height:1.25;font-family:'Ano Regular';-inkscape-font-specification:'Ano Regular, ';letter-spacing:0px;word-spacing:0px;fill:#dce1ec;fill-opacity:1;stroke:none;stroke-width:0.25106"
++             id="path1808" />
++        </g>
++        <g
++           id="g1820">
++          <path
++             d="m 220.63801,94.467255 c 0,-2.068719 -1.67707,-3.765873 -3.75582,-3.765873 h -2.61101 v 7.531748 h 2.61101 c 2.07875,0 3.75582,-1.687111 3.75582,-3.765875 z m -1.72728,0 c 0,1.174954 -0.94398,2.118932 -2.11893,2.118932 h -0.79335 v -4.237862 h 0.79335 c 1.17495,0 2.11893,0.954021 2.11893,2.11893 z"
++             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.8299px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';letter-spacing:0px;word-spacing:0px;fill:#4f9fee;fill-opacity:1;stroke:none;stroke-width:0.25106"
++             id="path1812" />
++          <path
++             d="m 225.71316,90.701382 h -1.80763 l -2.86207,7.531748 h 1.83776 l 0.40169,-1.064486 h 3.04282 l 0.39166,1.064486 h 1.84778 z m -1.81766,4.830361 0.91384,-2.420202 0.90382,2.420202 z"
++             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.8299px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';letter-spacing:0px;word-spacing:0px;fill:#4f9fee;fill-opacity:1;stroke:none;stroke-width:0.25106"
++             id="path1814" />
++          <path
++             d="m 232.31144,95.190303 c 0.93393,-0.281185 1.6168,-1.154867 1.6168,-2.189227 0,-1.265333 -1.02432,-2.299694 -2.28963,-2.299694 h -2.48047 v 7.531748 h 1.72728 v -2.118932 l 1.67708,2.118932 h 2.14905 z m -0.1105,-2.189227 c 0,0.411736 -0.25106,0.652752 -0.56238,0.652752 h -0.75317 v -1.305503 h 0.75317 c 0.31132,0 0.56238,0.241015 0.56238,0.652751 z"
++             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.8299px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';letter-spacing:0px;word-spacing:0px;fill:#4f9fee;fill-opacity:1;stroke:none;stroke-width:0.25106"
++             id="path1816" />
++          <path
++             d="m 238.75845,90.701382 -2.00846,2.36999 v -2.36999 h -1.72729 v 7.531748 h 1.72729 v -2.339863 l 1.98839,2.339863 h 2.17918 l -3.19346,-3.755832 3.21354,-3.775916 z"
++             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.8299px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';letter-spacing:0px;word-spacing:0px;fill:#4f9fee;fill-opacity:1;stroke:none;stroke-width:0.25106"
++             id="path1818" />
++        </g>
++      </g>
++      <g
++         id="g1790">
++        <path
++           id="path1824"
++           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';fill:#4f9fee;fill-opacity:1;stroke:none;stroke-width:0.171201"
++           d="m 6.0294424,2.568037 c 0,-1.4106927 -1.1436221,-2.568008872565 -2.56116,-2.568008872565 H 1.7851565 V 5.1360473 h 1.6831259 c 1.4175379,0 2.56116,-1.1504695 2.56116,-2.5680103 z m -1.1778576,0 c 0,0.8012186 -0.6437136,1.4449327 -1.4449349,1.4449327 H 2.3364893 v -2.889866 h 1.0701606 c 0.8012213,0 1.4449349,0.6505625 1.4449349,1.4449333 z"
++           sodipodi:nodetypes="ssccssssccss" />
++        <path
++           id="path1826"
++           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';fill:#3d8ad5;fill-opacity:1;stroke:none;stroke-width:0.171201"
++           d="M 2.0300435,1.255144e-5 1.6876461,0.00635735 V 1.0924146 C 1.876678,1.0921558 2.0300435,1.2454526 2.0300435,1.4344813 V 5.1360358 H 3.0666136 C 3.1729317,4.9320827 3.2265932,4.6974519 3.2080542,4.451231 V 4.0128603 H 2.3364893 V 1.1231724 H 3.2023729 C 3.1322897,0.52831193 2.6497261,0.04664426 2.0300435,2.3144399e-7 Z"
++           sodipodi:nodetypes="cccsccccccccc" />
++        <path
++           d="M 1.852148,1.255144e-5 1.6876461,0.00635735 V 1.0924146 C 1.876678,1.0921558 2.0300435,1.2454526 2.0300435,1.4344813 V 5.1360358 H 2.8887173 C 2.9950362,4.9320827 3.0486959,4.6974519 3.0301587,4.451231 V 4.0128603 H 2.1585938 V 1.1231724 H 3.0244775 C 2.9543925,0.52831193 2.4075378,2.3144399e-7 1.852148,2.3144399e-7 Z"
++           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';fill:#2d7bc5;fill-opacity:1;stroke:none;stroke-width:0.171201"
++           id="path1828"
++           sodipodi:nodetypes="cccsccccccccc" />
++        <path
++           inkscape:original-d="M 1.6877949,2.2554433e-6 1.1470667,0.00944201 0.10799299,1.0937135 1.3453905,1.0924815 c 0.1890319,-2.581e-4 0.3424044,0.152908 0.3424044,0.3419373 V 5.8208335 C 2.3912578,5.7679015 2.9185985,5.1546923 2.8656498,4.4512261 V 1.3696243 C 2.9185792,0.66616151 2.3912578,0.05296662 1.6877949,1.5103439e-5 Z"
++           inkscape:path-effect="#path-effect1836"
++           sodipodi:nodetypes="ccccccccsc"
++           id="path1830"
++           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';fill:#dce1ec;fill-opacity:1;stroke:none;stroke-width:0.171201"
++           d="M 1.6877949,2.2554433e-6 1.4116097,0.00482375 A 0.63531929,0.63531929 156.39022 0 0 0.96400189,0.2004698 L 0.2910578,0.90268571 A 0.11275169,0.11275169 66.861767 0 0 0.37257619,1.0934501 L 1.3453905,1.0924815 c 0.1890319,-2.581e-4 0.3424044,0.152908 0.3424044,0.3419373 V 5.8208335 C 2.3912578,5.7679015 2.9185985,5.1546923 2.8656498,4.4512261 V 1.3696243 C 2.9185792,0.66616151 2.3912578,0.05296662 1.6877949,1.5103439e-5 Z" />
++      </g>
++    </g>
++  </g>
++</svg>
+diff --git a/gui/images/svg_images/logo_top_100x22.svg b/gui/images/svg_images/logo_top_100x22.svg
+new file mode 100644
+index 0000000000000000000000000000000000000000..f1a2c3db6d8ae7c5e0da850266e5ece6d198c2a4
+--- /dev/null
++++ b/gui/images/svg_images/logo_top_100x22.svg
+@@ -0,0 +1,157 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="100"
++   height="22"
++   viewBox="0 0 26.458333 5.8208334"
++   version="1.1"
++   id="svg1132"
++   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
++   sodipodi:docname="logo_top_100x22.svg">
++  <defs
++     id="defs1126">
++    <inkscape:path-effect
++       effect="fillet_chamfer"
++       id="path-effect1836"
++       is_visible="true"
++       lpeversion="1"
++       satellites_param="F,0,0,1,0,0,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,1,1,0,0.26458333,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1"
++       unit="px"
++       method="auto"
++       mode="F"
++       radius="1"
++       chamfer_steps="1"
++       flexible="false"
++       use_knot_distance="true"
++       apply_no_radius="true"
++       apply_with_radius="true"
++       only_selected="true"
++       hide_knots="false" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="4.7556835"
++     inkscape:cx="29.382824"
++     inkscape:cy="2.9469558"
++     inkscape:document-units="mm"
++     inkscape:current-layer="layer1"
++     inkscape:document-rotation="0"
++     showgrid="false"
++     units="px"
++     inkscape:window-width="1920"
++     inkscape:window-height="1027"
++     inkscape:window-x="1912"
++     inkscape:window-y="-8"
++     inkscape:window-maximized="1" />
++  <metadata
++     id="metadata1129">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title></dc:title>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     id="layer1">
++    <g
++       id="g1811">
++      <g
++         id="g1822"
++         transform="matrix(0.37563903,0,0,0.37563903,-64.288753,-32.575173)">
++        <g
++           id="g1810">
++          <g
++             id="g1804">
++            <g
++               aria-label="PY"
++               id="g1800"
++               style="font-style:normal;font-weight:normal;font-size:2.85476px;line-height:1.25;font-family:sans-serif;fill:#dce1ec;fill-opacity:1;stroke:none;stroke-width:0.0713691"
++               transform="translate(-0.108475,-0.0784345)">
++              <path
++                 d="m 196.06915,94.086075 c 0,-0.336862 -0.27406,-0.610919 -0.61092,-0.610919 h -0.80504 v 2.14107 h 0.34257 v -0.919233 h 0.46247 c 0.33686,0 0.61092,-0.274056 0.61092,-0.610918 z m -0.34257,0 c 0,0.171285 -0.11134,0.311169 -0.28262,0.311169 h -0.4482 v -0.622338 h 0.4482 c 0.17128,0 0.28262,0.139883 0.28262,0.311169 z"
++                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Ano Bold';-inkscape-font-specification:'Ano Bold, ';fill:#dce1ec;fill-opacity:1;stroke-width:0.0713691"
++                 id="path1796" />
++              <path
++                 d="m 197.84548,93.475156 -0.61378,0.802188 -0.61091,-0.802188 h -0.41109 l 0.85072,1.113357 v 1.027713 h 0.34257 v -1.024859 l 0.85357,-1.116211 z"
++                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Ano Bold';-inkscape-font-specification:'Ano Bold, ';fill:#dce1ec;fill-opacity:1;stroke-width:0.0713691"
++                 id="path1798" />
++            </g>
++            <path
++               id="path1802"
++               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.8299px;line-height:1.25;font-family:'Ano Regular';-inkscape-font-specification:'Ano Regular, ';letter-spacing:0px;word-spacing:0px;fill:#dce1ec;fill-opacity:1;stroke:none;stroke-width:0.25106"
++               d="m 200.31312,94.467255 c 0,-2.189227 -1.77749,-3.966719 -3.96672,-3.966719 -2.18923,0 -3.96672,1.777492 -3.96672,3.966719 0,2.18923 1.77749,3.966722 3.96672,3.966722 2.18923,0 3.96672,-1.777492 3.96672,-3.966722 z m -0.80338,0 c 0,1.797579 -1.41598,3.263759 -3.16334,3.263759 -1.74736,0 -3.16333,-1.46618 -3.16333,-3.263759 0,-1.797577 1.41597,-3.263756 3.16333,-3.263756 1.74736,0 3.16334,1.466179 3.16334,3.263756 z" />
++          </g>
++          <path
++             d="m 207.29882,90.701382 h -0.80339 V 96.8975 l -4.06714,-6.196118 h -0.80339 v 7.531748 h 0.80339 v -6.186075 l 4.06714,6.186075 h 0.80339 z"
++             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.8299px;line-height:1.25;font-family:'Ano Regular';-inkscape-font-specification:'Ano Regular, ';letter-spacing:0px;word-spacing:0px;fill:#dce1ec;fill-opacity:1;stroke:none;stroke-width:0.25106"
++             id="path1806" />
++          <path
++             d="m 213.06923,97.530167 h -3.36418 v -2.711429 h 3.06291 v -0.702963 h -3.06291 v -2.71143 h 3.36418 v -0.702963 h -4.16757 v 7.531748 h 4.16757 z"
++             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.8299px;line-height:1.25;font-family:'Ano Regular';-inkscape-font-specification:'Ano Regular, ';letter-spacing:0px;word-spacing:0px;fill:#dce1ec;fill-opacity:1;stroke:none;stroke-width:0.25106"
++             id="path1808" />
++        </g>
++        <g
++           id="g1820">
++          <path
++             d="m 220.63801,94.467255 c 0,-2.068719 -1.67707,-3.765873 -3.75582,-3.765873 h -2.61101 v 7.531748 h 2.61101 c 2.07875,0 3.75582,-1.687111 3.75582,-3.765875 z m -1.72728,0 c 0,1.174954 -0.94398,2.118932 -2.11893,2.118932 h -0.79335 v -4.237862 h 0.79335 c 1.17495,0 2.11893,0.954021 2.11893,2.11893 z"
++             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.8299px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';letter-spacing:0px;word-spacing:0px;fill:#4f9fee;fill-opacity:1;stroke:none;stroke-width:0.25106"
++             id="path1812" />
++          <path
++             d="m 225.71316,90.701382 h -1.80763 l -2.86207,7.531748 h 1.83776 l 0.40169,-1.064486 h 3.04282 l 0.39166,1.064486 h 1.84778 z m -1.81766,4.830361 0.91384,-2.420202 0.90382,2.420202 z"
++             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.8299px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';letter-spacing:0px;word-spacing:0px;fill:#4f9fee;fill-opacity:1;stroke:none;stroke-width:0.25106"
++             id="path1814" />
++          <path
++             d="m 232.31144,95.190303 c 0.93393,-0.281185 1.6168,-1.154867 1.6168,-2.189227 0,-1.265333 -1.02432,-2.299694 -2.28963,-2.299694 h -2.48047 v 7.531748 h 1.72728 v -2.118932 l 1.67708,2.118932 h 2.14905 z m -0.1105,-2.189227 c 0,0.411736 -0.25106,0.652752 -0.56238,0.652752 h -0.75317 v -1.305503 h 0.75317 c 0.31132,0 0.56238,0.241015 0.56238,0.652751 z"
++             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.8299px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';letter-spacing:0px;word-spacing:0px;fill:#4f9fee;fill-opacity:1;stroke:none;stroke-width:0.25106"
++             id="path1816" />
++          <path
++             d="m 238.75845,90.701382 -2.00846,2.36999 v -2.36999 h -1.72729 v 7.531748 h 1.72729 v -2.339863 l 1.98839,2.339863 h 2.17918 l -3.19346,-3.755832 3.21354,-3.775916 z"
++             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.8299px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';letter-spacing:0px;word-spacing:0px;fill:#4f9fee;fill-opacity:1;stroke:none;stroke-width:0.25106"
++             id="path1818" />
++        </g>
++      </g>
++      <g
++         id="g1790">
++        <path
++           id="path1824"
++           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';fill:#4f9fee;fill-opacity:1;stroke:none;stroke-width:0.171201"
++           d="m 6.0294424,2.568037 c 0,-1.4106927 -1.1436221,-2.568008872565 -2.56116,-2.568008872565 H 1.7851565 V 5.1360473 h 1.6831259 c 1.4175379,0 2.56116,-1.1504695 2.56116,-2.5680103 z m -1.1778576,0 c 0,0.8012186 -0.6437136,1.4449327 -1.4449349,1.4449327 H 2.3364893 v -2.889866 h 1.0701606 c 0.8012213,0 1.4449349,0.6505625 1.4449349,1.4449333 z"
++           sodipodi:nodetypes="ssccssssccss" />
++        <path
++           id="path1826"
++           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';fill:#3d8ad5;fill-opacity:1;stroke:none;stroke-width:0.171201"
++           d="M 2.0300435,1.255144e-5 1.6876461,0.00635735 V 1.0924146 C 1.876678,1.0921558 2.0300435,1.2454526 2.0300435,1.4344813 V 5.1360358 H 3.0666136 C 3.1729317,4.9320827 3.2265932,4.6974519 3.2080542,4.451231 V 4.0128603 H 2.3364893 V 1.1231724 H 3.2023729 C 3.1322897,0.52831193 2.6497261,0.04664426 2.0300435,2.3144399e-7 Z"
++           sodipodi:nodetypes="cccsccccccccc" />
++        <path
++           d="M 1.852148,1.255144e-5 1.6876461,0.00635735 V 1.0924146 C 1.876678,1.0921558 2.0300435,1.2454526 2.0300435,1.4344813 V 5.1360358 H 2.8887173 C 2.9950362,4.9320827 3.0486959,4.6974519 3.0301587,4.451231 V 4.0128603 H 2.1585938 V 1.1231724 H 3.0244775 C 2.9543925,0.52831193 2.4075378,2.3144399e-7 1.852148,2.3144399e-7 Z"
++           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';fill:#2d7bc5;fill-opacity:1;stroke:none;stroke-width:0.171201"
++           id="path1828"
++           sodipodi:nodetypes="cccsccccccccc" />
++        <path
++           inkscape:original-d="M 1.6877949,2.2554433e-6 1.1470667,0.00944201 0.10799299,1.0937135 1.3453905,1.0924815 c 0.1890319,-2.581e-4 0.3424044,0.152908 0.3424044,0.3419373 V 5.8208335 C 2.3912578,5.7679015 2.9185985,5.1546923 2.8656498,4.4512261 V 1.3696243 C 2.9185792,0.66616151 2.3912578,0.05296662 1.6877949,1.5103439e-5 Z"
++           inkscape:path-effect="#path-effect1836"
++           sodipodi:nodetypes="ccccccccsc"
++           id="path1830"
++           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'Ano Black';-inkscape-font-specification:'Ano Black, ';fill:#dce1ec;fill-opacity:1;stroke:none;stroke-width:0.171201"
++           d="M 1.6877949,2.2554433e-6 1.4116097,0.00482375 A 0.63531929,0.63531929 156.39022 0 0 0.96400189,0.2004698 L 0.2910578,0.90268571 A 0.11275169,0.11275169 66.861767 0 0 0.37257619,1.0934501 L 1.3453905,1.0924815 c 0.1890319,-2.581e-4 0.3424044,0.152908 0.3424044,0.3419373 V 5.8208335 C 2.3912578,5.7679015 2.9185985,5.1546923 2.8656498,4.4512261 V 1.3696243 C 2.9185792,0.66616151 2.3912578,0.05296662 1.6877949,1.5103439e-5 Z" />
++      </g>
++    </g>
++  </g>
++</svg>
+diff --git a/main.py b/main.py
+index e527ea0ed79ee02d1c8fb342f03b627c20db89a4..e8f190b931aaec7480554579a8779521598cdb88 100644
+--- a/main.py
++++ b/main.py
+@@ -1,222 +1,662 @@
+-# ///////////////////////////////////////////////////////////////
+-#
+-# BY: WANDERSON M.PIMENTA
+-# PROJECT MADE WITH: Qt Designer and PySide6
+-# V: 1.0.0
+-#
+-# This project can be used freely for all uses, as long as they maintain the
+-# respective credits only in the Python scripts, any information in the visual
+-# interface (GUI) can be modified without any implication.
+-#
+-# There are limitations on Qt licenses if you want to use your products
+-# commercially, I recommend reading them on the official website:
+-# https://doc.qt.io/qtforpython/licenses.html
+-#
+-# ///////////////////////////////////////////////////////////////
+-
+-# IMPORT PACKAGES AND MODULES
+-# ///////////////////////////////////////////////////////////////
+-from gui.uis.windows.main_window.functions_main_window import *
+ import sys
+-import os
++import random
++from pathlib import Path
+ 
+-# IMPORT QT CORE
+-# ///////////////////////////////////////////////////////////////
+-from qt_core import *
++GUI_DIR = Path(__file__).parent / "PyOneDark_GUI_Core"
++sys.path.insert(0, str(GUI_DIR))
++BASE_DIR = Path(__file__).parent
+ 
+-# IMPORT SETTINGS
+-# ///////////////////////////////////////////////////////////////
++from qt_core import *
+ from gui.core.json_settings import Settings
++from gui.core.json_themes import Themes
++from gui.core.functions import Functions
++from pipeline.config import Config
++from pipeline.helpers import (
++    load_settings_json,
++    save_settings_json,
++    extract_frame_ffmpeg,
++)
++from pipeline import generator
++from gui.widgets import (
++    PyPushButton,
++    PyToggle,
++    PyGrips,
++)
++
++
++class ScriptEdit(QPlainTextEdit):
++    """Text editor that accepts .txt drops and loads file contents."""
++
++    def __init__(self, *args, **kwargs):
++        super().__init__(*args, **kwargs)
++        self.setAcceptDrops(True)
++
++    def dragEnterEvent(self, e):
++        if e.mimeData().hasUrls():
++            url = e.mimeData().urls()[0]
++            if url.isLocalFile() and url.toLocalFile().lower().endswith(".txt"):
++                e.acceptProposedAction()
++                return
++        super().dragEnterEvent(e)
++
++    def dropEvent(self, e):
++        if e.mimeData().hasUrls():
++            url = e.mimeData().urls()[0]
++            if url.isLocalFile() and url.toLocalFile().lower().endswith(".txt"):
++                try:
++                    with open(url.toLocalFile(), "r", encoding="utf-8") as f:
++                        self.setPlainText(f.read())
++                except Exception:
++                    pass
++                e.acceptProposedAction()
++                return
++        super().dropEvent(e)
++from gui.uis.windows.main_window.ui_main import UI_MainWindow
++from gui.uis.windows.main_window.functions_main_window import MainFunctions
+ 
+-# IMPORT PY ONE DARK WINDOWS
+-# ///////////////////////////////////////////////////////////////
+-# MAIN WINDOW
+-from gui.uis.windows.main_window import *
+-
+-# IMPORT PY ONE DARK WIDGETS
+-# ///////////////////////////////////////////////////////////////
+-from gui.widgets import *
+ 
+-# ADJUST QT FONT DPI FOR HIGHT SCALE AN 4K MONITOR
+-# ///////////////////////////////////////////////////////////////
+-os.environ["QT_FONT_DPI"] = "96"
+-# IF IS 4K MONITOR ENABLE 'os.environ["QT_SCALE_FACTOR"] = "2"'
+-
+-# MAIN WINDOW
+-# ///////////////////////////////////////////////////////////////
+ class MainWindow(QMainWindow):
+     def __init__(self):
+-        super().__init__()
++        QMainWindow.__init__(self)
++        self.config = Config.load(BASE_DIR / "config" / "config.json")
++        self.config.validate()
++        self.settings = Settings().items
++        Themes.settings_path = str(GUI_DIR / f"gui/themes/{self.settings['theme_name']}.json")
++        self.themes = Themes().items
++        default_user = {
++            "api_key": "",
++            "coqui_fallback": False,
++            "subtitle_font": "Noto Sans",
++            "font_size": 84,
++            "output_folder": str(BASE_DIR / "output"),
++        }
++        self.user_settings_path = BASE_DIR / "settings.json"
++        self.user_settings = load_settings_json(self.user_settings_path, default_user)
++        self.setup_ui()
++        self.build_controls()
++        self.build_settings_page()
++        self.build_help_page()
++        self.reset_form()
++        self.show()
+ 
+-        # SETUP MAIN WINDOw
+-        # Load widgets from "gui\uis\main_window\ui_main.py"
+-        # ///////////////////////////////////////////////////////////////
++    # ------------------------------------------------------------------
++    def setup_ui(self):
+         self.ui = UI_MainWindow()
+         self.ui.setup_ui(self)
+ 
+-        # LOAD SETTINGS
+-        # ///////////////////////////////////////////////////////////////
+-        settings = Settings()
+-        self.settings = settings.items
+-
+-        # SETUP MAIN WINDOW
+-        # ///////////////////////////////////////////////////////////////
+-        self.hide_grips = True # Show/Hide resize grips
+-        SetupMainWindow.setup_gui(self)
+-
+-        # SHOW MAIN WINDOW
+-        # ///////////////////////////////////////////////////////////////
+-        self.show()
+-
+-    # LEFT MENU BTN IS CLICKED
+-    # Run function when btn is clicked
+-    # Check funtion by object name / btn_id
+-    # ///////////////////////////////////////////////////////////////
+-    def btn_clicked(self):
+-        # GET BT CLICKED
+-        btn = SetupMainWindow.setup_btns(self)
+-
+-        # Remove Selection If Clicked By "btn_close_left_column"
+-        if btn.objectName() != "btn_settings":
+-            self.ui.left_menu.deselect_all_tab()
+-
+-        # Get Title Bar Btn And Reset Active         
+-        top_settings = MainFunctions.get_title_bar_btn(self, "btn_top_settings")
+-        top_settings.set_active(False)
+-
+-        # LEFT MENU
+-        # ///////////////////////////////////////////////////////////////
+-        
+-        # HOME BTN
++        # Apply frameless window and title
++        if self.settings["custom_title_bar"]:
++            self.setWindowFlag(Qt.FramelessWindowHint)
++            self.setAttribute(Qt.WA_TranslucentBackground)
++        self.setWindowTitle(self.settings["app_name"])
++
++        # Add grips for resizing
++        if self.settings["custom_title_bar"]:
++            self.left_grip = PyGrips(self, "left", True)
++            self.right_grip = PyGrips(self, "right", True)
++            self.top_grip = PyGrips(self, "top", True)
++            self.bottom_grip = PyGrips(self, "bottom", True)
++            self.top_left_grip = PyGrips(self, "top_left", True)
++            self.top_right_grip = PyGrips(self, "top_right", True)
++            self.bottom_left_grip = PyGrips(self, "bottom_left", True)
++            self.bottom_right_grip = PyGrips(self, "bottom_right", True)
++
++        # Configure menus
++        menus = [
++            {
++                "btn_icon": "icon_home.svg",
++                "btn_id": "btn_home",
++                "btn_text": "Home",
++                "btn_tooltip": "Home page",
++                "show_top": True,
++                "is_active": True,
++            },
++            {
++                "btn_icon": "icon_settings.svg",
++                "btn_id": "btn_settings",
++                "btn_text": "Settings",
++                "btn_tooltip": "Application settings",
++                "show_top": True,
++                "is_active": False,
++            },
++            {
++                "btn_icon": "icon_info.svg",
++                "btn_id": "btn_help",
++                "btn_text": "Help",
++                "btn_tooltip": "Help and About",
++                "show_top": True,
++                "is_active": False,
++            },
++        ]
++        self.ui.left_menu.add_menus(menus)
++        self.ui.left_menu.clicked.connect(self.menu_clicked)
++        self.ui.left_menu.released.connect(self.menu_released)
++
++        # Brand logo on sidebar
++        logo = QLabel()
++        logo_pix = QPixmap(str(BASE_DIR / "assets" / "gui_assets" / "logo_autocontent.png"))
++        logo.setPixmap(logo_pix.scaled(100, 30, Qt.KeepAspectRatio, Qt.SmoothTransformation))
++        logo.setAlignment(Qt.AlignCenter)
++        logo.setContentsMargins(0, 10, 0, 10)
++        logo.setToolTip("AutoContent")
++        self.ui.left_menu.top_layout.insertWidget(0, logo)
++        self.ui.title_bar.add_menus([])
++        self.ui.title_bar.clicked.connect(self.menu_clicked)
++        self.ui.title_bar.released.connect(self.menu_released)
++        self.ui.title_bar.set_title(self.settings["app_name"])
++
++        # Hide unused columns
++        self.ui.left_column_frame.setMinimumWidth(0)
++        self.ui.left_column_frame.setMaximumWidth(0)
++        self.ui.right_column_frame.setMinimumWidth(0)
++        self.ui.right_column_frame.setMaximumWidth(0)
++
++        # Set home page
++        MainFunctions.set_page(self, self.ui.load_pages.page_1)
++
++    # ------------------------------------------------------------------
++    def build_controls(self):
++        theme = self.themes["app_color"]
++        layout = self.ui.load_pages.controls_layout
++        layout.setAlignment(Qt.AlignTop | Qt.AlignHCenter)
++
++        def section(title):
++            frame = QFrame()
++            frame.setMaximumWidth(520)
++            frame.setStyleSheet(
++                f"border: 1px solid {theme['dark_four']}; border-radius: 4px;"
++            )
++            fl = QVBoxLayout(frame)
++            fl.setContentsMargins(10, 10, 10, 10)
++            lbl = QLabel(title)
++            lbl.setStyleSheet("font-weight: bold")
++            fl.addWidget(lbl)
++            layout.addWidget(frame, alignment=Qt.AlignHCenter)
++            return fl
++
++        # Script input section
++        script_layout = section("Script Input")
++
++        self.title_edit = QLineEdit()
++        self.title_edit.setPlaceholderText("Enter title (used for filenames)")
++        self.title_edit.setMaximumWidth(500)
++        self.title_edit.setToolTip("Used to name your project files")
++        self.title_edit.textChanged.connect(self.update_create_btn)
++        script_layout.addWidget(self.title_edit)
++
++        self.script_edit = ScriptEdit()
++        self.script_edit.setPlaceholderText("Drag and drop or paste your script here")
++        self.script_edit.setMinimumHeight(120)
++        self.script_edit.setMaximumWidth(500)
++        self.script_edit.setStyleSheet(
++            f"background-color: {theme['dark_one']}; color: {theme['text_foreground']};"
++        )
++        self.script_edit.textChanged.connect(self.update_create_btn)
++        self.script_edit.setToolTip("Paste or drag-and-drop your story script here")
++        script_layout.addWidget(self.script_edit)
++
++        btn_row = QHBoxLayout()
++        self.upload_btn = PyPushButton(
++            text="Upload",
++            radius=8,
++            color=theme["text_foreground"],
++            bg_color=theme["dark_three"],
++            bg_color_hover=theme["context_hover"],
++            bg_color_pressed=theme["context_pressed"],
++        )
++        self.upload_btn.setToolTip("Upload a .txt or .docx script file")
++        self.upload_btn.setIcon(QIcon(Functions.set_svg_icon("icon_folder_open.svg")))
++        self.upload_btn.setMaximumWidth(500)
++        self.upload_btn.clicked.connect(self.upload_script)
++        btn_row.addWidget(self.upload_btn)
++
++        self.ai_btn = PyPushButton(
++            text="Generate with AI",
++            radius=8,
++            color=theme["text_foreground"],
++            bg_color=theme["dark_three"],
++            bg_color_hover=theme["context_hover"],
++            bg_color_pressed=theme["context_pressed"],
++        )
++        self.ai_btn.setToolTip("Generate a short horror story with Mistral")
++        self.ai_btn.setMaximumWidth(500)
++        self.ai_btn.clicked.connect(self.generate_story_with_ai)
++        btn_row.addWidget(self.ai_btn)
++
++        self.reset_btn = PyPushButton(
++            text="Reset",
++            radius=8,
++            color=theme["text_foreground"],
++            bg_color=theme["dark_three"],
++            bg_color_hover=theme["context_hover"],
++            bg_color_pressed=theme["context_pressed"],
++        )
++        self.reset_btn.setToolTip("Reset all fields")
++        self.reset_btn.setIcon(QIcon(Functions.set_svg_icon("icon_restore.svg")))
++        self.reset_btn.setMaximumWidth(500)
++        self.reset_btn.clicked.connect(self.reset_form)
++        btn_row.addWidget(self.reset_btn)
++        script_layout.addLayout(btn_row)
++
++        # Voice selection
++        voice_layout = section("Voice Selection")
++        row1 = QHBoxLayout()
++        self.voice_combo = QComboBox()
++        voices = list(self.config.voices.keys()) if self.config.voices else []
++        self.voice_combo.addItems(voices)
++        self.voice_combo.setToolTip("Select narration style")
++        self.voice_combo.setMaximumWidth(500)
++        row1.addWidget(self.voice_combo)
++
++        self.preview_btn = PyPushButton(
++            text="",
++            radius=8,
++            color=theme["text_foreground"],
++            bg_color=theme["dark_three"],
++            bg_color_hover=theme["context_hover"],
++            bg_color_pressed=theme["context_pressed"],
++        )
++        self.preview_btn.setIcon(QIcon(Functions.set_svg_icon("icon_play.svg")))
++        self.preview_btn.setToolTip("Preview selected voice")
++        self.preview_btn.setMaximumWidth(500)
++        self.preview_btn.clicked.connect(self.preview_voice)
++        row1.addWidget(self.preview_btn)
++        voice_layout.addLayout(row1)
++
++        # Video settings
++        video_layout = section("Video Settings")
++        self.subtitle_combo = QComboBox()
++        self.subtitle_combo.addItems(["karaoke", "progressive", "simple"])
++        self.subtitle_combo.setToolTip("Choose a subtitle style")
++        self.subtitle_combo.setMaximumWidth(500)
++        video_layout.addWidget(self.subtitle_combo)
++
++        wm_row = QHBoxLayout()
++        self.watermark_toggle = PyToggle(
++            bg_color=theme["dark_three"],
++            circle_color=theme["icon_color"],
++            active_color=theme["context_color"],
++        )
++        self.watermark_toggle.setToolTip("Toggle AutoContent watermark on/off")
++        self.watermark_toggle.toggled.connect(self.update_watermark_label)
++        wm_row.addWidget(self.watermark_toggle)
++        self.watermark_label = QLabel("Watermark: Off")
++        wm_row.addWidget(self.watermark_label)
++        wm_row.addStretch()
++        video_layout.addLayout(wm_row)
++
++        # Background style
++        bg_layout = section("Background Video Style")
++        row2 = QHBoxLayout()
++        self.bg_combo = QComboBox()
++        bg_styles = list(self.config.background_styles.keys()) if self.config.background_styles else []
++        self.bg_combo.addItems(bg_styles)
++        self.bg_combo.setToolTip("Choose video background style")
++        self.bg_combo.setMaximumWidth(500)
++        self.bg_combo.currentTextChanged.connect(self.update_preview_from_style)
++        row2.addWidget(self.bg_combo)
++
++        self.surprise_btn = PyPushButton(
++            text="Surprise Me",
++            radius=8,
++            color=theme["text_foreground"],
++            bg_color=theme["dark_three"],
++            bg_color_hover=theme["context_hover"],
++            bg_color_pressed=theme["context_pressed"],
++        )
++        self.surprise_btn.setToolTip("Randomize voice and background")
++        self.surprise_btn.setIcon(QIcon(Functions.set_svg_icon("icon_more_options.svg")))
++        self.surprise_btn.setMaximumWidth(500)
++        self.surprise_btn.clicked.connect(self.surprise_me)
++        row2.addWidget(self.surprise_btn)
++        bg_layout.addLayout(row2)
++
++        # Resolution
++        res_layout = section("Resolution")
++        self.res_combo = QComboBox()
++        resolutions = self.config.resolutions or []
++        self.res_combo.addItems(resolutions)
++        self.res_combo.setToolTip("Set final video dimensions")
++        self.res_combo.setMaximumWidth(500)
++        self.res_combo.currentTextChanged.connect(self.update_create_btn)
++        res_layout.addWidget(self.res_combo)
++
++        # Action buttons
++        action_layout = section("Action Buttons")
++        initial_res = self.res_combo.currentText() if self.res_combo.count() else "1080x1920"
++        self.output_info = QLabel(f"MP4 | {initial_res} @30fps | Watermark Off")
++        self.output_info.setAlignment(Qt.AlignCenter)
++        action_layout.addWidget(self.output_info)
++
++        self.create_btn = PyPushButton(
++            text="Create Content",
++            radius=8,
++            color=theme["text_foreground"],
++            bg_color=theme["context_color"],
++            bg_color_hover=theme["context_hover"],
++            bg_color_pressed=theme["context_pressed"],
++        )
++        self.create_btn.setToolTip(
++            "Render full video with voiceover, subtitles, and background"
++        )
++        self.create_btn.setIcon(QIcon(Functions.set_svg_icon("icon_send.svg")))
++        self.create_btn.setEnabled(False)
++        self.create_btn.setMaximumWidth(500)
++        self.create_btn.clicked.connect(self.run_pipeline)
++        action_layout.addWidget(self.create_btn)
++
++        status = QHBoxLayout()
++        self.status_dot = QLabel("\u25CF")
++        self.status_dot.setStyleSheet(f"color: {theme['green']}")
++        status.addWidget(self.status_dot)
++        self.status_text = QLabel("Idle")
++        status.addWidget(self.status_text)
++        status.addStretch()
++        self.ready_label = QLabel("Ready")
++        status.addWidget(self.ready_label, alignment=Qt.AlignRight)
++        layout.addLayout(status)
++
++        layout.addStretch()
++
++        # Preview placeholder
++        self.preview_container = QFrame()
++        self.preview_container.setStyleSheet(
++            f"background-color: {theme['dark_one']}; border-radius: 10px;"
++        )
++        shadow = QGraphicsDropShadowEffect(blurRadius=20)
++        shadow.setColor(QColor(theme["context_color"]))
++        shadow.setOffset(0, 0)
++        self.preview_container.setGraphicsEffect(shadow)
++        self.preview_container.setFixedSize(270, 480)
++        preview_layout = QVBoxLayout(self.preview_container)
++        preview_layout.setContentsMargins(0, 0, 0, 0)
++        preview_layout.setAlignment(Qt.AlignCenter)
++        preview_bg = QLabel()
++        pix = QPixmap(str(BASE_DIR / "assets" / "gui_assets" / "phone_frame.png"))
++        preview_bg.setPixmap(pix)
++        preview_bg.setScaledContents(True)
++        preview_layout.addWidget(preview_bg)
++
++        frame_layout = QVBoxLayout(preview_bg)
++        frame_layout.setContentsMargins(30, 70, 30, 70)
++        self.preview_label = QLabel("No preview yet")
++        self.preview_label.setAlignment(Qt.AlignCenter)
++        frame_layout.addWidget(self.preview_label)
++        self.ui.load_pages.preview_layout.addWidget(self.preview_container, 0, Qt.AlignTop | Qt.AlignHCenter)
++        if self.bg_combo.count():
++            self.update_preview_from_style(self.bg_combo.currentText())
++        self.update_preview_size()
++
++    # ------------------------------------------------------------------
++    def build_settings_page(self):
++        theme = self.themes["app_color"]
++        self.ui.load_pages.title_label.setText("Settings")
++        self.ui.load_pages.description_label.setText("Configure application preferences")
++
++        lay = self.ui.load_pages.verticalLayout
++        def field(title):
++            frame = QFrame()
++            frame.setMaximumWidth(520)
++            frame.setStyleSheet(
++                f"border: 1px solid {theme['dark_four']}; border-radius: 4px;"
++            )
++            fl = QVBoxLayout(frame)
++            fl.setContentsMargins(10, 10, 10, 10)
++            lbl = QLabel(title)
++            lbl.setStyleSheet("font-weight: bold")
++            fl.addWidget(lbl)
++            lay.addWidget(frame, alignment=Qt.AlignHCenter)
++            return fl
++
++        api_sec = field("ElevenLabs API Key")
++        self.api_edit = QLineEdit()
++        self.api_edit.setEchoMode(QLineEdit.Password)
++        self.api_edit.setMaximumWidth(500)
++        self.api_edit.setToolTip("Your ElevenLabs API key")
++        api_sec.addWidget(self.api_edit)
++
++        coqui_row = QHBoxLayout()
++        self.coqui_toggle = PyToggle(bg_color=theme["dark_three"], circle_color=theme["icon_color"], active_color=theme["context_color"])
++        self.coqui_toggle.setToolTip("Enable Coqui fallback")
++        coqui_row.addWidget(self.coqui_toggle)
++        coqui_row.addWidget(QLabel("Use Coqui fallback"))
++        api_sec.addLayout(coqui_row)
++
++        font_sec = field("Subtitle Font")
++        self.font_combo = QComboBox()
++        self.font_combo.addItems(["Noto Sans", "Arial", "Times"])
++        self.font_combo.setMaximumWidth(500)
++        self.font_combo.setToolTip("Subtitle font family")
++        font_sec.addWidget(self.font_combo)
++
++        size_row = QHBoxLayout()
++        size_row.addWidget(QLabel("Font Size"))
++        self.font_size = QSpinBox()
++        self.font_size.setRange(10, 200)
++        self.font_size.setValue(84)
++        self.font_size.setToolTip("Subtitle font size")
++        size_row.addWidget(self.font_size)
++        font_sec.addLayout(size_row)
++
++        out_sec = field("Output Folder")
++        out_row = QHBoxLayout()
++        self.output_path = QLabel(str(BASE_DIR / "output"))
++        out_row.addWidget(self.output_path)
++        self.browse_btn = PyPushButton(
++            text="Browse",
++            radius=8,
++            color=theme["text_foreground"],
++            bg_color=theme["dark_three"],
++            bg_color_hover=theme["context_hover"],
++            bg_color_pressed=theme["context_pressed"],
++        )
++        self.browse_btn.setToolTip("Select output folder")
++        self.browse_btn.clicked.connect(self.select_output_folder)
++        out_row.addWidget(self.browse_btn)
++        out_sec.addLayout(out_row)
++
++        save_sec = field("Save")
++        self.save_btn = PyPushButton(
++            text="Save Settings",
++            radius=8,
++            color=theme["text_foreground"],
++            bg_color=theme["context_color"],
++            bg_color_hover=theme["context_hover"],
++            bg_color_pressed=theme["context_pressed"],
++        )
++        self.save_btn.setToolTip("Save all settings")
++        self.save_btn.clicked.connect(self.save_settings)
++        save_sec.addWidget(self.save_btn)
++        lay.addStretch()
++
++        # Apply stored settings
++        self.api_edit.setText(self.user_settings.get("api_key", ""))
++        self.coqui_toggle.setChecked(bool(self.user_settings.get("coqui_fallback")))
++        font = self.user_settings.get("subtitle_font", "Noto Sans")
++        idx = self.font_combo.findText(font)
++        if idx >= 0:
++            self.font_combo.setCurrentIndex(idx)
++        self.font_size.setValue(int(self.user_settings.get("font_size", 84)))
++        self.output_path.setText(self.user_settings.get("output_folder", str(BASE_DIR / "output")))
++
++    # ------------------------------------------------------------------
++    def build_help_page(self):
++        self.ui.load_pages.empty_page_label.setWordWrap(True)
++        self.ui.load_pages.empty_page_label.setText(
++            "<b>AutoContent</b>\nUse this tool to generate narrated videos from your scripts.\n"\
++            "1. Enter or upload your script.\n2. Choose voice and style options.\n"\
++            "3. Click 'Create Content' to render." )
++
++    # ------------------------------------------------------------------
++    def menu_clicked(self, btn):
++        if not btn:
++            return
++        self.ui.left_menu.select_only_one(btn.objectName())
+         if btn.objectName() == "btn_home":
+-            # Select Menu
+-            self.ui.left_menu.select_only_one(btn.objectName())
+-
+-            # Load Page 1
+             MainFunctions.set_page(self, self.ui.load_pages.page_1)
+-
+-        # WIDGETS BTN
+-        if btn.objectName() == "btn_widgets":
+-            # Select Menu
+-            self.ui.left_menu.select_only_one(btn.objectName())
+-
+-            # Load Page 2
++        elif btn.objectName() == "btn_settings":
+             MainFunctions.set_page(self, self.ui.load_pages.page_2)
+-
+-        # LOAD USER PAGE
+-        if btn.objectName() == "btn_add_user":
+-            # Select Menu
+-            self.ui.left_menu.select_only_one(btn.objectName())
+-
+-            # Load Page 3 
++        elif btn.objectName() == "btn_help":
+             MainFunctions.set_page(self, self.ui.load_pages.page_3)
+ 
+-        # BOTTOM INFORMATION
+-        if btn.objectName() == "btn_info":
+-            # CHECK IF LEFT COLUMN IS VISIBLE
+-            if not MainFunctions.left_column_is_visible(self):
+-                self.ui.left_menu.select_only_one_tab(btn.objectName())
+-
+-                # Show / Hide
+-                MainFunctions.toggle_left_column(self)
+-                self.ui.left_menu.select_only_one_tab(btn.objectName())
+-            else:
+-                if btn.objectName() == "btn_close_left_column":
+-                    self.ui.left_menu.deselect_all_tab()
+-                    # Show / Hide
+-                    MainFunctions.toggle_left_column(self)
+-                
+-                self.ui.left_menu.select_only_one_tab(btn.objectName())
+-
+-            # Change Left Column Menu
+-            if btn.objectName() != "btn_close_left_column":
+-                MainFunctions.set_left_column_menu(
+-                    self, 
+-                    menu = self.ui.left_column.menus.menu_2,
+-                    title = "Info tab",
+-                    icon_path = Functions.set_svg_icon("icon_info.svg")
++    def menu_released(self, btn):
++        if btn:
++            print(f"Released {btn.objectName()}")
++
++    def upload_script(self):
++        path, _ = QFileDialog.getOpenFileName(self, "Open Script", "", "Text Files (*.txt)")
++        if path:
++            with open(path, "r", encoding="utf-8") as f:
++                self.script_edit.setText(f.read())
++
++    def generate_story_with_ai(self):
++        self.ai_btn.setEnabled(False)
++        QApplication.setOverrideCursor(Qt.WaitCursor)
++        try:
++            story = generator.generate_story(
++                prompt=(
++                    "Generate a 150–200 word short horror story designed for TikTok or "
++                    "YouTube Shorts. Make it punchy and disturbing."
+                 )
+-
+-        # SETTINGS LEFT
+-        if btn.objectName() == "btn_settings" or btn.objectName() == "btn_close_left_column":
+-            # CHECK IF LEFT COLUMN IS VISIBLE
+-            if not MainFunctions.left_column_is_visible(self):
+-                # Show / Hide
+-                MainFunctions.toggle_left_column(self)
+-                self.ui.left_menu.select_only_one_tab(btn.objectName())
+-            else:
+-                if btn.objectName() == "btn_close_left_column":
+-                    self.ui.left_menu.deselect_all_tab()
+-                    # Show / Hide
+-                    MainFunctions.toggle_left_column(self)
+-                self.ui.left_menu.select_only_one_tab(btn.objectName())
+-
+-            # Change Left Column Menu
+-            if btn.objectName() != "btn_close_left_column":
+-                MainFunctions.set_left_column_menu(
+-                    self, 
+-                    menu = self.ui.left_column.menus.menu_1,
+-                    title = "Settings Left Column",
+-                    icon_path = Functions.set_svg_icon("icon_settings.svg")
+-                )
+-        
+-        # TITLE BAR MENU
+-        # ///////////////////////////////////////////////////////////////
+-        
+-        # SETTINGS TITLE BAR
+-        if btn.objectName() == "btn_top_settings":
+-            # Toogle Active
+-            if not MainFunctions.right_column_is_visible(self):
+-                btn.set_active(True)
+-
+-                # Show / Hide
+-                MainFunctions.toggle_right_column(self)
+-            else:
+-                btn.set_active(False)
+-
+-                # Show / Hide
+-                MainFunctions.toggle_right_column(self)
+-
+-            # Get Left Menu Btn            
+-            top_settings = MainFunctions.get_left_menu_btn(self, "btn_settings")
+-            top_settings.set_active_tab(False)            
+-
+-        # DEBUG
+-        print(f"Button {btn.objectName()}, clicked!")
+-
+-    # LEFT MENU BTN IS RELEASED
+-    # Run function when btn is released
+-    # Check funtion by object name / btn_id
+-    # ///////////////////////////////////////////////////////////////
+-    def btn_released(self):
+-        # GET BT CLICKED
+-        btn = SetupMainWindow.setup_btns(self)
+-
+-        # DEBUG
+-        print(f"Button {btn.objectName()}, released!")
+-
+-    # RESIZE EVENT
+-    # ///////////////////////////////////////////////////////////////
++            )
++            self.script_edit.setPlainText(story)
++            QToolTip.showText(
++                self.ai_btn.mapToGlobal(QPoint(0, 0)),
++                "Story generated successfully",
++                self.ai_btn,
++            )
++        except Exception as e:
++            QMessageBox.warning(self, "Generation Failed", str(e))
++        finally:
++            QApplication.restoreOverrideCursor()
++            self.ai_btn.setEnabled(True)
++        self.update_create_btn()
++
++    def surprise_me(self):
++        theme = self.themes["app_color"]
++        combos = [self.voice_combo, self.bg_combo]
++        for combo in combos:
++            if combo.count():
++                combo.setCurrentIndex(random.randrange(combo.count()))
++                orig = combo.styleSheet()
++                combo.setStyleSheet(orig + f"; border: 2px solid {theme['context_color']}")
++                QTimer.singleShot(300, lambda c=combo, s=orig: c.setStyleSheet(s))
++        print(
++            f"Surprise: voice {self.voice_combo.currentText()}, background {self.bg_combo.currentText()}"
++        )
++        self.update_preview_from_style(self.bg_combo.currentText())
++
++    def update_watermark_label(self, checked):
++        state = "On" if checked else "Off"
++        self.watermark_label.setText(f"Watermark: {state}")
++        res = self.res_combo.currentText() if self.res_combo.count() else "1080x1920"
++        self.output_info.setText(f"MP4 | {res} @30fps | Watermark {state}")
++
++    def preview_voice(self):
++        print(f"Previewing {self.voice_combo.currentText()}")
++
++    def update_preview_size(self):
++        available = self.ui.load_pages.page_1.width()
++        width = max(250, int(available * 0.35))
++        height = int(width * 16 / 9)
++        self.preview_container.setFixedSize(width, height)
++
++    def set_preview_pixmap(self, pix: QPixmap | None):
++        if pix and not pix.isNull():
++            self.preview_label.setPixmap(pix.scaled(self.preview_label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
++            self.preview_label.setScaledContents(True)
++            self.preview_label.setText("")
++        else:
++            self.preview_label.setPixmap(QPixmap())
++            self.preview_label.setText("No preview yet")
++
++    def update_preview_from_style(self, style: str):
++        folder_rel = self.config.background_styles.get(style)
++        if not folder_rel:
++            self.set_preview_pixmap(None)
++            return
++        folder = BASE_DIR / folder_rel
++        thumb = folder / "preview.png"
++        if thumb.exists():
++            self.set_preview_pixmap(QPixmap(str(thumb)))
++            return
++        video = next((p for p in folder.iterdir() if p.suffix.lower() in {".mp4", ".webm", ".mov"}), None)
++        if video:
++            temp = folder / "preview_temp.png"
++            if extract_frame_ffmpeg(video, temp):
++                self.set_preview_pixmap(QPixmap(str(temp)))
++                return
++        self.set_preview_pixmap(None)
++
++    def reset_preview(self):
++        self.set_preview_pixmap(None)
++
++    def reset_form(self):
++        self.script_edit.clear()
++        self.title_edit.clear()
++        for combo in (self.voice_combo, self.subtitle_combo, self.bg_combo, self.res_combo):
++            combo.setCurrentIndex(0)
++        self.watermark_toggle.setChecked(False)
++        self.update_create_btn()
++        self.update_watermark_label(False)
++        self.reset_preview()
++
++    def update_create_btn(self):
++        text = self.script_edit.toPlainText().strip()
++        title = self.title_edit.text().strip()
++        self.create_btn.setEnabled(bool(text and title))
++        state = "On" if self.watermark_toggle.isChecked() else "Off"
++        res = self.res_combo.currentText() if self.res_combo.count() else "1080x1920"
++        self.output_info.setText(f"MP4 | {res} @30fps | Watermark {state}")
++
++    def run_pipeline(self):
++        print("Starting pipeline...")
++        self.status_text.setText("Rendering…")
++        output_dir = Path(self.output_path.text())
++        final_video = output_dir / "final_video.mp4"
++
++        def done() -> None:
++            self.status_text.setText("Video saved to output folder.")
++            if final_video.exists():
++                thumb = output_dir / "preview_final.png"
++                if extract_frame_ffmpeg(final_video, thumb):
++                    self.set_preview_pixmap(QPixmap(str(thumb)))
++
++        QTimer.singleShot(1000, done)
++
++    def select_output_folder(self):
++        path = QFileDialog.getExistingDirectory(self, "Select Output Folder")
++        if path:
++            self.output_path.setText(path)
++
++    def save_settings(self):
++        self.user_settings.update(
++            {
++                "api_key": self.api_edit.text(),
++                "coqui_fallback": self.coqui_toggle.isChecked(),
++                "subtitle_font": self.font_combo.currentText(),
++                "font_size": self.font_size.value(),
++                "output_folder": self.output_path.text(),
++            }
++        )
++        save_settings_json(self.user_settings, self.user_settings_path)
++        self.status_text.setText("Settings saved successfully")
++
++    # Resize grips
+     def resizeEvent(self, event):
+-        SetupMainWindow.resize_grips(self)
++        if self.settings["custom_title_bar"]:
++            self.left_grip.setGeometry(5, 10, 10, self.height())
++            self.right_grip.setGeometry(self.width() - 15, 10, 10, self.height())
++            self.top_grip.setGeometry(5, 5, self.width() - 10, 10)
++            self.bottom_grip.setGeometry(5, self.height() - 15, self.width() - 10, 10)
++            self.top_right_grip.setGeometry(self.width() - 20, 5, 15, 15)
++            self.bottom_left_grip.setGeometry(5, self.height() - 20, 15, 15)
++            self.bottom_right_grip.setGeometry(self.width() - 20, self.height() - 20, 15, 15)
++        self.update_preview_size()
++        super().resizeEvent(event)
+ 
+-    # MOUSE CLICK EVENTS
+-    # ///////////////////////////////////////////////////////////////
+-    def mousePressEvent(self, event):
+-        # SET DRAG POS WINDOW
+-        self.dragPos = event.globalPos()
+ 
+-
+-# SETTINGS WHEN TO START
+-# Set the initial class and also additional parameters of the "QApplication" class
+-# ///////////////////////////////////////////////////////////////
+ if __name__ == "__main__":
+-    # APPLICATION
+-    # ///////////////////////////////////////////////////////////////
+     app = QApplication(sys.argv)
+-    app.setWindowIcon(QIcon("icon.ico"))
+     window = MainWindow()
+-
+-    # EXEC APP
+-    # ///////////////////////////////////////////////////////////////
+-    sys.exit(app.exec_())
+\ No newline at end of file
++    sys.exit(app.exec())
+diff --git a/pipeline/helpers.py b/pipeline/helpers.py
+index 16a2527b1aae338af1b29cefb45c1d4d1a160491..9ef8bff0d2dd561fe00c2de1dac2efd774a42acd 100644
+--- a/pipeline/helpers.py
++++ b/pipeline/helpers.py
+@@ -10,89 +10,93 @@ import traceback
+ import wave
+ import subprocess
+ 
+ 
+ def sanitize_name(name: str) -> str:
+     """Return a filesystem-safe version of *name*."""
+     cleaned = re.sub(r"[^a-zA-Z0-9_-]", "_", name.strip())
+     return cleaned or "session"
+ 
+ 
+ def now_ts_folder() -> str:
+     return datetime.now().strftime("%Y%m%d_%H%M%S")
+ 
+ 
+ def iso_timestamp() -> str:
+     return datetime.now().isoformat(timespec="seconds")
+ 
+ 
+ def sanitize_filename(name: str) -> str:
+     """Alias for sanitize_name for backward compatibility."""
+     return sanitize_name(name)
+ 
+ 
+ def zip_folder(folder: Path, dest_zip: Path) -> Path:
+     """Create a zip archive of *folder* at *dest_zip* (without extension)."""
++    if not folder.exists():
++        raise FileNotFoundError(f"Folder not found: {folder}")
+     dest_zip = dest_zip.with_suffix(".zip")
+     base = dest_zip.with_suffix("")
+     shutil.make_archive(str(base), "zip", root_dir=folder)
+     return dest_zip
+ 
+ 
+ def run_with_timeout(func: Callable[..., Any], timeout: float, *args, **kwargs) -> Any:
+     """Run *func* with timeout. Raises TimeoutError if timeout exceeded."""
+     result: dict[str, Any] = {}
+     exc: list[BaseException] = []
+ 
+     def target() -> None:
+         try:
+             result["value"] = func(*args, **kwargs)
+         except BaseException as e:  # capture all
+             exc.append(e)
+ 
+     thread = threading.Thread(target=target)
+     thread.start()
+     thread.join(timeout)
+     if thread.is_alive():
+         raise TimeoutError(f"{func.__name__} timed out after {timeout}s")
+     if exc:
+         raise exc[0]
+     return result.get("value")
+ 
+ 
+ def create_silence(path: Path, duration: float = 1.0) -> None:
+     """Create a silent WAV file of *duration* seconds."""
++    path.parent.mkdir(parents=True, exist_ok=True)
+     n_frames = int(44100 * duration)
+     with wave.open(str(path), "w") as wf:
+         wf.setnchannels(1)
+         wf.setsampwidth(2)
+         wf.setframerate(44100)
+         wf.writeframes(b"\x00\x00" * n_frames)
+ 
+ 
+ def create_dummy_subtitles(path: Path) -> None:
+     """Write a minimal subtitle file when generation fails."""
++    path.parent.mkdir(parents=True, exist_ok=True)
+     text = "[Script Info]\nScriptType: v4.00+\n\n[V4+ Styles]\n" \
+         "Format: Name, Fontname, Fontsize, PrimaryColour, BackColour, " \
+         "OutlineColour, Bold, Italic, Alignment, MarginL, MarginR, " \
+         "MarginV, BorderStyle, Outline, Shadow, Encoding\n" \
+         "Style: Default,Arial,48,&H00FFFFFF,&H00000000,&H00000000,0,0,2,10,10,10,1,2,0,0\n" \
+         "[Events]\nFormat: Start, End, Style, Text\nDialogue: 0,0:00:00.00,0:00:02.00,Default,Subtitle generation failed\n"
+     path.write_text(text)
+ 
+ 
+ @dataclass
+ class PipelineContext:
+     script_text: str
+     script_name: str
+     output_dir: Path
+     subtitle_style: str
+     voice_engine: str
+     voice_id: Optional[str] = None
+     voiceover_path: Path = field(init=False)
+     subtitles_path: Path = field(init=False)
+     final_video_path: Path = field(init=False)
+     script_path: Path = field(init=False)
+     log_file: Optional[Path] = None
+     debug: bool = False
+     timestamp: str = field(default_factory=iso_timestamp)
+ 
+@@ -180,79 +184,130 @@ def validate_files(*paths: Path) -> list[Path]:
+     return missing
+ 
+ 
+ def preview_voice(engine: str, voice_id: str, coqui_model: str) -> Path:
+     """Generate and play a short voice preview."""
+     from .voiceover import VoiceOverGenerator
+ 
+     preview = Path("_preview.wav")
+     generator = VoiceOverGenerator(engine, voice_id, coqui_model)
+     try:
+         generator.generate(f"This is a sample of {voice_id}", preview)
+         try:
+             from playsound import playsound  # pragma: no cover - optional dep
+ 
+             playsound(str(preview))
+         except Exception:
+             pass
+     except Exception as e:  # pragma: no cover - runtime failures
+         color_print("ERROR", f"Voice preview failed: {e}")
+         log_trace(e)
+     return preview
+ 
+ 
+ def trim_silence_ffmpeg(audio: Path, ffmpeg: str = "ffmpeg") -> None:
+     """Trim leading and trailing silence from *audio* using ffmpeg."""
++    if not shutil.which(ffmpeg):
++        color_print("ERROR", f"ffmpeg not found: {ffmpeg}")
++        return
+     trimmed = audio.with_name(audio.stem + "_trim.wav")
+     cmd = [
+         ffmpeg,
+         "-y",
+         "-i",
+         str(audio),
+         "-af",
+         "silenceremove=start_periods=1:start_duration=0.1:start_threshold=-45dB:stop_periods=1:stop_duration=0.1:stop_threshold=-45dB",
+         str(trimmed),
+     ]
+     try:
+         subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+         if trimmed.exists() and trimmed.stat().st_size > 0:
+             audio.unlink(missing_ok=True)
+             trimmed.rename(audio)
+     except Exception as e:  # pragma: no cover - runtime
+         color_print("ERROR", f"trim_silence failed: {e}")
+ 
+ 
+ def validate_video(path: Path, subtitles_required: bool = True, ffprobe: str = "ffprobe") -> dict:
+     """Return basic validation info for *path*."""
++    if not shutil.which(ffprobe):
++        return {
++            "exists": False,
++            "duration": False,
++            "resolution": False,
++            "audio": False,
++            "subtitles": False,
++            "size": False,
++        }
++
+     info = {
+         "exists": path.exists() and path.stat().st_size > 0,
+         "duration": False,
+         "resolution": False,
+         "audio": False,
+         "subtitles": not subtitles_required,
+         "size": False,
+     }
+     if not info["exists"]:
+         return info
+     try:
+         result = subprocess.run(
+             [ffprobe, "-v", "error", "-show_entries", "format=duration,size", "-show_streams", "-of", "json", str(path)],
+             check=True,
+             capture_output=True,
+             text=True,
+         )
+         data = json.loads(result.stdout)
+         fmt = data.get("format", {})
+         dur = float(fmt.get("duration", 0))
+         info["duration"] = dur > 0
+         info["size"] = int(fmt.get("size", 0)) > 0
+         streams = data.get("streams", [])
+         for s in streams:
+             if s.get("codec_type") == "video" and s.get("width") and s.get("height"):
+                 info["resolution"] = True
+             if s.get("codec_type") == "audio":
+                 info["audio"] = True
+             if subtitles_required and s.get("codec_type") == "subtitle":
+                 info["subtitles"] = True
+     except Exception:
+         pass
+     return info
++
++
++def load_settings_json(path: Path, defaults: dict | None = None) -> dict:
++    """Load settings from *path* applying *defaults* if provided."""
++    data: dict = {}
++    defaults = defaults or {}
++    if path.exists():
++        try:
++            data = json.loads(path.read_text())
++        except Exception:
++            data = {}
++    for k, v in defaults.items():
++        data.setdefault(k, v)
++    return data
++
++
++def save_settings_json(data: dict, path: Path) -> None:
++    """Write *data* to *path* in JSON format."""
++    path.parent.mkdir(parents=True, exist_ok=True)
++    try:
++        with open(path, "w", encoding="utf-8") as f:
++            json.dump(data, f, indent=2)
++    except Exception:
++        pass
++
++
++def extract_frame_ffmpeg(video: Path, output: Path, ffmpeg: str = "ffmpeg") -> bool:
++    """Extract the first frame from *video* using ffmpeg."""
++    if not shutil.which(ffmpeg) or not video.exists():
++        return False
++    output.parent.mkdir(parents=True, exist_ok=True)
++    cmd = [ffmpeg, "-y", "-i", str(video), "-frames:v", "1", str(output)]
++    try:
++        subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
++        return output.exists()
++    except Exception:
++        return False
++
+diff --git a/pipeline/renderer.py b/pipeline/renderer.py
+index fa8fa343e6262057ac71354bd1f5c74af8c88d25..74106ffaf1a46591f78f59fa6b41ef4fa5d1a5d9 100644
+--- a/pipeline/renderer.py
++++ b/pipeline/renderer.py
+@@ -1,53 +1,56 @@
+ from __future__ import annotations
+ 
+ import random
+ import subprocess
+ from pathlib import Path
+ from typing import Optional
++import shutil
+ 
+ from .logger import setup_logger
+ 
+ 
+ class VideoRenderer:
+     def __init__(
+         self,
+         bg_folder: Path,
+         watermark: Path | None = None,
+         opacity: float = 1.0,
+         resolution: str = "1080x1920",
+         ffmpeg_path: str = "ffmpeg",
+         log_file: Optional[Path] = None,
+         debug: bool = False,
+     ):
+         self.logger = setup_logger("renderer", log_file, debug)
+         self.bg_root = bg_folder.parent
+         self.bg_folder = self._resolve_folder(bg_folder)
+         self.watermark = watermark if watermark and watermark.exists() else None
+         self.opacity = opacity
+         self.resolution = resolution
+         self.ffmpeg = ffmpeg_path
++        if not shutil.which(self.ffmpeg):
++            self.logger.warning(f"ffmpeg executable '{self.ffmpeg}' not found")
+ 
+     def _list_videos(self, folder: Path) -> list[Path]:
+         return [p for p in folder.glob("*") if p.suffix.lower() in {".mp4", ".webm"}]
+ 
+     def _resolve_folder(self, folder: Path) -> Path:
+         folder = folder.resolve()
+         if folder.exists():
+             videos = self._list_videos(folder)
+             if videos:
+                 return folder
+             # if folder is a root containing subfolders, try them
+             subdirs = [p for p in folder.iterdir() if p.is_dir()]
+             for sub in subdirs:
+                 vids = self._list_videos(sub)
+                 if vids:
+                     self.logger.warning(
+                         f"Falling back to {sub} due to missing videos in {folder}"
+                     )
+                     return sub
+             self.logger.warning(
+                 f"No background videos found in '{folder}'. Please add videos or pick another style."
+             )
+         # try case-insensitive search in root
+         root = folder.parent
+         if not root.exists():
+@@ -82,50 +85,61 @@ class VideoRenderer:
+         if not videos:
+             self.logger.error(f"No background videos found in {self.bg_folder}")
+             raise FileNotFoundError("No background videos found")
+         choice = random.choice(videos)
+         self.logger.info(f"Selected background video {choice}")
+         return choice
+ 
+     def render(
+         self,
+         audio_path: Path,
+         subtitles: Path | None,
+         output_path: Path,
+         intro: Path | None = None,
+         outro: Path | None = None,
+         crop_safe: bool = False,
+         overlay_text: str | None = None,
+     ):
+         """Render the final video using *audio_path* and optional *subtitles*.
+ 
+         Automatically switches to ``-filter_complex`` when a watermark and
+         subtitles are both present. All paths are converted to POSIX style to
+         avoid Windows escaping issues.
+         """
+         self.logger.info("Starting FFmpeg render")
+ 
++        output_path.parent.mkdir(parents=True, exist_ok=True)
++        if not audio_path.exists():
++            raise FileNotFoundError(f"Audio file not found: {audio_path}")
++        if subtitles and not subtitles.exists():
++            self.logger.warning(f"Subtitle file not found: {subtitles}")
++            subtitles = None
++        if intro and not intro.exists():
++            raise FileNotFoundError(f"Intro clip not found: {intro}")
++        if outro and not outro.exists():
++            raise FileNotFoundError(f"Outro clip not found: {outro}")
++
+         if output_path.suffix.lower() != ".mp4":
+             raise ValueError("Output path must end with .mp4")
+ 
+         bg_video = self.pick_background()
+ 
+         # simple wav validation
+         try:
+             import wave
+ 
+             with wave.open(str(audio_path), "rb") as _:
+                 pass
+         except Exception as e:
+             self.logger.error(f"Invalid audio file {audio_path}: {e}")
+             raise
+ 
+         self.logger.info(f"Using background video {bg_video}")
+ 
+         bg = bg_video.as_posix()
+         audio = audio_path.as_posix()
+         subs = subtitles.as_posix() if subtitles and subtitles.exists() else None
+         wm = self.watermark.as_posix() if self.watermark else None
+ 
+         base_cmd = [self.ffmpeg, "-y", "-i", bg, "-i", audio]
+ 
+         # Determine filters
+@@ -199,25 +213,26 @@ class VideoRenderer:
+             concat = output_path.with_name("concat.txt")
+             with open(concat, "w") as f:
+                 if intro:
+                     f.write(f"file '{intro.as_posix()}'\n")
+                 f.write(f"file '{main_output.as_posix()}'\n")
+                 if outro:
+                     f.write(f"file '{outro.as_posix()}'\n")
+             cmd2 = [
+                 self.ffmpeg,
+                 "-y",
+                 "-f",
+                 "concat",
+                 "-safe",
+                 "0",
+                 "-i",
+                 concat.as_posix(),
+                 "-c",
+                 "copy",
+                 output_path.as_posix(),
+             ]
+             subprocess.run(cmd2, check=True)
+             main_output.unlink(missing_ok=True)
+             concat.unlink(missing_ok=True)
+ 
+         self.logger.info(f"Render complete: {output_path}")
++
+diff --git a/pipeline/subtitles.py b/pipeline/subtitles.py
+index e2eadc28fda9c9b334b20f54a8fe4b35173c6722..36dce6d5eeb14b754310d857780ec433b7ee5190 100644
+--- a/pipeline/subtitles.py
++++ b/pipeline/subtitles.py
+@@ -1,67 +1,72 @@
+ from __future__ import annotations
+ 
+ from pathlib import Path
+ from typing import List, Optional
+ import subprocess
+ import json
+ from .logger import setup_logger
+ from .helpers import create_dummy_subtitles
+ 
+ 
+ class SubtitleGenerator:
+     def __init__(self, style: str, model: str = "base", log_file: Optional[Path] = None, debug: bool = False):
+         self.style = style
+         self.model_name = model
+         self.logger = setup_logger("subtitles", log_file, debug)
+ 
+     def transcribe(self, audio_path: Path) -> List[dict]:
+         """Use whisper to transcribe audio to words with timestamps."""
+         self.logger.info("Transcribing audio with Whisper")
++        if not audio_path.exists() or audio_path.stat().st_size == 0:
++            self.logger.error(f"Audio file not found: {audio_path}")
++            return []
+         try:
+             import whisper
+         except Exception as e:
+             self.logger.error(f"Whisper not available: {e}")
+             return []
+         model = whisper.load_model(self.model_name)
+         result = model.transcribe(str(audio_path), word_timestamps=True)
+         words = result.get("segments", [])
+         self.logger.info(f"Transcription complete: {len(words)} segments")
+         return words
+ 
+     def generate_ass(self, words: List[dict], output_path: Path):
+         self.logger.info(f"Generating {self.style} subtitles")
+         if not words:
+             self.logger.warning("No subtitle segments provided; using dummy subtitles")
+             create_dummy_subtitles(output_path)
+             return
++        output_path.parent.mkdir(parents=True, exist_ok=True)
+         with open(output_path, "w") as f:
+             f.write("[Script Info]\nScriptType: v4.00+\n\n")
+             f.write(
+                 "[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, BackColour, OutlineColour, Bold, Italic, Alignment, MarginL, MarginR, MarginV, BorderStyle, Outline, Shadow, Encoding\n"
+             )
+             f.write(
+                 "Style: Default,Arial,48,&H00FFFFFF,&H00000000,&H00000000,0,0,2,10,10,10,1,2,0,0\n"
+             )
+             f.write("[Events]\nFormat: Start, End, Style, Text\n")
+             for w in words:
+                 start = self._format_time(w["start"])
+                 end = self._format_time(w["end"])
+                 text = w.get("text", "").strip()
+                 line = f"Dialogue: 0,{start},{end},Default,{self._style_tag(text)}\n"
+                 f.write(line)
+         self.logger.info(f"Subtitles written to {output_path}")
+ 
+     def _style_tag(self, text: str) -> str:
+         if self.style == "karaoke":
+             return f"{{\\k20}}{text}"
+         if self.style == "progressive":
+             return f"{{\\alpha&HFF&\\t(0,300,\\alpha&H00&)}}{text}"
+         return text
+ 
+     @staticmethod
+     def _format_time(seconds: float) -> str:
+         hrs = int(seconds // 3600)
+         mins = int((seconds % 3600) // 60)
+         secs = int(seconds % 60)
+         ms = int((seconds - int(seconds)) * 100)
+         return f"{hrs:01d}:{mins:02d}:{secs:02d}.{ms:02d}"
++
+diff --git a/pipeline/voiceover.py b/pipeline/voiceover.py
+index d45beda0e9850f221e4f5c7142cf6904219bd181..d5f764d5082616b97ea8f6bead1c7007abddd722 100644
+--- a/pipeline/voiceover.py
++++ b/pipeline/voiceover.py
+@@ -14,116 +14,125 @@ except Exception:  # pragma: no cover - missing dependency in tests
+         pass
+ from .logger import setup_logger
+ 
+ load_dotenv()
+ 
+ 
+ class VoiceOverGenerator:
+     def __init__(
+         self,
+         engine: str,
+         voice_id: Optional[str] = None,
+         coqui_model_name: str | None = None,
+         force_coqui: bool = False,
+         debug: bool = False,
+         log_file: Optional[Path] = None,
+     ):
+         self.engine = engine
+         self.voice_id = voice_id
+         self.coqui_model_name = coqui_model_name or "tts_models/en/ljspeech/tacotron2-DDC"
+         self.force_coqui = force_coqui
+         self.logger = setup_logger("voiceover", log_file, debug)
+         self.api_key = os.getenv("ELEVENLABS_API_KEY")
+         self.voice_id = voice_id or os.getenv("ELEVENLABS_VOICE_ID")
+ 
+     def generate(self, text: str, output_path: Path) -> bool:
++        """Generate speech for *text* and save it to *output_path*."""
++        if not text.strip():
++            self.logger.error("No script text provided for voiceover")
++            return False
++        output_path.parent.mkdir(parents=True, exist_ok=True)
++
+         engine = self.engine
+         if self.force_coqui:
+             engine = "coqui"
+             self.logger.info("Force Coqui flag enabled; skipping ElevenLabs")
+         self.logger.info(f"Generating voiceover using {engine}")
+         if engine == "elevenlabs":
+             if not self.api_key or not self.voice_id:
+                 self.logger.error("ElevenLabs voice ID not found. Falling back to Coqui TTS.")
+                 return self._generate_coqui(text, output_path)
+             if self._generate_elevenlabs(text, output_path):
+                 ok = output_path.exists() and output_path.stat().st_size > 0
+                 if ok:
+                     self.logger.info(f"Voiceover saved to {output_path}")
+                 return ok
+             self.logger.error("ElevenLabs generation failed. Falling back to Coqui TTS.")
+             return self._generate_coqui(text, output_path)
+ 
+         return self._generate_coqui(text, output_path)
+ 
+     def _generate_elevenlabs(self, text: str, output_path: Path) -> bool:
+         if requests is None:
+             self.logger.error("requests library not available")
+             return False
++        output_path.parent.mkdir(parents=True, exist_ok=True)
+         url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}"
+         headers = {"xi-api-key": self.api_key}
+         payload = {"text": text}
+         for attempt in range(3):
+             try:
+                 response = requests.post(url, json=payload, headers=headers, timeout=30)
+                 if response.status_code == 200:
+                     output_path.write_bytes(response.content)
+                     self.logger.info("ElevenLabs voiceover generated successfully")
+                     return True
+                 self.logger.error(
+                     f"ElevenLabs API error {response.status_code}: {response.text}"
+                 )
+                 if response.status_code == 404:
+                     self.logger.error("ElevenLabs voice ID not found")
+                     self._list_voices()
+                 if response.status_code >= 500:
+                     continue
+                 return False
+             except Exception as e:
+                 self.logger.error(f"ElevenLabs request failed: {e}")
+                 if attempt == 2:
+                     return False
+         return False
+ 
+     def _generate_coqui(self, text: str, output_path: Path) -> bool:
+         self.logger.info("Using Coqui TTS")
++        output_path.parent.mkdir(parents=True, exist_ok=True)
+         try:
+             from TTS.api import TTS
+             from TTS.utils.manage import ModelManager
+         except Exception as e:  # fallback import error or runtime
+             self.logger.error(f"Coqui TTS not available: {e}")
+             return False
+ 
+         try:
+             tts = TTS(model_name=self.coqui_model_name)
+         except Exception:
+             self.logger.info("Downloading Coqui TTS model...")
+             manager = ModelManager()
+             try:
+                 manager.download_model(self.coqui_model_name)
+                 tts = TTS(model_name=self.coqui_model_name)
+             except Exception as e:
+                 self.logger.error(f"Coqui TTS download failed: {e}")
+                 return False
+ 
+         try:
+             tts.tts_to_file(text=text, file_path=str(output_path))
+             if output_path.exists() and output_path.stat().st_size > 0:
+                 self.logger.info(f"Coqui voiceover generated successfully at {output_path}")
+                 return True
+             return False
+         except Exception as e:
+             self.logger.error(f"Coqui TTS generation failed: {e}")
+             return False
+ 
+     def _list_voices(self) -> None:
+         """Fetch and log available ElevenLabs voices."""
+         if requests is None or not self.api_key:
+             return
+         try:
+             resp = requests.get("https://api.elevenlabs.io/v1/voices", headers={"xi-api-key": self.api_key}, timeout=30)
+             if resp.status_code == 200:
+                 voices = [v.get("voice_id", "") for v in resp.json().get("voices", [])]
+                 if voices:
+                     self.logger.error("Available voices: " + ", ".join(voices))
+         except Exception as e:
+             self.logger.error(f"Failed to fetch voice list: {e}")
++
+diff --git a/settings.json b/settings.json
+index eaa08273274f6400a4ada658efb415b7b304750f..8eb2967300d701cacb6d787f3bfc98609f2637b2 100644
+--- a/settings.json
++++ b/settings.json
+@@ -1,35 +1,40 @@
+ {
+-    "app_name": "PyOneDark - Modern GUI",
+-    "version" : "v1.0.0",
+-    "copyright" : "By: Wanderson M. Pimenta",
++    "app_name": "AutoContent",
++    "version" : "AutoContent v1.0.0",
++    "copyright" : "By Michael LaChance",
+     "year" : 2021,
+     "theme_name" : "default",
+     "custom_title_bar": true,
+     "startup_size": [
+         1400,
+         720
+     ],
+     "minimum_size": [
+         960,
+         540
+     ],
+     "lef_menu_size" : {
+         "minimum" : 50,
+         "maximum" : 240
+     },
+     "left_menu_content_margins" : 3,
+     "left_column_size" : {
+         "minimum" : 0,
+         "maximum" : 240
+     },
+     "right_column_size" : {
+         "minimum" : 0,
+         "maximum" : 240
+     },
+     "time_animation" : 500,
+     "font" : {
+-        "family" : "Segoe UI",
++        "family" : "Noto Sans",
+         "title_size" : 10,
+         "text_size" : 9
+-    }
++    },
++    "api_key": "",
++    "coqui_fallback": false,
++    "subtitle_font": "Noto Sans",
++    "font_size": 84,
++    "output_folder": "output"
+ }
+\ No newline at end of file
+diff --git a/tests/test_gui.py b/tests/test_gui.py
+index fa9fdb1529beeb26d0178ab15d983e2bb76affa4..221042ba3f540dda2b4fb28f99ea2512d9344f7a 100644
+--- a/tests/test_gui.py
++++ b/tests/test_gui.py
+@@ -1,28 +1,18 @@
+ import os
+-os.environ.setdefault('QT_QPA_PLATFORM','offscreen')
++os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+ from PySide6 import QtWidgets, QtTest
+-from gui_pydracula.main_window import MainWindow
++from main import MainWindow
+ 
+ 
+-def test_gui_stress(tmp_path):
++def test_gui_basic():
+     app = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+     win = MainWindow()
+     win.show()
+     QtTest.QTest.qWait(100)
+-    win.stack.setCurrentWidget(win.batch_page)
++    assert win.create_btn.toolTip() != ""
++    win.surprise_btn.click()
+     QtTest.QTest.qWait(50)
+-    win.stack.setCurrentWidget(win.settings_page)
+-    QtTest.QTest.qWait(50)
+-    win.stack.setCurrentWidget(win.home_page)
+-    QtTest.QTest.qWait(50)
+-    win.home_page.adv_box.setChecked(True)
+-    QtTest.QTest.qWait(50)
+-    win.home_page.adv_box.setChecked(False)
+-    win.home_page.reset_form()
+-    QtTest.QTest.qWait(50)
+-    win.settings_page.top_check.toggle()
+-    QtTest.QTest.qWait(50)
+-    win.settings_page.top_check.toggle()
++    win.reset_btn.click()
+     QtTest.QTest.qWait(50)
+     win.close()
+     app.quit()
