@@ -10,6 +10,7 @@ from qt_core import *
 from gui.core.json_settings import Settings
 from gui.core.json_themes import Themes
 from gui.widgets import PyPushButton, PyToggle, PyGrips
+from gui.core.functions import Functions
 from pipeline import generator
 from pipeline.pipeline import VideoPipeline
 from pipeline.config import Config
@@ -104,16 +105,15 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.settings = Settings().items
-        Themes.settings_path = str(GUI_DIR / f"gui/themes/{self.settings['theme_name']}.json")
+        # Always load the default PyOneDark theme
+        Themes.settings_path = str(GUI_DIR / "gui/themes/default.json")
         self.themes = Themes().items
         self.app_settings = SettingsManager()
         self.auto_filename = True
 
         self.setup_ui()
-        self.build_sidebar()
-        self.build_home_page()
-        self.build_settings_page()
-        self.build_help_page()
+        self.setup_sidebar()
+        self.setup_pages()
         self.show()
 
     # ------------------------------------------------------------------
@@ -138,17 +138,6 @@ class MainWindow(QMainWindow):
             self.bottom_left_grip = PyGrips(self, "bottom_left", True)
             self.bottom_right_grip = PyGrips(self, "bottom_right", True)
 
-        # clear default left menu
-        lm = self.ui.left_menu_frame.layout()
-        while lm.count():
-            item = lm.takeAt(0)
-            if item.widget():
-                item.widget().deleteLater()
-        self.menu_container = QFrame()
-        self.sidebar_layout = QVBoxLayout(self.menu_container)
-        self.sidebar_layout.setContentsMargins(PAD, PAD, PAD, PAD)
-        lm.addWidget(self.menu_container)
-
         # hide left/right columns by default
         self.ui.left_column_frame.setMinimumWidth(0)
         self.ui.left_column_frame.setMaximumWidth(0)
@@ -156,78 +145,76 @@ class MainWindow(QMainWindow):
         self.ui.right_column_frame.setMaximumWidth(0)
 
     # ------------------------------------------------------------------
-    def clear_layout(self, layout: QLayout):
-        while layout.count():
-            item = layout.takeAt(0)
-            if item.widget():
-                item.widget().deleteLater()
-            elif item.layout():
-                self.clear_layout(item.layout())
+    def setup_sidebar(self):
+        menus = [
+            {
+                "btn_icon": Functions.set_svg_icon("icon_home.svg"),
+                "btn_id": "btn_home",
+                "btn_text": "Home",
+                "btn_tooltip": "Home page",
+                "show_top": True,
+                "is_active": True,
+            },
+            {
+                "btn_icon": Functions.set_svg_icon("icon_file.svg"),
+                "btn_id": "btn_batch",
+                "btn_text": "Batch",
+                "btn_tooltip": "Batch mode",
+                "show_top": True,
+                "is_active": False,
+            },
+            {
+                "btn_icon": Functions.set_svg_icon("icon_settings.svg"),
+                "btn_id": "btn_settings",
+                "btn_text": "Settings",
+                "btn_tooltip": "Application settings",
+                "show_top": False,
+                "is_active": False,
+            },
+            {
+                "btn_icon": Functions.set_svg_icon("icon_info.svg"),
+                "btn_id": "btn_help",
+                "btn_text": "Help",
+                "btn_tooltip": "Help and info",
+                "show_top": False,
+                "is_active": False,
+            },
+        ]
+        self.ui.left_menu.add_menus(menus)
+        self.ui.left_menu.clicked.connect(self.handle_left_menu_clicked)
+        self.ui.left_menu.released.connect(self.menu_released)
+        self.ui.title_bar.add_menus([])
+        self.ui.title_bar.clicked.connect(self.menu_clicked)
+        self.ui.title_bar.released.connect(self.menu_released)
 
     # ------------------------------------------------------------------
-    def build_sidebar(self):
-        theme = self.themes["app_color"]
-        btn_args = dict(
-            radius=8,
-            color=theme["text_foreground"],
-            bg_color=theme["dark_three"],
-            bg_color_hover=theme["context_hover"],
-            bg_color_pressed=theme["context_pressed"],
+    def setup_pages(self):
+        from autocontent_gui.pages import (
+            HomePageWidget,
+            BatchModePageWidget,
+            SettingsPageWidget,
+            HelpPageWidget,
+        )
+        self.ui.load_pages.load_pages(
+            {
+                "home": HomePageWidget,
+                "batch": BatchModePageWidget,
+                "settings": SettingsPageWidget,
+                "help": HelpPageWidget,
+            }
         )
 
-        self.home_btn = PyPushButton(text="Home", **btn_args)
-        self.settings_btn = PyPushButton(text="Settings", **btn_args)
-        self.help_btn = PyPushButton(text="Help", **btn_args)
-
-        self.home_btn.clicked.connect(lambda: self.switch_page(0))
-        self.settings_btn.clicked.connect(lambda: self.switch_page(1))
-        self.help_btn.clicked.connect(lambda: self.switch_page(2))
-
-        self.sidebar_layout.addWidget(self.home_btn)
-        self.sidebar_layout.addWidget(self.settings_btn)
-        self.sidebar_layout.addWidget(self.help_btn)
-        self.sidebar_layout.addStretch()
-
     # ------------------------------------------------------------------
-    def switch_page(self, index: int):
-        stack = self.ui.load_pages.pages
-        if index == stack.currentIndex():
-            return
-        new = stack.widget(index)
-        effect = QGraphicsOpacityEffect(new)
-        new.setGraphicsEffect(effect)
-        anim = QPropertyAnimation(effect, b"opacity", self)
-        anim.setDuration(200)
-        anim.setStartValue(0)
-        anim.setEndValue(1)
-        anim.start(QPropertyAnimation.DeleteWhenStopped)
-        stack.setCurrentIndex(index)
-        if hasattr(self, "preview_container"):
-            self.preview_container.setVisible(index == 0)
-
-    # ------------------------------------------------------------------
-    def build_home_page(self):
-        layout = self.ui.load_pages.page_1_layout
-        self.clear_layout(layout)
-        placeholder = QLabel("\ud83d\udd27 Rebuilding GUI...")
-        placeholder.setAlignment(Qt.AlignCenter)
-        layout.addWidget(placeholder)
-
-    # ------------------------------------------------------------------
-    def build_settings_page(self):
-        layout = self.ui.load_pages.page_2_layout
-        self.clear_layout(layout)
-        placeholder = QLabel("\ud83d\udd27 Rebuilding GUI...")
-        placeholder.setAlignment(Qt.AlignCenter)
-        layout.addWidget(placeholder)
-
-    # ------------------------------------------------------------------
-    def build_help_page(self):
-        layout = self.ui.load_pages.page_3_layout
-        self.clear_layout(layout)
-        placeholder = QLabel("\ud83d\udd27 Rebuilding GUI...")
-        placeholder.setAlignment(Qt.AlignCenter)
-        layout.addWidget(placeholder)
+    def handle_left_menu_clicked(self, btn):
+        mapping = {
+            "btn_home": "home",
+            "btn_batch": "batch",
+            "btn_settings": "settings",
+            "btn_help": "help",
+        }
+        page = mapping.get(btn.objectName())
+        if page:
+            self.ui.load_pages.set_current(page)
 
     # ------------------------------------------------------------------
     def set_status(self, text: str, color: str | None = None):
