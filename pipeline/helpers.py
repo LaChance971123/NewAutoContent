@@ -32,6 +32,8 @@ def sanitize_filename(name: str) -> str:
 
 def zip_folder(folder: Path, dest_zip: Path) -> Path:
     """Create a zip archive of *folder* at *dest_zip* (without extension)."""
+    if not folder.exists():
+        raise FileNotFoundError(f"Folder not found: {folder}")
     dest_zip = dest_zip.with_suffix(".zip")
     base = dest_zip.with_suffix("")
     shutil.make_archive(str(base), "zip", root_dir=folder)
@@ -61,6 +63,7 @@ def run_with_timeout(func: Callable[..., Any], timeout: float, *args, **kwargs) 
 
 def create_silence(path: Path, duration: float = 1.0) -> None:
     """Create a silent WAV file of *duration* seconds."""
+    path.parent.mkdir(parents=True, exist_ok=True)
     n_frames = int(44100 * duration)
     with wave.open(str(path), "w") as wf:
         wf.setnchannels(1)
@@ -71,6 +74,7 @@ def create_silence(path: Path, duration: float = 1.0) -> None:
 
 def create_dummy_subtitles(path: Path) -> None:
     """Write a minimal subtitle file when generation fails."""
+    path.parent.mkdir(parents=True, exist_ok=True)
     text = "[Script Info]\nScriptType: v4.00+\n\n[V4+ Styles]\n" \
         "Format: Name, Fontname, Fontsize, PrimaryColour, BackColour, " \
         "OutlineColour, Bold, Italic, Alignment, MarginL, MarginR, " \
@@ -202,6 +206,9 @@ def preview_voice(engine: str, voice_id: str, coqui_model: str) -> Path:
 
 def trim_silence_ffmpeg(audio: Path, ffmpeg: str = "ffmpeg") -> None:
     """Trim leading and trailing silence from *audio* using ffmpeg."""
+    if not shutil.which(ffmpeg):
+        color_print("ERROR", f"ffmpeg not found: {ffmpeg}")
+        return
     trimmed = audio.with_name(audio.stem + "_trim.wav")
     cmd = [
         ffmpeg,
@@ -223,6 +230,16 @@ def trim_silence_ffmpeg(audio: Path, ffmpeg: str = "ffmpeg") -> None:
 
 def validate_video(path: Path, subtitles_required: bool = True, ffprobe: str = "ffprobe") -> dict:
     """Return basic validation info for *path*."""
+    if not shutil.which(ffprobe):
+        return {
+            "exists": False,
+            "duration": False,
+            "resolution": False,
+            "audio": False,
+            "subtitles": False,
+            "size": False,
+        }
+
     info = {
         "exists": path.exists() and path.stat().st_size > 0,
         "duration": False,
@@ -256,3 +273,4 @@ def validate_video(path: Path, subtitles_required: bool = True, ffprobe: str = "
     except Exception:
         pass
     return info
+

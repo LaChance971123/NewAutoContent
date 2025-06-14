@@ -17,6 +17,9 @@ class SubtitleGenerator:
     def transcribe(self, audio_path: Path) -> List[dict]:
         """Use whisper to transcribe audio to words with timestamps."""
         self.logger.info("Transcribing audio with Whisper")
+        if not audio_path.exists() or audio_path.stat().st_size == 0:
+            self.logger.error(f"Audio file not found: {audio_path}")
+            return []
         try:
             import whisper
         except Exception as e:
@@ -34,6 +37,7 @@ class SubtitleGenerator:
             self.logger.warning("No subtitle segments provided; using dummy subtitles")
             create_dummy_subtitles(output_path)
             return
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w") as f:
             f.write("[Script Info]\nScriptType: v4.00+\n\n")
             f.write(
@@ -65,3 +69,4 @@ class SubtitleGenerator:
         secs = int(seconds % 60)
         ms = int((seconds - int(seconds)) * 100)
         return f"{hrs:01d}:{mins:02d}:{secs:02d}.{ms:02d}"
+

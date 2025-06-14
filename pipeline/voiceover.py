@@ -36,6 +36,12 @@ class VoiceOverGenerator:
         self.voice_id = voice_id or os.getenv("ELEVENLABS_VOICE_ID")
 
     def generate(self, text: str, output_path: Path) -> bool:
+        """Generate speech for *text* and save it to *output_path*."""
+        if not text.strip():
+            self.logger.error("No script text provided for voiceover")
+            return False
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
         engine = self.engine
         if self.force_coqui:
             engine = "coqui"
@@ -59,6 +65,7 @@ class VoiceOverGenerator:
         if requests is None:
             self.logger.error("requests library not available")
             return False
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}"
         headers = {"xi-api-key": self.api_key}
         payload = {"text": text}
@@ -86,6 +93,7 @@ class VoiceOverGenerator:
 
     def _generate_coqui(self, text: str, output_path: Path) -> bool:
         self.logger.info("Using Coqui TTS")
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         try:
             from TTS.api import TTS
             from TTS.utils.manage import ModelManager
@@ -127,3 +135,4 @@ class VoiceOverGenerator:
                     self.logger.error("Available voices: " + ", ".join(voices))
         except Exception as e:
             self.logger.error(f"Failed to fetch voice list: {e}")
+
