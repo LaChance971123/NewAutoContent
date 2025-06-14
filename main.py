@@ -1,20 +1,31 @@
 import sys
+import os
 import json
 from pathlib import Path
 from typing import Callable, Any
 
+# Ensure Qt can initialize in headless environments
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+
 GUI_DIR = Path(__file__).parent / "PyOneDark_GUI_Core"
 sys.path.insert(0, str(GUI_DIR))
 
-from qt_core import *
-from gui.core.json_settings import Settings
-from gui.core.json_themes import Themes
-from gui.core.functions import Functions
-from gui.widgets import PyGrips
+try:
+    from qt_core import *
+    from gui.core.json_settings import Settings
+    from gui.core.json_themes import Themes
+    from gui.core.functions import Functions
+    QT_OK = True
+except Exception as e:  # pragma: no cover - handle missing Qt libs
+    QT_OK = False
+    print(f"Failed to load Qt modules: {e}")
 
-from pipeline import generator
-from pipeline.pipeline import VideoPipeline
-from pipeline.config import Config
+if QT_OK:
+    from gui.widgets import PyGrips
+    from pipeline import generator
+    from pipeline.pipeline import VideoPipeline
+    from pipeline.config import Config
+    from pipeline.helpers import sanitize_name
 
 
 class SettingsManager:
@@ -34,29 +45,34 @@ class SettingsManager:
         self.path.write_text(json.dumps(self.data, indent=4))
 
 
-class WorkerThread(QThread):
-    finished = Signal(object)
-    failed = Signal(Exception)
+if QT_OK:
+    class WorkerThread(QThread):
+        finished = Signal(object)
+        failed = Signal(Exception)
 
-    def __init__(self, func: Callable, *args: Any, **kwargs: Any) -> None:
-        super().__init__()
-        self.func = func
-        self.args = args
-        self.kwargs = kwargs
+        def __init__(self, func: Callable, *args: Any, **kwargs: Any) -> None:
+            super().__init__()
+            self.func = func
+            self.args = args
+            self.kwargs = kwargs
 
-    def run(self) -> None:
-        try:
-            result = self.func(*self.args, **self.kwargs)
-        except Exception as e:  # pragma: no cover - runtime errors
-            self.failed.emit(e)
+        def run(self) -> None:
+            try:
+                result = self.func(*self.args, **self.kwargs)
+            except Exception as e:  # pragma: no cover - runtime errors
+                self.failed.emit(e)
+            else:
+                self.finished.emit(result)
+
+
+    class MainWindow(QMainWindow):
+        def __init__(self) -> None:
+            super().__init__()
+        theme_path = GUI_DIR / "gui/themes/default.json"
+        if theme_path.exists():
+            Themes.settings_path = str(theme_path)
         else:
-            self.finished.emit(result)
-
-
-class MainWindow(QMainWindow):
-    def __init__(self) -> None:
-        super().__init__()
-        Themes.settings_path = str(GUI_DIR / "gui/themes/default.json")
+            print(f"Warning: missing theme file {theme_path}, using defaults")
         self.settings = Settings().items
         self.themes = Themes().items
         self.app_settings = SettingsManager()
@@ -65,7 +81,9 @@ class MainWindow(QMainWindow):
         self.setup_ui()
         self.setup_sidebar()
         self.setup_pages()
+        print("MainWindow initialized")
         self.show()
+        print("\u2705 GUI launched successfully")
 
     # ---------------------------------------------------------------
     def setup_ui(self) -> None:
@@ -168,6 +186,16 @@ class MainWindow(QMainWindow):
         self.processing = False
 
     # ---------------------------------------------------------------
+    def menu_clicked(self, btn: QPushButton) -> None:
+        if isinstance(btn, QPushButton):
+            self.handle_left_menu_clicked(btn)
+
+    # ---------------------------------------------------------------
+    def menu_released(self, btn: QPushButton) -> None:
+        # Stub for future behavior
+        pass
+
+    # ---------------------------------------------------------------
     def handle_left_menu_clicked(self, btn: QPushButton) -> None:
         mapping = {
             "btn_home": "home",
@@ -184,7 +212,12 @@ class MainWindow(QMainWindow):
 
     # ---------------------------------------------------------------
     def show_status(self, text: str, error: bool = False) -> None:
-        if self.home_page:
+        widget = None
+        if QT_OK and hasattr(self.ui, "load_pages"):
+            widget = self.ui.load_pages.pages.currentWidget()
+        if widget and hasattr(widget, "show_status"):
+            widget.show_status(text, error=error)
+        elif self.home_page:
             self.home_page.show_status(text, error=error)
 
     # ---------------------------------------------------------------
@@ -283,6 +316,8 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
+    if not QT_OK:
+        sys.exit("Qt environment not available")
     app = QApplication(sys.argv)
     window = MainWindow()
     sys.exit(app.exec())
