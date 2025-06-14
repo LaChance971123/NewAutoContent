@@ -28,7 +28,7 @@
     },
     "time_animation" : 500,
     "font" : {
-        "family" : "Segoe UI",
+        "family" : "Noto Sans",
         "title_size" : 10,
         "text_size" : 9
     }
