@@ -341,8 +341,6 @@ class SettingsPageWidget(QWidget):
     def __init__(self):
         super().__init__()
         font_family = Settings().items["font"]["family"]
-        theme = Themes().items["app_color"]
-        self.theme = theme
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(15, 15, 15, 15)
@@ -372,14 +370,7 @@ class SettingsPageWidget(QWidget):
         self.output_edit = QLineEdit("/path/to/output")
         self.output_edit.setToolTip("Folder for rendered videos")
         output_row.addWidget(self.output_edit)
-        self.output_btn = PyPushButton(
-            text="Browse",
-            radius=8,
-            color=self.theme["text_foreground"],
-            bg_color=self.theme["dark_three"],
-            bg_color_hover=self.theme["context_hover"],
-            bg_color_pressed=self.theme["context_pressed"],
-        )
+        self.output_btn = PyPushButton(text="Browse")
         self.output_btn.setToolTip("Select output directory")
         output_row.addWidget(self.output_btn)
         output_box.addLayout(output_row)
@@ -395,46 +386,11 @@ class SettingsPageWidget(QWidget):
         voice_box.addWidget(self.voice_combo)
         main_layout.addLayout(voice_box)
 
-        self.save_btn = PyPushButton(
-            text="Save Settings",
-            radius=8,
-            color=self.theme["text_foreground"],
-            bg_color=self.theme["context_color"],
-            bg_color_hover=self.theme["context_hover"],
-            bg_color_pressed=self.theme["context_pressed"],
-        )
+        self.save_btn = PyPushButton(text="Save Settings")
         self.save_btn.setToolTip("Persist settings")
         main_layout.addWidget(self.save_btn, alignment=Qt.AlignLeft)
 
-        self.status_label = QLabel("")
-        main_layout.addWidget(self.status_label)
-
         self.output_btn.clicked.connect(self.browse_output)
-
-    def show_status(self, text: str, timeout: int = 2000):
-        if not text:
-            self.status_label.setText("")
-            return
-        self.status_label.setText(text)
-        effect = QGraphicsOpacityEffect(self.status_label)
-        self.status_label.setGraphicsEffect(effect)
-        anim = QPropertyAnimation(effect, b"opacity", self)
-        anim.setDuration(200)
-        anim.setStartValue(0)
-        anim.setEndValue(1)
-        anim.start(QPropertyAnimation.DeleteWhenStopped)
-        QTimer.singleShot(
-            timeout,
-            lambda: self._fade_status(effect),
-        )
-
-    def _fade_status(self, effect: QGraphicsOpacityEffect):
-        anim = QPropertyAnimation(effect, b"opacity", self)
-        anim.setDuration(200)
-        anim.setStartValue(1)
-        anim.setEndValue(0)
-        anim.finished.connect(lambda: self.status_label.setText(""))
-        anim.start(QPropertyAnimation.DeleteWhenStopped)
 
     def load_settings(self, data: dict):
         self.api_edit.setText(data.get("api_key", ""))
@@ -456,6 +412,7 @@ class SettingsPageWidget(QWidget):
         if path:
             self.output_edit.setText(path)
 
+        main_layout.addStretch()
 
 
 class HelpPageWidget(QWidget):
@@ -466,8 +423,6 @@ class HelpPageWidget(QWidget):
     def __init__(self):
         super().__init__()
         font_family = Settings().items["font"]["family"]
-        theme = Themes().items["app_color"]
-        self.theme = theme
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(15, 15, 15, 15)
@@ -495,46 +450,11 @@ class HelpPageWidget(QWidget):
         section("\U0001F39E\ufe0f Output Overview", """Videos and logs will be stored in the output folder defined in Settings. Each run creates its own timestamped subfolder.""")
         section("\u2699\ufe0f Troubleshooting", """If a step fails, check pipeline.log in the output folder. Ensure ffmpeg is installed and paths are correct.""")
 
-        self.copy_btn = PyPushButton(
-            text="Copy Logs",
-            radius=8,
-            color=self.theme["text_foreground"],
-            bg_color=self.theme["dark_three"],
-            bg_color_hover=self.theme["context_hover"],
-            bg_color_pressed=self.theme["context_pressed"],
-        )
+        self.copy_btn = PyPushButton(text="Copy Logs")
         self.copy_btn.setToolTip("Copy log file path to clipboard")
         cont_layout.addWidget(self.copy_btn, alignment=Qt.AlignLeft)
         self.copy_btn.clicked.connect(self.copy_logs_requested.emit)
         cont_layout.addStretch()
 
         main_layout.addWidget(scroll)
-
-        self.status_label = QLabel("")
-        main_layout.addWidget(self.status_label)
-
-    def show_status(self, text: str, timeout: int = 2000):
-        if not text:
-            self.status_label.setText("")
-            return
-        self.status_label.setText(text)
-        effect = QGraphicsOpacityEffect(self.status_label)
-        self.status_label.setGraphicsEffect(effect)
-        anim = QPropertyAnimation(effect, b"opacity", self)
-        anim.setDuration(200)
-        anim.setStartValue(0)
-        anim.setEndValue(1)
-        anim.start(QPropertyAnimation.DeleteWhenStopped)
-        QTimer.singleShot(
-            timeout,
-            lambda: self._fade_status(effect),
-        )
-
-    def _fade_status(self, effect: QGraphicsOpacityEffect):
-        anim = QPropertyAnimation(effect, b"opacity", self)
-        anim.setDuration(200)
-        anim.setStartValue(1)
-        anim.setEndValue(0)
-        anim.finished.connect(lambda: self.status_label.setText(""))
-        anim.start(QPropertyAnimation.DeleteWhenStopped)
 
