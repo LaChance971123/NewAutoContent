@@ -4,28 +4,19 @@ import json
 from pathlib import Path
 from typing import Callable, Any
 
-# Ensure Qt can initialize in headless environments
-os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
-
 GUI_DIR = Path(__file__).parent / "PyOneDark_GUI_Core"
 sys.path.insert(0, str(GUI_DIR))
 
-try:
-    from qt_core import *
-    from gui.core.json_settings import Settings
-    from gui.core.json_themes import Themes
-    from gui.core.functions import Functions
-    QT_OK = True
-except Exception as e:  # pragma: no cover - handle missing Qt libs
-    QT_OK = False
-    print(f"Failed to load Qt modules: {e}")
+from qt_core import *
+from gui.core.json_settings import Settings
+from gui.core.json_themes import Themes
+from gui.core.functions import Functions
+from gui.widgets import PyGrips
 
-if QT_OK:
-    from gui.widgets import PyGrips
-    from pipeline import generator
-    from pipeline.pipeline import VideoPipeline
-    from pipeline.config import Config
-    from pipeline.helpers import sanitize_name
+from pipeline import generator
+from pipeline.pipeline import VideoPipeline
+from pipeline.config import Config
+from pipeline.helpers import sanitize_name
 
 
 class SettingsManager:
@@ -45,67 +36,38 @@ class SettingsManager:
         self.path.write_text(json.dumps(self.data, indent=4))
 
 
-if QT_OK:
-    class WorkerThread(QThread):
-        finished = Signal(object)
-        failed = Signal(Exception)
+class WorkerThread(QThread):
+    finished = Signal(object)
+    failed = Signal(Exception)
 
-        def __init__(self, func: Callable, *args: Any, **kwargs: Any) -> None:
-            super().__init__()
-            self.func = func
-            self.args = args
-            self.kwargs = kwargs
+    def __init__(self, func: Callable, *args: Any, **kwargs: Any) -> None:
+        super().__init__()
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
 
-        def run(self) -> None:
-            try:
-                result = self.func(*self.args, **self.kwargs)
-            except Exception as e:  # pragma: no cover - runtime errors
-                self.failed.emit(e)
-            else:
-                self.finished.emit(result)
+    def run(self) -> None:
+        try:
+            result = self.func(*self.args, **self.kwargs)
+        except Exception as e:  # pragma: no cover - runtime errors
+            self.failed.emit(e)
+        else:
+            self.finished.emit(result)
 
 
-    class MainWindow(QMainWindow):
-        def __init__(self) -> None:
-            super().__init__()
-            theme_path = GUI_DIR / "gui/themes/default.json"
-            self.startup_warning: str | None = None
-            if theme_path.exists():
-                Themes.settings_path = str(theme_path)
-            else:
-                self.startup_warning = "[\u26a0] Using fallback theme"
-                print(self.startup_warning)
-            self.settings = Settings().items
-            try:
-                self.themes = Themes().items
-            except Exception as e:
-                print(f"Failed to load theme: {e}")
-                self.themes = {"app_color": {
-                    "dark_one": "#1C1F22",
-                    "dark_three": "#2E3338",
-                    "context_color": "#377DFF",
-                    "context_hover": "#4A8BFF",
-                    "context_pressed": "#2554CE",
-                    "text_foreground": "#F5F7FA",
-                    "icon_color": "#F5F7FA",
-                    "red": "#ff5555",
-                }}
-            self.app_settings = SettingsManager()
-            self._threads: list[WorkerThread] = []
+class MainWindow(QMainWindow):
+    def __init__(self) -> None:
+        super().__init__()
+        Themes.settings_path = str(GUI_DIR / "gui/themes/default.json")
+        self.settings = Settings().items
+        self.themes = Themes().items
+        self.app_settings = SettingsManager()
+        self._threads: list[WorkerThread] = []
 
-            self.setup_ui()
-            self.setup_sidebar()
-            self.setup_pages()
-            if self.startup_warning:
-                self.show_status(self.startup_warning, error=True)
-            print("MainWindow initialized")
-            self.show()
-
-        # -----------------------------------------------------------
-
-    def showEvent(self, event) -> None:  # type: ignore[override]
-        super().showEvent(event)
-        print("[\u2713] All GUI components tested and loaded successfully")
+        self.setup_ui()
+        self.setup_sidebar()
+        self.setup_pages()
+        self.show()
 
     # ---------------------------------------------------------------
     def setup_ui(self) -> None:
@@ -234,12 +196,7 @@ if QT_OK:
 
     # ---------------------------------------------------------------
     def show_status(self, text: str, error: bool = False) -> None:
-        widget = None
-        if QT_OK and hasattr(self.ui, "load_pages"):
-            widget = self.ui.load_pages.pages.currentWidget()
-        if widget and hasattr(widget, "show_status"):
-            widget.show_status(text, error=error)
-        elif self.home_page:
+        if self.home_page:
             self.home_page.show_status(text, error=error)
 
     # ---------------------------------------------------------------
