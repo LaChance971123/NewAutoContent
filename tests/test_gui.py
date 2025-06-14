@@ -21,8 +21,7 @@ def test_gui_basic():
     win = MainWindow()
     win.show()
     QtTest.QTest.qWait(100)
-    label = win.ui.load_pages.page_1_layout.itemAt(0).widget()
-    assert isinstance(label, QtWidgets.QLabel)
-    assert "Rebuilding" in label.text()
+    assert hasattr(win.ui, "left_menu")
+    assert win.ui.load_pages.pages.count() >= 4
     win.close()
     app.quit()
